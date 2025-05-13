@@ -116,12 +116,12 @@ class UserController extends Controller
             Log::info('Session Guard:', ['guard' => session('guard')]);
             Log::info('Current User Pegawai:', ['user' => Auth::guard('pegawai')->user()]);
 
-            return match ($pegawai->role->id_role) {
-                1 => redirect()->route('dashboard.cs'),
-                2 => redirect()->route('dashboard.gudang'),
-                3 => redirect()->route('dashboard.admin'),
-                5 => redirect()->route('dashboard.hunter'),
-                6 => redirect()->route('dashboard.owner'),
+            return match ($pegawai->role->nama_role) {
+                'cs' => redirect()->route('dashboard.cs'),
+                'gudang' => redirect()->route('dashboard.gudang'),
+                'admin' => redirect()->route('dashboard.admin'),
+                'hunter' => redirect()->route('dashboard.hunter'),
+                'owner' => redirect()->route('dashboard.owner'),
                 default => redirect()->route('login')->withErrors(['login_error' => 'Role tidak valid.']),
             };
         }
