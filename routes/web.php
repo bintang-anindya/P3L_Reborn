@@ -30,7 +30,7 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
     })->name('dashboard.pembeli');
 });
 
-Route::middleware(['web', 'auth:pegawai'])->group(function () {
+
         Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
         Route::get('/dashboard/gudang', fn () => view('dashboard.gudang'))->name('dashboard.gudang');
         Route::get('/dashboard/admin', fn () => view('dashboard.admin'))->name('dashboard.admin');
@@ -40,7 +40,6 @@ Route::middleware(['web', 'auth:pegawai'])->group(function () {
             Log::info('Dashboard owner diakses oleh', ['user' => Auth::guard('pegawai')->user()]);
             return view('dashboard.owner');
         })->name('dashboard.owner');
-});
 
 Route::middleware(['web', 'auth:organisasi'])->group(function () {
     Route::get('/dashboard/organisasi', function () {

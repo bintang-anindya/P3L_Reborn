@@ -108,7 +108,7 @@ class UserController extends Controller
         // 1. Login sebagai Pegawai
         $pegawai = Pegawai::with('role')->where('email_pegawai', $request->email)->first();
         if ($pegawai && $request->password === $pegawai->password_pegawai) {
-            Auth::guard('pegawai')->login($pegawai); // <- pakai string
+            Auth::guard('pegawai')->login($pegawai); 
             session(['guard' => 'pegawai']);
             session(['role' => $pegawai->role->nama_role]);
                 
@@ -116,12 +116,12 @@ class UserController extends Controller
             Log::info('Session Guard:', ['guard' => session('guard')]);
             Log::info('Current User Pegawai:', ['user' => Auth::guard('pegawai')->user()]);
 
-            return match ($pegawai->role->nama_role) {
-                'admin' => redirect()->route('dashboard.admin'),
-                'cs' => redirect()->route('dashboard.cs'),
-                'gudang' => redirect()->route('dashboard.gudang'),
-                'hunter' => redirect()->route('dashboard.hunter'),
-                'owner' => redirect()->route('dashboard.owner'),
+            return match ($pegawai->role->id_role) {
+                1 => redirect()->route('dashboard.cs'),
+                2 => redirect()->route('dashboard.gudang'),
+                3 => redirect()->route('dashboard.admin'),
+                5 => redirect()->route('dashboard.hunter'),
+                6 => redirect()->route('dashboard.owner'),
                 default => redirect()->route('login')->withErrors(['login_error' => 'Role tidak valid.']),
             };
         }
