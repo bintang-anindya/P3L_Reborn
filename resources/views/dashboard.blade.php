@@ -172,6 +172,7 @@
                         <h1>Diskon hingga 10%</h1>
                         <a href="#" class="btn btn-outline-light mt-3">Belanja Sekarang</a>
                     </div>
+
                     <img src="{{ asset('assets/images/keluarga di crop.PNG') }}" alt="Promo">
                 </section>
 

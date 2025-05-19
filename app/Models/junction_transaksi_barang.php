@@ -1,32 +1,28 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class JunctionTransaksiBarang extends Model
+class Junction_transaksi_barang extends Authenticatable
 {
-    protected $table = 'transaksiBarang'; // Pastikan tabel sesuai dengan nama tabel pivot di database
+    protected $table = 'junction_transaksi_barang'; // Nama tabel jika tidak mengikuti konvensi jamak
 
-    protected $primaryKey = 'id_transaksiBarang'; // Menentukan primary key
+    protected $primaryKey = 'id_transaksiBarang'; // Jika primary key bukan 'id'
 
-    // Tabel pivot biasanya tidak memiliki timestamp, pastikan ini sesuai dengan tabel di DB
-    public $timestamps = false;
+    public $timestamps = false; // Jika tabel tidak pakai created_at dan updated_at
 
-    // Menentukan kolom yang bisa diisi
     protected $fillable = [
-        'id_transaksi', 
-        'id_barang'
+        'id_barang',
+        'id_transaksi'
     ];
 
-    // Relasi ke transaksi
-    public function transaksi()
-    {
-        return $this->belongsTo(Transaksi::class, 'id_transaksi');
+    public function Barang(){
+        return $this->belongsTo(Barang::class, 'id_barang');
     }
 
-    // Relasi ke barang
-    public function barang()
-    {
-        return $this->belongsTo(Barang::class, 'id_barang');
+    public function Transaksi(){
+        return $this->belongsTo(Transaksi::class, 'id_transaksi');
     }
 }

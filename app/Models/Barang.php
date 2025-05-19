@@ -8,9 +8,7 @@ use Carbon\Carbon;
 class Barang extends Model
 {
     protected $table = 'barang';
-
     protected $primaryKey = 'id_barang';
-
     public $timestamps = false;
 
     protected $fillable = [

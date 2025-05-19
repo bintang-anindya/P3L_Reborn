@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Role extends Authenticatable
+class Role extends Model
 {
-    protected $table = 'role';
-    protected $primaryKey = 'id_role'; 
-    public $timestamps = false;
+    use HasFactory;
 
+    protected $table = 'role'; 
+    protected $primaryKey = 'id_role';
+    public $timestamps = false;
+  
     public function requests() {
         return $this->hasMany(Pegawai::class, 'id_role');
     }
