@@ -23,7 +23,7 @@ class Pembeli extends Authenticatable
 
     public function alamat()
     {
-        return $this->hasOne(Alamat::class); // Setiap pengguna bisa memiliki 1 alamat default
+        return $this->hasOne(Alamat::class);
     }
 
     public function getAuthPassword()

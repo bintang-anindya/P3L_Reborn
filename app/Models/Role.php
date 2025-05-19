@@ -10,5 +10,7 @@ class Role extends Authenticatable
     protected $primaryKey = 'id_role'; 
     public $timestamps = false;
 
-
+    public function requests() {
+        return $this->hasMany(Pegawai::class, 'id_role');
+    }
 }
