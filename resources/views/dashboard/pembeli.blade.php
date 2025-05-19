@@ -146,7 +146,9 @@
                 @else
                     <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
                 @endauth
-                
+                <a href="{{ route('profilPembeli') }}" class="me-3">
+                    <i class="fas fa-user-circle fa-lg"></i>
+                </a>
                 <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
                 <a href="#" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
             </div>
@@ -196,69 +198,7 @@
                                 <div class="text-warning">★★★★★ (88)</div>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
+                        <!-- Add more product cards as needed -->
                     </div>
                 </section>
 
@@ -275,24 +215,7 @@
                                 <div class="text-warning">★★★★★ (88)</div>
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Joko_Widodo_2019_official_portrait.jpg/250px-Joko_Widodo_2019_official_portrait.jpg" alt="Gamepad">
-                                <p class="mt-2">Jokowi</p>
-                                <div><span class="product-price">$5</span> <span class="original-price">$7</span></div>
-                                <div class="text-warning">★ (1)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLsCm4rARF1hyTXZYmp5VpIoVODucVxFPXTQ&s" alt="Gamepad">
-                                <p class="mt-2">Air Jordick</p>
-                                <div><span class="product-price">$1299</span> <span class="original-price">$1899</span></div>
-                                <div class="text-warning">★★★★★ (143)</div>
-                            </div>
-                        </div>
+                        <!-- Add more product cards as needed -->
                     </div>
                 </section>
             </main>

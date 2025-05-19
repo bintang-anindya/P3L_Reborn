@@ -12,9 +12,8 @@ class Role extends Model
     protected $table = 'role'; 
     protected $primaryKey = 'id_role';
     public $timestamps = false;
-
-    public function pegawai()
-    {
+  
+    public function requests() {
         return $this->hasMany(Pegawai::class, 'id_role');
     }
 }

@@ -9,6 +9,7 @@ class Alamat extends Model
     use HasFactory;
     protected $table = 'alamat';
     protected $primaryKey = 'id_alamat';
+
     public $timestamps = false;
 
     protected $fillable = [

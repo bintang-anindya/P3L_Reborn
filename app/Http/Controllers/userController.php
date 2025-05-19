@@ -107,6 +107,7 @@ class UserController extends Controller
             session(['guard' => 'pembeli']); // Menyimpan status guard ke session
             Log::info('User logged in successfully as Pembeli', ['user' => $pembeli->id_pembeli]);
             Log::info('Guard aktif sekarang:', ['guard' => Auth::guard('pembeli')->getName()]);
+            session(['pembeli_id' => $pembeli->id_pembeli]);
             return redirect()->route('dashboard.pembeli');  // Pastikan redirect yang benar
         }
 
@@ -139,10 +140,11 @@ class UserController extends Controller
             session(['guard' => 'organisasi']); // Menyimpan status guard ke session
             Log::info('User logged in successfully as Pembeli', ['user' => $organisasi->id_organisasi]);
             Log::info('Guard aktif sekarang:', ['guard' => Auth::guard('organisasi')->getName()]);
+            session(['organisasi_id' => $organisasi->id_organisasi]);
             return redirect()->route('dashboard.organisasi');  // Pastikan redirect yang benar
         }
 
-        // 3. Login sebagai Organisasi
+        // 3. Login sebagai Penitip
         $penitip = Penitip::where('email_penitip', $request->email)->first();
         if ($penitip && $request->password === $penitip->password_penitip) {
             // Auth::login($organisasi);

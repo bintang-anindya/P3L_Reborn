@@ -126,6 +126,10 @@
         .horizontal-scroll-container::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
+        
+        .product-card {
+            background: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -135,7 +139,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="{{ route('home') }}">ReUseMart</a>
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
@@ -151,14 +155,16 @@
     <div class="container-fluid">
         <div class="row">
             <aside class="col-md-2 sidebar">
-                <a href="#">Fashion Wanita</a>
-                <a href="#">Fashion Pria</a>
-                <a href="#">Elektronik</a>
-                <a href="#">Gaya Hidup dan Perabot</a>
-                <a href="#">Olahraga</a>
-                <a href="#">Keperluan Bayi</a>
-                <a href="#">Hewan Peliharaan</a>
-                <a href="#">Kecantikan</a>
+                <a href="{{ route('kategori', ['id' => 1]) }}">Elektronik & Gadget</a>
+                <a href="{{ route('kategori', ['id' => 2]) }}">Pakaian & Aksesoris</a>
+                <a href="{{ route('kategori', ['id' => 3]) }}">Perabotan Rumah Tangga</a>
+                <a href="{{ route('kategori', ['id' => 4]) }}">Buku, Alat Tulis, & Sekolah</a>
+                <a href="{{ route('kategori', ['id' => 5]) }}">Hobi, Mainan, & Koleksi</a>
+                <a href="{{ route('kategori', ['id' => 6]) }}">Perlengkapan Bayi & Anak</a>
+                <a href="{{ route('kategori', ['id' => 7]) }}">Otomotif & Aksesoris</a>
+                <a href="{{ route('kategori', ['id' => 8]) }}">Taman & Outdoor</a>
+                <a href="{{ route('kategori', ['id' => 9]) }}">Kantor & Industri</a>
+                <a href="{{ route('kategori', ['id' => 10]) }}">Kosmetik & Perawatan Diri</a>
             </aside>
             <main class="col-md-10">
                 <section class="hero d-flex justify-content-between align-items-center">
@@ -166,130 +172,43 @@
                         <h1>Diskon hingga 10%</h1>
                         <a href="#" class="btn btn-outline-light mt-3">Belanja Sekarang</a>
                     </div>
-                    <img src="assets/images/keluarga di crop.PNG" alt="Promo">
+
+                    <img src="{{ asset('assets/images/keluarga di crop.PNG') }}" alt="Promo">
                 </section>
 
-                <section class="flash-sale mt-5">
-                    <h5 class="text-danger">Hits Hari Ini</h5>
-                    <h2 class="fw-bold">Baru Ditambahkan</h2>
-                    <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap">
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
+                @if(isset($kategori))
+                    <section class="flash-sale mt-5">
+                        <h5 class="text-danger">Kategori</h5>
+                        <h2 class="fw-bold">{{ $kategori->nama_kategori }}</h2>
+                        <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
+                            @forelse ($barang as $item)
+                                <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
+                                    <x-product-card :item="$item" />
+                                </div>
+                            @empty
+                                <p class="ms-2">Tidak ada barang dalam kategori ini.</p>
+                            @endforelse
                         </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
+                    </section>
+                @else
+                    <section class="flash-sale mt-5">
+                        <h5 class="text-danger">Hits Hari Ini</h5>
+                        <h2 class="fw-bold">Baru Ditambahkan</h2>
+                        <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
+                            @foreach ($barangBaru as $barang)
+                                <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
+                                    <x-product-card :item="$barang" />
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://via.placeholder.com/150" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
-                <section class="flash-sale mt-5">
-                    <h5 class="text-danger">Hits Hari Ini</h5>
-                    <h2 class="fw-bold">Flash Sales</h2>
-                    <div class="row mt-4">
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://m.media-amazon.com/images/I/51T%2B823iYtL._AC_UF1000,1000_QL80_.jpg" alt="Gamepad">
-                                <p class="mt-2">HAVIT HV-G92 Gamepad</p>
-                                <div><span class="product-price">$120</span> <span class="original-price">$160</span></div>
-                                <div class="text-warning">★★★★★ (88)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Joko_Widodo_2019_official_portrait.jpg/250px-Joko_Widodo_2019_official_portrait.jpg" alt="Gamepad">
-                                <p class="mt-2">Jokowi</p>
-                                <div><span class="product-price">$5</span> <span class="original-price">$7</span></div>
-                                <div class="text-warning">★ (1)</div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="product-card position-relative">
-                                <div class="discount">-40%</div>
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLsCm4rARF1hyTXZYmp5VpIoVODucVxFPXTQ&s" alt="Gamepad">
-                                <p class="mt-2">Air Jordick</p>
-                                <div><span class="product-price">$1299</span> <span class="original-price">$1899</span></div>
-                                <div class="text-warning">★★★★★ (143)</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                        <!-- <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap">
+                            @foreach ($barangBaru as $barang)
+                                <x-product-card :item="$barang" class="me-3" />
+                            @endforeach
+                        </div> -->
+                    </section>
+                @endif
             </main>
         </div>
     </div>

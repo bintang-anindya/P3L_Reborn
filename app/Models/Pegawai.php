@@ -12,6 +12,15 @@ class Pegawai extends Authenticatable
     public $timestamps = false;
     use HasFactory;
 
+    protected $fillable = [
+        'nama_pegawai',
+        'email_pegawai',
+        'username_pegawai',
+        'password_pegawai',
+        'no_telp_pegawai',
+        'id_role',
+    ];
+
     public function role()
     {
         return $this->belongsTo(Role::class, 'id_role'); 

@@ -1,21 +1,31 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use App\Models\KategoriBarang;
 
-class KategoriBarang extends Model
+class KategoriBarangController extends Controller
 {
-    protected $table = 'kategori_barang';
-    protected $primaryKey = 'id_kategori';
-    public $timestamps = false;
-
-    protected $fillable = [
-        'nama_kategori',
-    ];
-
-    public function barang()
+    public function index()
     {
-        return $this->hasMany(Barang::class, 'id_kategori');
+        return response()->json(KategoriBarang::all());
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_kategori' => 'required|string|max:255',
+            'deskripsi_kategori' => 'nullable|string'
+        ]);
+
+        $kategori = KategoriBarang::create($validated);
+
+        return response()->json($kategori, 201);
+    }
+
+    public function show($id)
+    {
+        return response()->json(KategoriBarang::findOrFail($id));
     }
 }

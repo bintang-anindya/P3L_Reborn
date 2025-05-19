@@ -26,10 +26,14 @@ class Pembeli extends Authenticatable
         return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
         // ^ foreign key       ^ owner key
     }
+
     public function getAuthPassword()
     {
         return $this->password_pembeli;
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'id_pembeli');
+    }
 }
-
-

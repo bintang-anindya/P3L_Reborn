@@ -47,12 +47,6 @@ class BarangController extends Controller
         return response()->json($barang);
     }
 
-    // public function show($id)
-    // {
-    //     $barang = barang::findOrFail($id);
-    //     return view('barang.show', compact('barang'));
-    // }
-
     public function showDetail($id)
     {
         $barang = Barang::findOrFail($id);
