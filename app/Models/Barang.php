@@ -7,11 +7,11 @@ use Carbon\Carbon;
 
 class Barang extends Model
 {
-    protected $table = 'barang'; // Nama tabel jika tidak mengikuti konvensi jamak
+    protected $table = 'barang';
 
-    protected $primaryKey = 'id_barang'; // Jika primary key bukan 'id'
+    protected $primaryKey = 'id_barang';
 
-    public $timestamps = false; // Jika tabel tidak pakai created_at dan updated_at
+    public $timestamps = false;
 
     protected $fillable = [
         'nama_barang',
@@ -30,11 +30,9 @@ class Barang extends Model
 
     public function scopeLayakDidonasikan($query)
     {
-        return $query->where('status_barang', 'tersedia')
-        ->whereDate('tanggal_masuk', '<=', \Carbon\Carbon::now()->subDays(30));
+        return $query->where('status_barang', 'untuk donasi');
     }
-
-    // Relasi opsional, sesuaikan dengan model Kategori dan Penitipan
+  
     public function kategori()
     {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
@@ -42,7 +40,12 @@ class Barang extends Model
 
     public function penitipan()
     {
-        return $this->hasMany(Penitipan::class, 'id_barang');
+
+        return $this->belongsTo(Penitipan::class, 'id_penitipan');
     }
 
+    public function gambarTambahan()
+    {
+        return $this->hasMany(GambarBarang::class, 'id_barang');
+    }
 }

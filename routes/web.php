@@ -5,11 +5,25 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\RequestDonasiController;
+use App\Http\Controllers\PembeliController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BarangController;
+use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\DonasiController;
+use App\Http\Controllers\OrganisasiController;
 
-// Landing page (public)
-Route::get('/', function () {
-    return view('landingPage');
-})->name('landingPage');
+
+// LandingPage
+Route::get('/', [DashboardController::class, 'index'])->name('home');
+Route::get('/kategori/{id}', [DashboardController::class, 'tampilkanKategori'])->name('kategori');
+
+// -------------------- BARANG --------------------
+Route::get('/barang/{id}', [BarangController::class, 'showDetail'])->name('detailBarang');
+Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+//Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
+Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
+Route::put('/barang/{id}', [BarangController::class, 'update'])->name('barang.update');
+Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
 
 // Halaman login & register
 Route::get('/login', [UserController::class, 'showLoginForm'])->name('loginPage');
@@ -38,13 +52,15 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
 
 Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
 Route::get('/dashboard/gudang', fn () => view('dashboard.gudang'))->name('dashboard.gudang');
-Route::get('/dashboard/admin', fn () => view('dashboard.admin'))->name('dashboard.admin');
+
+Route::get('/dashboard/admin', function() {
+    return redirect()->route('pegawai.index');
+})->name('dashboard.admin');
+
 Route::get('/dashboard/kurir', fn () => view('dashboard.kurir'))->name('dashboard.kurir');
 Route::get('/dashboard/hunter', fn () => view('dashboard.hunter'))->name('dashboard.hunter');
-Route::get('/dashboard/owner', function () {
-    Log::info('Dashboard owner diakses oleh', ['user' => Auth::guard('pegawai')->user()]);
-    return view('dashboard.owner');
-})->name('dashboard.owner');
+
+Route::get('/dashboard/owner', [DonasiController::class, 'index'])->name('dashboard.owner');
 
 Route::middleware(['web', 'auth:organisasi'])->group(function () {
     Route::get('/dashboard/organisasi', function () {
@@ -57,6 +73,7 @@ Route::middleware(['web', 'auth:penitip'])->group(function () {
         return view('dashboard.penitip');
     })->name('dashboard.penitip');
 });
+
 
 Route::prefix('cs')->name('cs.')->group(function () {
     Route::get('/dataPenitip', [PenitipController::class, 'index'])->name('penitip.index');
@@ -74,9 +91,17 @@ Route::prefix('organisasi')->name('organisasi.')->group(function () {
     Route::delete('/request-donasi/{requestDonasi}', [RequestDonasiController::class, 'destroy'])->name('requestDonasi.destroy');
 });
 
+// -------------------- Pegawai --------------------
+Route::get('/pegawai', [PegawaiController::class, 'index'])->name('pegawai.index');
+Route::post('/pegawai', [PegawaiController::class, 'store'])->name('pegawai.store');
+Route::get('/pegawai/{id}/edit', [PegawaiController::class, 'edit'])->name('pegawai.edit');
+Route::put('/pegawai/{id}', [PegawaiController::class, 'update'])->name('pegawai.update');
+Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('pegawai.destroy');
 
+// -------------------- ACC REQUEST DONASI --------------------
+Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
 
-
-
-
-
+Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('donasi.historyPage');
+Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
+Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');
+Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.update');

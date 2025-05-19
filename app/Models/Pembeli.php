@@ -42,5 +42,3 @@ class Pembeli extends Authenticatable
         return $this->hasMany(Transaksi::class, 'id_pembeli');
     }
 }
-
-
