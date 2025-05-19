@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PenitipController;
+use App\Http\Controllers\PembeliController;
+use App\Http\Controllers\RequestDonasiController;
 
 // Landing page (public)
 Route::get('/', function () {
@@ -15,6 +18,8 @@ Route::get('/register', [UserController::class, 'showRegisterForm'])->name('regi
 // Proses login & register
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/register', [UserController::class, 'register'])->name('register');
+
+Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
 
 // Logout
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
@@ -52,3 +57,26 @@ Route::middleware(['web', 'auth:penitip'])->group(function () {
         return view('dashboard.penitip');
     })->name('dashboard.penitip');
 });
+
+Route::prefix('cs')->name('cs.')->group(function () {
+    Route::get('/dataPenitip', [PenitipController::class, 'index'])->name('penitip.index');
+    Route::post('/dataPenitip', [PenitipController::class, 'store'])->name('penitip.store');
+    Route::get('/data-penitip/{id}/edit', [PenitipController::class, 'edit'])->name('penitip.edit');
+    Route::put('/data-penitip/{id}', [PenitipController::class, 'update'])->name('penitip.update');
+    Route::delete('/data-penitip/{id}', [PenitipController::class, 'destroy'])->name('penitip.destroy');
+});
+
+Route::prefix('organisasi')->name('organisasi.')->group(function () {
+    Route::get('/requestDonasi', [RequestDonasiController::class, 'index'])->name('requestDonasi.index');
+    Route::post('/requestDonasi', [RequestDonasiController::class, 'store'])->name('requestDonasi.store');
+    Route::get('/request-donasi/{requestDonasi}/edit', [RequestDonasiController::class, 'edit'])->name('requestDonasi.edit');
+    Route::put('/request-donasi/{requestDonasi}', [RequestDonasiController::class, 'update'])->name('requestDonasi.update');
+    Route::delete('/request-donasi/{requestDonasi}', [RequestDonasiController::class, 'destroy'])->name('requestDonasi.destroy');
+});
+
+
+
+
+
+
+
