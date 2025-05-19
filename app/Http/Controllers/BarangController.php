@@ -13,25 +13,11 @@ class BarangController extends Controller
         return response()->json($barang);
     }
 
-    // public function index(Request $request)
-    // {
-    //     $search = $request->search;
-        
-    //     $barangQuery = Barang::with('kategori');
-        
-    //     if ($search) {
-    //         $barangQuery->where(function($query) use ($search) {
-    //             $query->where('nama_barang', 'like', "%{$search}%")
-    //                   ->orWhereHas('kategori', function($q) use ($search) {
-    //                       $q->where('nama_kategori', 'like', "%{$search}%");
-    //                   });
-    //         });
-    //     }
-        
-    //     $barangList = $barangQuery->get();
-        
-    //     return view('dashboard.pembeli', compact('barangList', 'search'));
-    // }
+    public function index2()
+    {
+        $barang = Barang::all();
+        return view('barang.show', compact('barang'));
+    }
 
     public function store(Request $request)
     {
@@ -83,4 +69,13 @@ class BarangController extends Controller
 
         return response()->json(['message' => 'Barang deleted']);
     }
+
+    public function dashboardPenitip()
+    {
+        // Ambil 10 barang terbaru
+        $barangBaru = Barang::latest()->take(10)->get();
+
+        return view('dashboard.penitip', compact('barangBaru'));
+    }   
+
 }

@@ -40,5 +40,4 @@ class Penitip extends Authenticatable
             $query->where('id_penitip', $this->id_penitip);
         });
     }
-
 }

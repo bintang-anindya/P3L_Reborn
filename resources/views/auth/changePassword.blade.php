@@ -1,48 +1,80 @@
+<!-- resources/views/changePassword.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ReUseMart</title>
+    <title>Ganti Password - ReUseMart</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #fff;
-            color: #000;
+            background: linear-gradient(to right, #f8f8f8, #e6e6e6);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .login-card {
+        .topbar {
+            background-color: #000;
+            color: #fff;
+            padding: 5px 15px;
+            font-size: 0.875rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar .nav-link {
+            color: #000;
+            font-weight: 500;
+        }
+
+        .navbar .nav-link:hover {
+            color: #f44336;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .change-password-card {
             background-color: #fff;
             border-radius: 16px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 420px;
-            margin-top : 40px;
         }
 
-        .login-card h3 {
+        .change-password-card h3 {
             margin-bottom: 1.5rem;
             font-weight: bold;
             color: #333;
         }
 
-        .form-control {
+        .form-control, .form-select {
             border-radius: 8px;
         }
 
-        .btn-login {
+        .btn-submit {
             border-radius: 8px;
             background-color: #000;
             color: #fff;
         }
 
-        .btn-login:hover {
+        .btn-submit:hover {
             background-color: #333;
         }
 
@@ -52,49 +84,12 @@
 
         video.bg-video {
             position: fixed;
-            top: 0;
-            left: 0;
             right: 0;
             bottom: 0;
             min-width: 100%;
             min-height: 100%;
             z-index: -1;
             object-fit: cover;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #fff;
-            color: #000;
-        }
-        .topbar {
-            background-color: #000;
-            color: #fff;
-            padding: 5px 15px;
-            font-size: 0.875rem;
-            position: relative;
-            z-index: 10; /* <-- Tambah z-index */
-        }
-
-        .navbar {
-            background-color: #fff;
-            border-bottom: 1px solid #ddd;
-            position: relative;
-            z-index: 10; /* <-- Tambah z-index */
-        }
-        .navbar .nav-link {
-            color: #000;
-            font-weight: 500;
-        }
-        .navbar .nav-link:hover {
-            color: #f44336;
-        }
-        .main-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 0;
         }
     </style>
 </head>
@@ -104,7 +99,6 @@
         Your browser does not support HTML5 video.
     </video>
 
-    <!-- Bagian atas -->
     <div class="topbar text-mid">
         Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
         <a href="#" class="text-white text-decoration-underline">Belanja</a>
@@ -116,28 +110,22 @@
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
-            <div>
-                <i class="fas fa-user me-3"></i>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
-            </div>
         </div>
     </nav>
 
-    <!-- Hanya bagian ini yang diflex dan di-center -->
-    <div class="main-content d-flex align-items-center justify-content-center">
-        <div class="login-card">
-            <h3 class="text-center">Masuk ke ReUseMart</h3>
+    <div class="main-content">
+        <div class="change-password-card">
+            <h3 class="text-center">Ganti Password</h3>
 
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            <!-- Flash message -->
+            @if(session('status'))
+                <div class="alert alert-success">{{ session('status') }}</div>
             @endif
 
+            <!-- Error messages -->
             @if ($errors->any())
                 <div class="alert alert-danger">
-                    <ul>
+                    <ul class="mb-0">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -145,28 +133,31 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('changePasswordSubmit') }}">
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Alamat Email</label>
                     <input type="email" class="form-control" id="email" name="email" placeholder="email@gmail.com" required>
                 </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Kata Sandi</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                <div class="mb-4">
+                    <label for="role" class="form-label">Pilih Role Anda</label>
+                    <select class="form-select" id="role" name="role" required>
+                        <option value="">-- Pilih Role --</option>
+                        <option value="owner">Owner</option>
+                        <option value="admin">Admin</option>
+                        <option value="cs">CS</option>
+                        <option value="gudang">Gudang</option>
+                        <option value="pembeli">Pembeli</option>
+                    </select>
                 </div>
                 <div class="d-grid mb-3">
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <button type="submit" class="btn btn-submit">Lanjut Ganti Password</button>
                 </div>
-                <p class="text-center register-link">Belum punya akun? <a href="{{ route('registerPage') }}">Daftar di sini</a></p>
-
-                <!-- <hr class="my-3" style="border-top: 1px solid #000; width: 80%; margin: 0 auto;"> -->
-
-                <p class="text-center register-link">Lupa Password Anda? <a href="{{ route('changePasswordPage') }}">Pulihkan di sini</a></p>
+                <p class="text-center register-link">
+                    Ingat password Anda? <a href="{{ route('loginPage') }}">Login di sini</a>
+                </p>
             </form>
         </div>
     </div>
-</body>        
+</body>
 </html>
-
-
