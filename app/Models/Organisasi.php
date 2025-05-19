@@ -20,10 +20,6 @@ class Organisasi extends Authenticatable
         'no_telp_organisasi',
     ];
 
-    public function requests() {
-        return $this->hasMany(Request::class, 'id_organisasi');
-    }
-
     public function getAuthPassword()
     {
         return $this->password_pembeli;

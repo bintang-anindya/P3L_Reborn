@@ -10,10 +10,8 @@ use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\AlamatController;
 
 use App\Http\Controllers\PenitipController;
-use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\PembeliController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
@@ -65,10 +63,6 @@ Route::get('/resetPassword', [ChangePasswordController::class, 'showResetForm'])
 // Menangani pengiriman form reset password (POST)
 Route::post('/reset-password', [ChangePasswordController::class, 'resetPassword'])
     ->name('resetPasswordSubmit');
-
-// Organisasi
-Route::resource('organisasi', OrganisasiController::class);
-Route::post('/organisasi/delete', [OrganisasiController::class, 'destroy'])->name('organisasi.destroy');
 
 // Dashboard
 Route::get('/', [DashboardController::class, 'index'])->name('home');
