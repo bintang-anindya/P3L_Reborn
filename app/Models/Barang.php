@@ -32,7 +32,7 @@ class Barang extends Model
     {
         return $query->where('status_barang', 'untuk donasi');
     }
-
+  
     public function kategori()
     {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori');
@@ -40,6 +40,7 @@ class Barang extends Model
 
     public function penitipan()
     {
+
         return $this->belongsTo(Penitipan::class, 'id_penitipan');
     }
 

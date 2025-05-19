@@ -2,15 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RequestDonasi extends Model
 {
-    protected $table = 'request_donasi';
-    protected $primaryKey = 'id_request';
-    public $timestamps = false;
+    use HasFactory;
 
-    public function organisasi() {
+    protected $table = 'request_donasi';
+    public $timestamps = false;
+    protected $primaryKey = 'id_request';
+    protected $fillable = [
+        'keterangan_request',
+        'id_organisasi', 
+        'status_donasi'];
+
+    public function organisasi()
+    {
         return $this->belongsTo(Organisasi::class, 'id_organisasi');
     }
 }
