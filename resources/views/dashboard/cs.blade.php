@@ -140,13 +140,8 @@
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
             <div class="d-flex align-items-center gap-3">
-                @auth
                     <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
-                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
-                @else
-                    <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
-                @endauth
-                
+
                 <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
                 <a href="#" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
             </div>

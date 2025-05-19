@@ -16,4 +16,9 @@ class Penitip extends Authenticatable
     {
         return $this->password_pembeli;
     }
+
+    public function penitipan()
+    {
+        return $this->hasMany(Penitipan::class, 'id_penitip');
+    }
 }

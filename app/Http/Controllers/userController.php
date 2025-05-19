@@ -21,6 +21,11 @@ class UserController extends Controller
         return view('auth.register');
     }
 
+    public function showChangePasswordForm()
+    {
+        return view('auth.changePassword');
+    }
+
     // Proses registrasi
     public function register(Request $request)
     {
@@ -159,7 +164,27 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Berhasil logout.');
+        return redirect()->route('home')->with('success', 'Berhasil logout.');
+    }
+
+    public function showResetPasswordPegawai()
+    {
+        $pegawaiList = Pegawai::all();
+        return view('auth.resetPasswordPegawai', compact('pegawaiList'));
+    }
+
+    public function resetPasswordPegawai($id)
+    {   
+        $pegawai = Pegawai::findOrFail($id);
+
+        if ($pegawai) {
+            $pegawai->password_pegawai = $pegawai->tanggal_lahir; // plain text
+            $pegawai->save();
+
+            return redirect()->back()->with('success', 'Password pegawai berhasil direset ke tanggal lahir.');
+        }
+
+        return redirect()->back()->with('error', 'Pegawai tidak ditemukan.');
     }
 
 }
