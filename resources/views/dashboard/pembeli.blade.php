@@ -139,13 +139,18 @@
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
-            <div>
-                <!-- Ganti tombol login/register dengan ikon profil -->
+            <div class="d-flex align-items-center gap-3">
+                @auth
+                    <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                @else
+                    <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
+                @endauth
                 <a href="{{ route('profilPembeli') }}" class="me-3">
                     <i class="fas fa-user-circle fa-lg"></i>
                 </a>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
+                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                <a href="#" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
             </div>
         </div>
     </nav>

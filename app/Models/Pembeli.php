@@ -21,16 +21,11 @@ class Pembeli extends Authenticatable
         'id_alamat'
     ];
 
-    // public function alamat()
-    // {
-    //     return $this->hasOne(Alamat::class); // Setiap pengguna bisa memiliki 1 alamat default
-    // }
-
     public function alamat()
     {
         return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
+        // ^ foreign key       ^ owner key
     }
-
 
     public function getAuthPassword()
     {
@@ -42,5 +37,3 @@ class Pembeli extends Authenticatable
         return $this->hasMany(Transaksi::class, 'id_pembeli');
     }
 }
-
-

@@ -10,10 +10,11 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #fff;
+            color: #000;
             min-height: 100vh;
-            overflow: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         video.bg-video {
@@ -99,6 +100,35 @@
         textarea.form-control {
             resize: none;
         }
+        .topbar {
+            background-color: #000;
+            color: #fff;
+            padding: 5px 15px;
+            font-size: 0.875rem;
+            position: relative;
+            z-index: 10; /* <-- Tambah z-index */
+        }
+
+        .navbar {
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+            z-index: 10; /* <-- Tambah z-index */
+        }
+        .navbar .nav-link {
+            color: #000;
+            font-weight: 500;
+        }
+        .navbar .nav-link:hover {
+            color: #f44336;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +136,27 @@
         <source src="{{ asset('assets/videos/5585939-hd_1920_1080_25fps.mp4') }}" type="video/mp4">
         Your browser does not support HTML5 video.
     </video>
+
+    <!-- Bagian atas -->
+    <div class="topbar text-mid">
+        Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
+        <a href="#" class="text-white text-decoration-underline">Belanja</a>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">ReUseMart</a>
+            <form class="d-flex ms-auto me-3">
+                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
+            </form>
+            <div>
+                <i class="fas fa-user me-3"></i>
+                <i class="fas fa-heart me-3"></i>
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </nav>
+
     <div class="overlay"></div>
 
     <div class="register-container">
