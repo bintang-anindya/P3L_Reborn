@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="topbar text-center">
-            penitip brian <a href="#" class="text-white text-decoration-underline">Help</a>
+            penitip<a href="#" class="text-white text-decoration-underline">Help</a>
         </div>
     </body>
 </html>

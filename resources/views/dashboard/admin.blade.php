@@ -12,7 +12,7 @@
     </head>
     <body>
         <div class="topbar text-center">
-            brian brian tai <a href="#" class="text-white text-decoration-underline">Help</a>
+            admin<a href="#" class="text-white text-decoration-underline">Help</a>
         </div>
     </body>
 </html>
