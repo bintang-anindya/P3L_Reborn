@@ -51,6 +51,14 @@
                 @method('DELETE')
                 <button type="submit" class="btn btn-danger">Hapus</button>
             </form>
+
+            <form action="{{ route('alamat.setPrimary', $alamat->id_alamat) }}" method="POST">
+                @csrf
+                <button type="submit" {{ $alamat->is_primary ? 'disabled' : '' }}>
+                    {{ $alamat->is_primary ? 'Alamat Utama' : 'Jadikan Alamat Utama' }}
+                </button>
+            </form>
+
             <br><br>
         @empty
             <p>Belum ada alamat yang ditambahkan.</p>
@@ -62,8 +70,16 @@
         <h2>Data Pembeli Login</h2>
         <p>
             {{ $pembeli->nama_pembeli }} -
-            Alamat: {{ $pembeli->alamat->detail ?? 'Belum memiliki alamat' }}
+            Alamat:
+            @if ($pembeli->alamats->count())
+                <ul>
+                    @foreach ($pembeli->alamats as $alamat)
+                        <li>{{ $alamat->detail }}</li>
+                    @endforeach
+                </ul>
+            @else
+                Belum memiliki alamat
+            @endif
         </p>
-
     </body>
 </html>

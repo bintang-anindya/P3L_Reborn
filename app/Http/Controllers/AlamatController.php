@@ -10,12 +10,14 @@ class AlamatController extends Controller
 {
     public function index()
     {
-        $id_pembeli = session('id_pembeli');
-        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+        $id_pembeli = session('pembeli_id');
+        if (!$id_pembeli) {
+            return redirect()->route('login')->withErrors('Silakan login terlebih dahulu.');
+        }
+        $pembeli = Pembeli::with('alamats')->findOrFail($id_pembeli);
+        $alamats = $pembeli->alamats;
 
-        $alamats = $pembeli->alamat ? collect([$pembeli->alamat]) : collect([]);
-
-        return view('AlamatManager', compact('pembeli', 'alamats'));
+        return view('alamatManager', compact('pembeli', 'alamats'));
     }
 
     public function store(Request $request)
@@ -24,18 +26,18 @@ class AlamatController extends Controller
             'detail' => 'required|string|max:255',
         ]);
 
-        $alamat = Alamat::create([
-            'detail' => $request->detail
-        ]);
+        // Ambil id_pembeli dari session
+        $id_pembeli = session('pembeli_id');
 
-        // Update pembeli login agar id_alamat = alamat yg baru dibuat
-        $id_pembeli = session('id_pembeli');
-        $pembeli = Pembeli::findOrFail($id_pembeli);
-        $pembeli->id_alamat = $alamat->id_alamat;
-        $pembeli->save();
+        // Buat alamat dengan id_pembeli yang sedang aktif
+        $alamat = Alamat::create([
+            'detail' => $request->detail,
+            'id_pembeli' => $id_pembeli,
+        ]);
 
         return redirect()->back()->with('success', 'Alamat berhasil ditambahkan.');
     }
+
 
     public function update(Request $request, $id)
     {
@@ -44,30 +46,29 @@ class AlamatController extends Controller
         ]);
 
         $id_pembeli = session('id_pembeli');
-        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+        $pembeli = Pembeli::with('alamats')->findOrFail($id_pembeli);
 
-        if (!$pembeli->alamat || $pembeli->id_alamat != $id) {
+        $alamat = $pembeli->alamats->where('id_alamat', $id)->first();
+        if (!$alamat) {
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mengubah alamat ini.');
         }
 
-        $alamat = Alamat::findOrFail($id);
         $alamat->update([
-            'detail' => $request->detail
+            'detail' => $request->detail,
         ]);
-
         return redirect()->back()->with('success', 'Alamat berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $id_pembeli = session('id_pembeli');
-        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+        $pembeli = Pembeli::with('alamats')->findOrFail($id_pembeli);
 
-        if (!$pembeli->alamat || $pembeli->id_alamat != $id) {
+        $alamat = $pembeli->alamats->where('id_alamat', $id)->first();
+        if (!$alamat) {
             return redirect()->back()->withErrors('Anda tidak memiliki izin untuk menghapus alamat ini.');
         }
 
-        $alamat = Alamat::findOrFail($id);
         $alamat->delete();
 
         // Kosongkan id_alamat pada pembeli
@@ -82,21 +83,35 @@ class AlamatController extends Controller
         $keyword = $request->input('keyword');
 
         $id_pembeli = session('id_pembeli');
-        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+        $pembeli = Pembeli::with('alamats')->findOrFail($id_pembeli);
 
-        $hasil_pencarian = collect([]);
-
-        if ($pembeli->alamat && stripos($pembeli->alamat->detail, $keyword) !== false) {
-            $hasil_pencarian->push($pembeli->alamat);
-        }
+        $hasil_pencarian = $pembeli->alamats->filter(function($alamat) use ($keyword) {
+            return stripos($alamat->detail, $keyword) !== false;
+        });
 
         if ($hasil_pencarian->isEmpty()) {
             return redirect()->route('alamat.manager')->with('not_found', 'Alamat tidak ditemukan.');
         }
 
-        $alamats = $hasil_pencarian; // tampilkan hasil
+        $alamats = $hasil_pencarian;
 
-        return view('alamatManager', compact('pembeli', 'alamats', 'hasil_pencarian'));
+        return view('AlamatManager', compact('pembeli', 'alamats', 'hasil_pencarian'));
+    }
+
+    public function setPrimary($id)
+    {
+        $id_pembeli = session('pembeli_id');
+        $pembeli = Pembeli::findOrFail($id_pembeli);
+
+        // Pastikan alamat yang dipilih milik user
+        $alamat = Alamat::where('id_pembeli', $id_pembeli)
+                        ->where('id_alamat', $id)
+                        ->firstOrFail();
+
+        $pembeli->id_alamat_utama = $alamat->id_alamat;
+        $pembeli->save();
+
+        return redirect()->back()->with('success', 'Alamat utama berhasil diset.');
     }
 
 }

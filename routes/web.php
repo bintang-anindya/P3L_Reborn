@@ -8,7 +8,6 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\AlamatController;
-
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\RequestDonasiController;
@@ -18,11 +17,15 @@ use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\OrganisasiController;
 
 //alamatManager
-Route::get('/AlamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
-Route::post('/alamat', [AlamatController::class, 'store'])->name('alamat.store');
-Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
-Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
-Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.search');
+Route::middleware(['web', 'auth:pembeli'])->group(function () {
+    Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
+    Route::post('/alamatManager', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+    Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.search');
+    Route::post('/alamat/{id}/set-primary', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
+
+});
 
 // Landing page (public)
 // Route::get('/', function () {
