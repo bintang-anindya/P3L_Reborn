@@ -31,11 +31,13 @@ class ChangePasswordController extends Controller
             $user = Pembeli::where('email_pembeli', $request->email)->first();
 
             if ($user) {
-                // Buat signed URL
-                $url = 'http://127.0.0.1:8000/change-password';
-                Mail::to($request->email)->send(new ResetPasswordMail($url));
+                // Buat signed URL lengkap
+                $url = URL::signedRoute('resetPassword', [
+                    'email' => $request->email,
+                    'role' => $request->role
+                ]);
 
-                dd($url); // Pastikan $url tidak null
+                Mail::to($request->email)->send(new ResetPasswordMail($url));
 
                 return back()->with('status', 'Link reset password telah dikirim ke email Anda.');
             } else {

@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Alamat;
-use App\Models\Pembeli;
+use App\Models\Pembeli; 
 
 class AlamatController extends Controller
 {
     public function index()
     {
-        $pembelis = Pembeli::with('alamat')->get();
-        $alamats = Alamat::all();
-        return view('alamatManager', compact('pembelis', 'alamats'));
+        $id_pembeli = session('id_pembeli');
+        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+
+        $alamats = $pembeli->alamat ? collect([$pembeli->alamat]) : collect([]);
+
+        return view('AlamatManager', compact('pembeli', 'alamats'));
     }
 
     public function store(Request $request)
@@ -21,9 +24,15 @@ class AlamatController extends Controller
             'detail' => 'required|string|max:255',
         ]);
 
-        Alamat::create([
+        $alamat = Alamat::create([
             'detail' => $request->detail
         ]);
+
+        // Update pembeli login agar id_alamat = alamat yg baru dibuat
+        $id_pembeli = session('id_pembeli');
+        $pembeli = Pembeli::findOrFail($id_pembeli);
+        $pembeli->id_alamat = $alamat->id_alamat;
+        $pembeli->save();
 
         return redirect()->back()->with('success', 'Alamat berhasil ditambahkan.');
     }
@@ -33,6 +42,13 @@ class AlamatController extends Controller
         $request->validate([
             'detail' => 'required|string|max:255',
         ]);
+
+        $id_pembeli = session('id_pembeli');
+        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+
+        if (!$pembeli->alamat || $pembeli->id_alamat != $id) {
+            return redirect()->back()->withErrors('Anda tidak memiliki izin untuk mengubah alamat ini.');
+        }
 
         $alamat = Alamat::findOrFail($id);
         $alamat->update([
@@ -44,8 +60,19 @@ class AlamatController extends Controller
 
     public function destroy($id)
     {
+        $id_pembeli = session('id_pembeli');
+        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+
+        if (!$pembeli->alamat || $pembeli->id_alamat != $id) {
+            return redirect()->back()->withErrors('Anda tidak memiliki izin untuk menghapus alamat ini.');
+        }
+
         $alamat = Alamat::findOrFail($id);
         $alamat->delete();
+
+        // Kosongkan id_alamat pada pembeli
+        $pembeli->id_alamat = null;
+        $pembeli->save();
 
         return redirect()->back()->with('success', 'Alamat berhasil dihapus.');
     }
@@ -54,16 +81,22 @@ class AlamatController extends Controller
     {
         $keyword = $request->input('keyword');
 
-        $hasil_pencarian = Alamat::where('detail', 'like', "%{$keyword}%")->get();
+        $id_pembeli = session('id_pembeli');
+        $pembeli = Pembeli::with('alamat')->findOrFail($id_pembeli);
+
+        $hasil_pencarian = collect([]);
+
+        if ($pembeli->alamat && stripos($pembeli->alamat->detail, $keyword) !== false) {
+            $hasil_pencarian->push($pembeli->alamat);
+        }
 
         if ($hasil_pencarian->isEmpty()) {
             return redirect()->route('alamat.manager')->with('not_found', 'Alamat tidak ditemukan.');
         }
 
-        $pembelis = Pembeli::with('alamat')->get();
-        $alamats = Alamat::all();
+        $alamats = $hasil_pencarian; // tampilkan hasil
 
-        return view('alamatManager', compact('pembelis', 'alamats', 'hasil_pencarian'));
+        return view('alamatManager', compact('pembeli', 'alamats', 'hasil_pencarian'));
     }
 
 }

@@ -15,4 +15,10 @@ class Alamat extends Model
     protected $fillable = [
         'detail',
     ];
+
+    public function pembelis()
+    {
+        return $this->hasMany(Pembeli::class, 'id_alamat');
+    }
+
 }

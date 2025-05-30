@@ -23,8 +23,7 @@ class Pembeli extends Authenticatable
 
     public function alamat()
     {
-        return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
-        // ^ foreign key       ^ owner key
+        return $this->belongsTo(Alamat::class, 'id_alamat');
     }
 
     public function getAuthPassword()
