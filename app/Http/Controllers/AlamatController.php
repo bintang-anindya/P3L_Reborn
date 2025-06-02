@@ -59,13 +59,21 @@ class AlamatController extends Controller
         $pembeli = Pembeli::findOrFail($id_pembeli);
         $alamat = Alamat::where('id_pembeli', $id_pembeli)->where('id_alamat', $id)->firstOrFail();
 
-        // Jika alamat yang dihapus adalah alamat utama, set null
-        if ($pembeli->id_alamat_utama == $alamat->id_alamat) {
-            $pembeli->id_alamat_utama = null;
+        // Hapus alamat
+        $alamat->delete();
+
+        // Jika alamat yang dihapus adalah alamat utama
+        if ($pembeli->id_alamat_utama == $id) {
+            // Cari alamat lain milik pembeli, kalau ada
+            $alamat_lain = Alamat::where('id_pembeli', $id_pembeli)->first();
+            if ($alamat_lain) {
+                $pembeli->id_alamat_utama = $alamat_lain->id_alamat;
+            } else {
+                // Kalau tidak ada alamat lain, kosongkan
+                $pembeli->id_alamat_utama = null;
+            }
             $pembeli->save();
         }
-
-        $alamat->delete();
 
         return back()->with('success', 'Alamat berhasil dihapus.');
     }

@@ -35,4 +35,10 @@ class Pembeli extends Authenticatable
     {
         return $this->hasMany(Alamat::class, 'id_pembeli', 'id_pembeli');
     }
+
+    public function alamatUtama()
+    {
+        return $this->alamats->where('id_alamat', $this->id_alamat_utama)->first();
+    }
+
 }

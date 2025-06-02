@@ -15,6 +15,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\KeranjangController;
 
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
@@ -102,11 +103,7 @@ Route::get('/dashboard', function () {
     return view('dashboard'); // Ganti dengan view yang sesuai
 })->middleware('auth')->name('dashboard');
 
-Route::middleware(['web', 'auth:pembeli'])->group(function () {
-    Route::get('/dashboard/pembeli', function () {
-        return view('dashboard.pembeli');
-    })->name('dashboard.pembeli');
-});
+Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
 Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
 
@@ -173,3 +170,8 @@ Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('d
 Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
 Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');
 Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.update');
+
+    // -------------------- Route Keranjang -----------------------
+        Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+        Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+        Route::post('/keranjang/hapus/{id_barang}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
