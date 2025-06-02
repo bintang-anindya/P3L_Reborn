@@ -26,7 +26,6 @@ class DashboardController extends Controller
         return view('dashboard', compact('kategori', 'barang', 'barangBaru'));
     }
 
-
     public function getBarangBaru()
     {
         return Barang::where('status_barang', 'tersedia')

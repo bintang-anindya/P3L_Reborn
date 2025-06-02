@@ -41,4 +41,20 @@ class BarangController extends Controller
 
         return response()->json(['message' => 'Barang deleted']);
     }
+
+    public function dashboardPenitip()
+    {
+        // Ambil 10 barang terbaru
+        $barangBaru = Barang::latest()->take(10)->get();
+
+        return view('dashboard.penitip', compact('barangBaru'));
+    }
+    
+    public function dashboardPembeli()
+    {
+        // Ambil 10 barang terbaru
+        $barangBaru = Barang::orderBy('tanggal_masuk', 'desc')->take(10)->get();
+
+        return view('dashboard.pembeli', compact('barangBaru'));
+    } 
 }

@@ -126,10 +126,27 @@
         .horizontal-scroll-container::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
-        .product-card {
-            background: #f9f9f9;
+
+        /* Footer menempel di bawah */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
+
+        /* Agar konten tidak tertutup footer, beri padding bawah pada kontainer */
+        .container.mt-4 {
+            padding-bottom: 80px; /* Sesuaikan dengan tinggi footer */
+        }
+
+        /* Border hitam pada ikon keranjang yang aktif */
+        .navbar .fa-shopping-cart.active {
+            border: 2px solid #000;
+            border-radius: 5px;
+            padding: 4px;
+        }
+
     </style>
 </head>
 <body>
@@ -139,76 +156,54 @@
 
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
-            <div>
-                <i class="fas fa-user me-3"></i>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
-                <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
+            <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                <a href="{{ route('profilPembeli') }}" class="me-3">
+                    <i class="fas fa-user-circle fa-lg"></i>
+                </a>
+                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                <a href="{{ route('dashboard.pembeli') }}" class="text-dark"><i class="fas fa-shopping-cart active"></i></a>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <aside class="col-md-2 sidebar">
-                <a href="{{ route('kategori', ['id' => 1]) }}">Elektronik & Gadget</a>
-                <a href="{{ route('kategori', ['id' => 2]) }}">Pakaian & Aksesoris</a>
-                <a href="{{ route('kategori', ['id' => 3]) }}">Perabotan Rumah Tangga</a>
-                <a href="{{ route('kategori', ['id' => 4]) }}">Buku, Alat Tulis, & Sekolah</a>
-                <a href="{{ route('kategori', ['id' => 5]) }}">Hobi, Mainan, & Koleksi</a>
-                <a href="{{ route('kategori', ['id' => 6]) }}">Perlengkapan Bayi & Anak</a>
-                <a href="{{ route('kategori', ['id' => 7]) }}">Otomotif & Aksesoris</a>
-                <a href="{{ route('kategori', ['id' => 8]) }}">Taman & Outdoor</a>
-                <a href="{{ route('kategori', ['id' => 9]) }}">Kantor & Industri</a>
-                <a href="{{ route('kategori', ['id' => 10]) }}">Kosmetik & Perawatan Diri</a>
-            </aside>
-            <main class="col-md-10">
-                <section class="hero d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1>Diskon hingga 10%</h1>
-                        <a href="#" class="btn btn-outline-light mt-3">Belanja Sekarang</a>
+    <div class="container mt-4">
+        <h2>Keranjang Belanja</h2>
+
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if($items->isEmpty())
+            <p>Belum ada barang yang Anda pilih.</p>
+        @else
+            <div class="row">
+                @foreach($items as $item)
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="{{ asset('storage/' . $item->barang->gambar) }}" class="card-img-top" alt="{{ $item->barang->nama_barang }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $item->barang->nama_barang }}</h5>
+                                <p class="card-text text-danger fw-bold">Rp {{ number_format($item->barang->harga, 0, ',', '.') }}</p>
+                                <form action="{{ route('keranjang.hapus', $item->id_barang) }}" method="POST" onsubmit="return confirm('Yakin hapus barang ini dari keranjang?')">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-
-                    <img src="{{ asset('assets/images/keluarga di crop.PNG') }}" alt="Promo">
-                </section>
-
-                @if(isset($kategori))
-                    <section class="flash-sale mt-5">
-                        <h5 class="text-danger">Kategori</h5>
-                        <h2 class="fw-bold">{{ $kategori->nama_kategori }}</h2>
-                        <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
-                            @forelse ($barang as $item)
-                                <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
-                                    <x-product-card :item="$item" />
-                                </div>
-                            @empty
-                                <p class="ms-2">Tidak ada barang dalam kategori ini.</p>
-                            @endforelse
-                        </div>
-                    </section>
-                @else
-                    <section class="flash-sale mt-5">
-                        <h5 class="text-danger">Hits Hari Ini</h5>
-                        <h2 class="fw-bold">Baru Ditambahkan</h2>
-                        <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
-                            @foreach ($barangBaru as $barang)
-                                <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
-                                    <x-product-card :item="$barang" />
-                                </div>
-                            @endforeach
-                        </div>
-                    </section>
-                @endif
-            </main>
-        </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
-    <footer class="footer mt-auto">
-        <p>&copy; 2025 ReUseMart. All Rights Reserved.</p>
+    <footer class="footer">
+        &copy; 2025 ReUseMart. Semua hak cipta dilindungi.
     </footer>
 </body>
 </html>
