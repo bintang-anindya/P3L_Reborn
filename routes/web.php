@@ -16,7 +16,6 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\OrganisasiController;
 
-//alamatManager
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
     Route::post('/alamatManager', [AlamatController::class, 'store'])->name('alamat.store');
@@ -24,8 +23,8 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
     Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.search');
     Route::post('/alamat/{id}/set-primary', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
-
 });
+
 
 // Landing page (public)
 // Route::get('/', function () {
