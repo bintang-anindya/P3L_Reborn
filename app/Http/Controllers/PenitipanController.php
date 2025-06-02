@@ -16,7 +16,7 @@ use Carbon\Carbon;
 
 class PenitipanController extends Controller
 {
-    public function index(Request $request) // Add Request $request parameter here
+    public function index(Request $request)
     {
         $kategoriList = KategoriBarang::all();
         
@@ -71,7 +71,6 @@ class PenitipanController extends Controller
         ]);
 
         try {
-            // Convert tanggal_masuk to Carbon object
             $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
             $tenggatWaktu = $tanggalMasuk->copy()->addDays(30);
 
