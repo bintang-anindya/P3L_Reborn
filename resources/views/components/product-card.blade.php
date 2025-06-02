@@ -3,7 +3,7 @@
 <a href="{{ route('detailBarang', $item->id_barang) }}" class="text-decoration-none text-dark">
     <div class="product-card">
         <div class="image-wrapper">
-            <img src="{{ asset('assets/images/barang/' . $item->gambar_barang) }}" alt="{{ $item->nama_barang }}">
+            <img src="{{ asset('storage/' . $item->gambar_barang) }}" width="100" class="img-thumbnail" alt="Gambar {{ $item->nama_barang }}">
             <div class="overlay">
                 <span>Lihat Barang</span>
             </div>

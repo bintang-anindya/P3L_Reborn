@@ -14,5 +14,11 @@ class Alamat extends Model
 
     protected $fillable = [
         'detail',
+        'id_pembeli',
     ];
+
+    public function pembeli()
+    {
+        return $this->belongsTo(Pembeli::class, 'id_pembeli');
+    }
 }

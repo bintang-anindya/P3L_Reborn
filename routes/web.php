@@ -8,7 +8,6 @@ use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\AlamatController;
-
 use App\Http\Controllers\PenitipController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\RequestDonasiController;
@@ -16,13 +15,19 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\PenitipanController;
+use App\Http\Controllers\NotaPenitipanController;
+use App\Http\Controllers\KeranjangController;
 
-//alamatManager
-Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
-Route::post('/alamat', [AlamatController::class, 'store'])->name('alamat.store');
-Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
-Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
-Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.search');
+Route::middleware(['web', 'auth:pembeli'])->group(function () {
+    Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
+    Route::post('/alamatManager', [AlamatController::class, 'store'])->name('alamat.store');
+    Route::put('/alamat/{id}', [AlamatController::class, 'update'])->name('alamat.update');
+    Route::delete('/alamat/{id}', [AlamatController::class, 'destroy'])->name('alamat.destroy');
+    Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.search');
+    Route::post('/alamat/{id}/set-primary', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
+});
+
 
 // Landing page (public)
 // Route::get('/', function () {
@@ -31,9 +36,6 @@ Route::get('/alamat/cari', [AlamatController::class, 'search'])->name('alamat.se
 
 // Profile
 Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
-
-
-
 
 // LandingPage
 Route::get('/', [DashboardController::class, 'index'])->name('home');
@@ -63,6 +65,11 @@ Route::get('/resetPassword', [ChangePasswordController::class, 'showResetForm'])
 // Menangani pengiriman form reset password (POST)
 Route::post('/reset-password', [ChangePasswordController::class, 'resetPassword'])
     ->name('resetPasswordSubmit');
+
+Route::get('/reset-password', [ChangePasswordController::class, 'showResetForm'])
+    ->name('resetPassword')
+    ->middleware('signed');
+
 
 // Organisasi
 Route::resource('organisasi', OrganisasiController::class);
@@ -95,17 +102,25 @@ Route::get('/dashboard', function () {
     return view('dashboard'); // Ganti dengan view yang sesuai
 })->middleware('auth')->name('dashboard');
 
-Route::middleware(['web', 'auth:pembeli'])->group(function () {
-    Route::get('/dashboard/pembeli', function () {
-        return view('dashboard.pembeli');
-    })->name('dashboard.pembeli');
-});
+Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
 // Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
 Route::get('/dashboard/penitip', fn () => view('dashboard.penitip'))->name('dashboard.penitip');
 
 Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
-Route::get('/dashboard/gudang', fn () => view('dashboard.gudang'))->name('dashboard.gudang');
+
+// --------------- GUDANG ---------------- //
+Route::get('/dashboard/gudang', [PenitipanController::class, 'index'])->name('dashboard.gudang');
+Route::post('/gudang', [PenitipanController::class, 'store'])->name('penitipan.store');
+Route::put('/penitipan/{id}', [PenitipanController::class, 'update'])->name('penitipan.update');
+Route::delete('/penitipan/{id}', [PenitipanController::class, 'destroy'])->name('penitipan.destroy');
+
+// --------------- Gambar Tambahan ---------------- //
+Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
+
+// --------------- PDF ---------------- //
+Route::get('/penitipan/{id}/nota', [NotaPenitipanController::class, 'download'])->name('penitipan.nota');
+
 
 Route::get('/dashboard/admin', function() {
     return redirect()->route('pegawai.index');
@@ -166,3 +181,8 @@ Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('d
 Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
 Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');
 Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.update');
+
+    // -------------------- Route Keranjang -----------------------
+        Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+        Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+        Route::post('/keranjang/hapus/{id_barang}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');

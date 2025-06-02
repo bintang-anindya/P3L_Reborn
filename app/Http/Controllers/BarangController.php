@@ -13,34 +13,6 @@ class BarangController extends Controller
         return response()->json($barang);
     }
 
-    public function index2()
-    {
-        $barang = Barang::all();
-        return view('barang.show', compact('barang'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nama_barang' => 'required|string|max:255',
-            'gambar_barang' => 'nullable|string',
-            'berat' => 'required|numeric',
-            'status_barang' => 'required|string',
-            'tanggal_garansi' => 'nullable|date',
-            'deskripsi_barang' => 'nullable|string',
-            'tanggal_masuk' => 'required|date',
-            'tanggal_keluar' => 'nullable|date',
-            'tenggat_waktu' => 'nullable|date',
-            'harga_barang' => 'required|numeric',
-            'id_kategori' => 'required|integer',
-            'id_penitipan' => 'required|integer',
-        ]);
-
-        $barang = Barang::create($validated);
-
-        return response()->json($barang, 201);
-    }
-
     public function show($id)
     {
         $barang = Barang::findOrFail($id);
@@ -82,7 +54,13 @@ class BarangController extends Controller
         return view('dashboard.penitip', compact('barangTitipan'));
     }
 
+    }
+    
+    public function dashboardPembeli()
+    {
+        // Ambil 10 barang terbaru
+        $barangBaru = Barang::orderBy('tanggal_masuk', 'desc')->take(10)->get();
 
-
-
+        return view('dashboard.pembeli', compact('barangBaru'));
+    } 
 }

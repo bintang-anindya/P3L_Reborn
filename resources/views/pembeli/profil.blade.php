@@ -38,7 +38,13 @@
                     </tr>
                     <tr>
                         <th>Alamat</th>
-                        <td>{{ optional($pembeli->alamat)->detail ?? 'Belum diatur' }}</td>
+                        <td>
+                            @if($pembeli->id_alamat_utama && $pembeli->alamats->where('id_alamat', $pembeli->id_alamat_utama)->first())
+                                {{ $pembeli->alamats->where('id_alamat', $pembeli->id_alamat_utama)->first()->detail }}
+                            @else
+                                Belum diatur
+                            @endif
+                        </td>
                     </tr>
                 </table>
 

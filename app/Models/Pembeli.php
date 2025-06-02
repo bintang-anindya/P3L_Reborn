@@ -18,14 +18,8 @@ class Pembeli extends Authenticatable
         'email_pembeli',
         'poin_pembeli',
         'no_telp_pembeli',
-        'id_alamat'
+        'id_alamat_utama',
     ];
-
-    public function alamat()
-    {
-        return $this->belongsTo(Alamat::class, 'id_alamat', 'id_alamat');
-        // ^ foreign key       ^ owner key
-    }
 
     public function getAuthPassword()
     {
@@ -36,4 +30,15 @@ class Pembeli extends Authenticatable
     {
         return $this->hasMany(Transaksi::class, 'id_pembeli');
     }
+
+    public function alamats()
+    {
+        return $this->hasMany(Alamat::class, 'id_pembeli', 'id_pembeli');
+    }
+
+    public function alamatUtama()
+    {
+        return $this->alamats->where('id_alamat', $this->id_alamat_utama)->first();
+    }
+
 }
