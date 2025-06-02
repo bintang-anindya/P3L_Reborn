@@ -28,6 +28,13 @@ class Barang extends Model
         'id_penitipan',
     ];
 
+    protected $casts = [
+        'tanggal_masuk' => 'datetime',
+        'tenggat_waktu' => 'datetime',
+        'tanggal_garansi' => 'datetime',
+        'harga_barang' => 'decimal:2'
+    ];
+
     public function scopeLayakDidonasikan($query)
     {
         return $query->where('status_barang', 'untuk donasi');
