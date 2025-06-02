@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\Penitip;
 use App\Models\Pegawai;
 use App\Models\Penitipan;
 use App\Models\Barang;
-
 
 class ProfileController extends Controller
 {
@@ -21,19 +21,23 @@ class ProfileController extends Controller
             // Ambil semua transaksi penitipan dari penitip ini
             $riwayatTransaksi = $penitip->penitipan()->get();
 
-            return view('profile.penitip', compact('user', 'penitip', 'riwayatTransaksi'));
+            // Ambil semua barang yang dititipkan oleh penitip ini
+            $barangTitipan = Barang::where('id_penitipan', $penitip->id_penitip)->get();
+
+            return view('penitip.profil', compact(
+                'user',
+                'penitip',
+                'riwayatTransaksi',
+                'barangTitipan'
+            ));
 
         } elseif ($guard == 'pegawai') {
             $user = Auth::guard('pegawai')->user();
             $pegawai = $user;
 
-            // Tidak ada riwayat untuk pegawai (atau sesuaikan kalau perlu)
-            return view('profile.penitip', compact('user', 'pegawai'));
+            return view('penitip.profil', compact('user', 'pegawai'));
         }
 
         return redirect()->route('login')->withErrors(['error' => 'Tidak ada guard yang aktif']);
     }
-
 }
-
-
