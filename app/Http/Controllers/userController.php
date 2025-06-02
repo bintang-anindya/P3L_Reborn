@@ -21,6 +21,11 @@ class UserController extends Controller
         return view('auth.register');
     }
 
+    public function showChangePasswordForm()
+    {
+        return view('auth.changePassword');
+    }
+
     // Proses registrasi
     public function register(Request $request)
     {
@@ -102,13 +107,14 @@ class UserController extends Controller
             session(['guard' => 'pembeli']); // Menyimpan status guard ke session
             Log::info('User logged in successfully as Pembeli', ['user' => $pembeli->id_pembeli]);
             Log::info('Guard aktif sekarang:', ['guard' => Auth::guard('pembeli')->getName()]);
+            session(['pembeli_id' => $pembeli->id_pembeli]);
             return redirect()->route('dashboard.pembeli');  // Pastikan redirect yang benar
         }
 
         // 1. Login sebagai Pegawai
         $pegawai = Pegawai::with('role')->where('email_pegawai', $request->email)->first();
         if ($pegawai && $request->password === $pegawai->password_pegawai) {
-            Auth::guard('pegawai')->login($pegawai); // <- pakai string
+            Auth::guard('pegawai')->login($pegawai); 
             session(['guard' => 'pegawai']);
             session(['role' => $pegawai->role->nama_role]);
                 
@@ -117,9 +123,9 @@ class UserController extends Controller
             Log::info('Current User Pegawai:', ['user' => Auth::guard('pegawai')->user()]);
 
             return match ($pegawai->role->nama_role) {
-                'admin' => redirect()->route('dashboard.admin'),
                 'cs' => redirect()->route('dashboard.cs'),
                 'gudang' => redirect()->route('dashboard.gudang'),
+                'admin' => redirect()->route('dashboard.admin'),
                 'hunter' => redirect()->route('dashboard.hunter'),
                 'owner' => redirect()->route('dashboard.owner'),
                 default => redirect()->route('login')->withErrors(['login_error' => 'Role tidak valid.']),
@@ -134,10 +140,11 @@ class UserController extends Controller
             session(['guard' => 'organisasi']); // Menyimpan status guard ke session
             Log::info('User logged in successfully as Pembeli', ['user' => $organisasi->id_organisasi]);
             Log::info('Guard aktif sekarang:', ['guard' => Auth::guard('organisasi')->getName()]);
+            session(['organisasi_id' => $organisasi->id_organisasi]);
             return redirect()->route('dashboard.organisasi');  // Pastikan redirect yang benar
         }
 
-        // 3. Login sebagai Organisasi
+        // 3. Login sebagai Penitip
         $penitip = Penitip::where('email_penitip', $request->email)->first();
         if ($penitip && $request->password === $penitip->password_penitip) {
             // Auth::login($organisasi);
@@ -159,7 +166,27 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'Berhasil logout.');
+        return redirect()->route('home')->with('success', 'Berhasil logout.');
+    }
+
+    public function showResetPasswordPegawai()
+    {
+        $pegawaiList = Pegawai::all();
+        return view('auth.resetPasswordPegawai', compact('pegawaiList'));
+    }
+
+    public function resetPasswordPegawai($id)
+    {   
+        $pegawai = Pegawai::findOrFail($id);
+
+        if ($pegawai) {
+            $pegawai->password_pegawai = $pegawai->tanggal_lahir; // plain text
+            $pegawai->save();
+
+            return redirect()->back()->with('success', 'Password pegawai berhasil direset ke tanggal lahir.');
+        }
+
+        return redirect()->back()->with('error', 'Pegawai tidak ditemukan.');
     }
 
 }

@@ -18,18 +18,27 @@ class Pembeli extends Authenticatable
         'email_pembeli',
         'poin_pembeli',
         'no_telp_pembeli',
-        'id_alamat'
+        'id_alamat_utama',
     ];
-
-    public function alamat()
-    {
-        return $this->hasOne(Alamat::class);
-    }
 
     public function getAuthPassword()
     {
         return $this->password_pembeli;
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'id_pembeli');
+    }
+
+    public function alamats()
+    {
+        return $this->hasMany(Alamat::class, 'id_pembeli', 'id_pembeli');
+    }
+
+    public function alamatUtama()
+    {
+        return $this->alamats->where('id_alamat', $this->id_alamat_utama)->first();
+    }
+
 }
-
-
