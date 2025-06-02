@@ -35,7 +35,7 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
 // })->name('dashboard');
 
 // Profile
-Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('profile.penitip');
+Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
 
 // LandingPage
 Route::get('/', [DashboardController::class, 'index'])->name('home');
@@ -104,7 +104,8 @@ Route::get('/dashboard', function () {
 
 Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
-Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
+// Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
+Route::get('/dashboard/penitip', fn () => view('dashboard.penitip'))->name('dashboard.penitip');
 
 Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
 
@@ -176,7 +177,6 @@ Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('peg
 
 // -------------------- ACC REQUEST DONASI --------------------
 Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
-
 Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('donasi.historyPage');
 Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
 Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');

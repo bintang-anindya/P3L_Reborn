@@ -49,6 +49,11 @@ class Barang extends Model
         return $this->belongsTo(Penitipan::class, 'id_penitipan');
     }
 
+    public function penitip()
+    {
+        return $this->belongsTo(Penitip::class, 'id_penitipan');
+    }
+
     public function gambarTambahan()
     {
         return $this->hasMany(GambarBarang::class, 'id_barang');
