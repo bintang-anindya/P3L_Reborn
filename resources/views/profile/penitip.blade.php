@@ -34,14 +34,14 @@
             @if (session('guard') == 'penitip')
                 <div class="card mt-4 shadow rounded-4">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Riwayat Transaksi Penitipan</h5>
+                        <h5 class="card-title text-center">Daftar Transaksi Penitipan</h5>
                         @if ($riwayatTransaksi->isEmpty())
                             <p class="text-center text-muted">Belum ada transaksi penitipan.</p>
                         @else
                             <ul class="list-group list-group-flush">
                                 @foreach ($riwayatTransaksi as $transaksi)
                                     <li class="list-group-item">
-                                        <strong>Tanggal:</strong> {{ $transaksi->created_at ?? '-' }} <br>
+                                        <strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($transaksi->tanggal_masuk)->format('Y-m-d') ?? '-' }} <br>
                                         <strong>Pesan:</strong> {{ $transaksi->pesan ?? '-' }}
                                     </li>
                                 @endforeach
