@@ -25,6 +25,12 @@ class BarangController extends Controller
         return view('detail', compact('barang'));
     }
 
+    public function showDetailPembeli($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return view('pembeli/detail', compact('barang'));
+    }
+
     public function update(Request $request, $id)
     {
         $barang = Barang::findOrFail($id);

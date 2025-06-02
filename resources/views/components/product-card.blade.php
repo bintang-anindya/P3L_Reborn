@@ -1,6 +1,6 @@
 @props(['item'])
 
-<a href="{{ route('detailBarang', $item->id_barang) }}" class="text-decoration-none text-dark">
+<a href="{{ route('detailBarangPembeli', $item->id_barang) }}" class="text-decoration-none text-dark">
     <div class="product-card">
         <div class="image-wrapper">
             <img src="{{ asset('storage/' . $item->gambar_barang) }}" width="100" class="img-thumbnail" alt="Gambar {{ $item->nama_barang }}">

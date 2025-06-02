@@ -43,6 +43,7 @@ Route::get('/kategori/{id}', [DashboardController::class, 'tampilkanKategori'])-
 
 // -------------------- BARANG --------------------
 Route::get('/barang/{id}', [BarangController::class, 'showDetail'])->name('detailBarang');
+Route::get('/pembeli/barang/{id}', [BarangController::class, 'showDetailPembeli'])->name('detailBarangPembeli');
 Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
 //Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
