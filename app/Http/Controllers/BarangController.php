@@ -44,10 +44,16 @@ class BarangController extends Controller
 
     public function dashboardPenitip()
     {
-        // Ambil 10 barang terbaru
-        $barangBaru = Barang::latest()->take(10)->get();
+        // Ambil user penitip yang login
+        $penitip = auth('penitip')->user();
 
-        return view('dashboard.penitip', compact('barangBaru'));
+        // Ambil barang yang dititipkan penitip berdasarkan id_penitip
+        $barangTitipan = \App\Models\Barang::where('id_penitip', $penitip->id_penitip)->get();
+
+        // Kirim ke view
+        return view('dashboard.penitip', compact('barangTitipan'));
+    }
+
     }
     
     public function dashboardPembeli()
