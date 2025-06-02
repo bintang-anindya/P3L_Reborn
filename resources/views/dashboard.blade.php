@@ -201,19 +201,13 @@
                                 </div>
                             @endforeach
                         </div>
-
-                        <!-- <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap">
-                            @foreach ($barangBaru as $barang)
-                                <x-product-card :item="$barang" class="me-3" />
-                            @endforeach
-                        </div> -->
                     </section>
                 @endif
             </main>
         </div>
     </div>
 
-    <footer class="footer mt-5">
+    <footer class="footer mt-auto">
         <p>&copy; 2025 ReUseMart. All Rights Reserved.</p>
     </footer>
 </body>

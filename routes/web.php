@@ -15,6 +15,8 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\OrganisasiController;
+use App\Http\Controllers\PenitipanController;
+use App\Http\Controllers\NotaPenitipanController;
 use App\Http\Controllers\KeranjangController;
 
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
@@ -34,9 +36,6 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
 
 // Profile
 Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('profile.penitip');
-
-
-
 
 // LandingPage
 Route::get('/', [DashboardController::class, 'index'])->name('home');
@@ -108,7 +107,19 @@ Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])-
 Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
 
 Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
-Route::get('/dashboard/gudang', fn () => view('dashboard.gudang'))->name('dashboard.gudang');
+
+// --------------- GUDANG ---------------- //
+Route::get('/dashboard/gudang', [PenitipanController::class, 'index'])->name('dashboard.gudang');
+Route::post('/gudang', [PenitipanController::class, 'store'])->name('penitipan.store');
+Route::put('/penitipan/{id}', [PenitipanController::class, 'update'])->name('penitipan.update');
+Route::delete('/penitipan/{id}', [PenitipanController::class, 'destroy'])->name('penitipan.destroy');
+
+// --------------- Gambar Tambahan ---------------- //
+Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
+
+// --------------- PDF ---------------- //
+Route::get('/penitipan/{id}/nota', [NotaPenitipanController::class, 'download'])->name('penitipan.nota');
+
 
 Route::get('/dashboard/admin', function() {
     return redirect()->route('pegawai.index');

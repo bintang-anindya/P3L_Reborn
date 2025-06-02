@@ -3,17 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class GambarBarang extends Model
 {
     protected $table = 'gambar_barang';
-
+    
+    protected $primaryKey = 'id_gambar';
+    
+    public $timestamps = false;
+    
     protected $fillable = [
-        'id_barang',
         'path_gambar',
+        'id_barang'
     ];
-
+    
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');

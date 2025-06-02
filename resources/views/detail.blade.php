@@ -49,7 +49,18 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
-            <img src="{{ asset('assets/images/barang/' . $barang->gambar_barang) }}" alt="{{ $barang->nama_barang }}" class="img-fluid rounded">
+            <img src="{{ asset('storage/' . $barang->gambar_barang) }}" class="img-fluid rounded" alt="Gambar {{ $barang->nama_barang }}">
+            @if($barang->gambarTambahan->count() > 0)
+                <div class="mb-3">
+                    <div class="row">
+                        @foreach($barang->gambarTambahan as $gambar)
+                            <div class="col-md-3 mb-2 position-relative">
+                                <img src="{{ asset('storage/' . $gambar->path_gambar) }}" class="img-thumbnail" width="150">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
         <div class="col-md-6">
             <div class="container my-5">
