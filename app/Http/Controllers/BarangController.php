@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use Illuminate\Support\Facades\Log;
 
 class BarangController extends Controller
 {
@@ -25,6 +26,12 @@ class BarangController extends Controller
         return view('detail', compact('barang'));
     }
 
+    public function showDetailPembeli($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return view('pembeli/detail', compact('barang'));
+    }
+
     public function update(Request $request, $id)
     {
         $barang = Barang::findOrFail($id);
@@ -42,16 +49,30 @@ class BarangController extends Controller
         return response()->json(['message' => 'Barang deleted']);
     }
 
-    public function dashboardPenitip()
+    public function dashboardPenitip(Request $request)
     {
-        // Ambil user penitip yang login
+        if (!auth('penitip')->check()) {
+            return redirect()->route('loginPage')->with('error', 'Anda harus login sebagai penitip');
+        }
+
         $penitip = auth('penitip')->user();
+        $search = $request->input('search');
 
-        // Ambil barang yang dititipkan penitip berdasarkan id_penitip
-        $barangTitipan = \App\Models\Barang::where('id_penitip', $penitip->id_penitip)->get();
+        $barangTitipan = Barang::with(['penitipan', 'kategori'])
+            ->whereHas('penitipan', function ($query) use ($penitip) {
+                $query->where('id_penitip', $penitip->id_penitip);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_barang', 'like', "%{$search}%")
+                        ->orWhere('deskripsi_barang', 'like', "%{$search}%")
+                        ->orWhere('harga_barang', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal_masuk', 'desc')
+            ->get();
 
-        // Kirim ke view
-        return view('dashboard.penitip', compact('barangTitipan'));
+        return view('dashboard.penitip', compact('barangTitipan', 'search'));
     }
     
     public function dashboardPembeli()

@@ -181,7 +181,7 @@
                         <h5 class="text-danger">Kategori</h5>
                         <h2 class="fw-bold">{{ $kategori->nama_kategori }}</h2>
                         <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
-                            @forelse ($barang as $item)
+                            @forelse ($barang->where('status_barang', 'tersedia') as $item)
                                 <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
                                     <x-product-card :item="$item" />
                                 </div>
@@ -195,7 +195,7 @@
                         <h5 class="text-danger">Hits Hari Ini</h5>
                         <h2 class="fw-bold">Baru Ditambahkan</h2>
                         <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
-                            @foreach ($barangBaru as $barang)
+                            @foreach ($barangBaru->where('status_barang', 'tersedia') as $barang)
                                 <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
                                     <x-product-card :item="$barang" />
                                 </div>

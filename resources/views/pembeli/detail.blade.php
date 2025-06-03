@@ -24,36 +24,32 @@
         .navbar .nav-link:hover {
             color: #f44336;
         }
-        .seller-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .rating-stars {
-            color: #ffc107;
-        }
     </style>
 </head>
 
 
-<div class="topbar text-mid">
+    <div class="topbar text-mid">
         Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! <a href="#" class="text-white text-decoration-underline">Belanja</a>
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
-            <div>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
-                <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
+            <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                <a href="{{ route('profilPembeli') }}" class="me-3">
+                    <i class="fas fa-user-circle fa-lg"></i>
+                </a>
+                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                <a href="{{ route('keranjang.index') }}" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
             </div>
         </div>
     </nav>
+    
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
@@ -74,33 +70,6 @@
             <div class="container my-5">
                 <h2 class="fw-bold">{{ $barang->nama_barang }}</h2>
 
-                <!-- Info Penitip Barang -->
-                <div class="seller-info">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-store me-2 text-primary"></i>
-                        <div>
-                            <h6 class="mb-1">{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</h6>
-                            <div class="d-flex align-items-center">
-                                <div class="rating-stars me-2">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= (optional(optional($barang->penitipan)->penitip)->total_rating ?? 4.5))
-                                            <i class="fas fa-star"></i>
-                                        @else
-                                            <i class="far fa-star"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <span class="text-muted small">
-                                    ({{ number_format(optional(optional($barang->penitipan)->penitip)->rating ?? 4.5, 1) }}/5.0)
-                                </span>
-                                <span class="text-muted small ms-2">
-                                    {{ optional(optional($barang->penitipan)->penitip)->total_penjualan ?? 0 }} produk terjual
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="d-flex align-items-center mb-2">
                     <h3 class="text-danger">Rp{{ number_format($barang->harga_barang, 0, ',', '.') }}</h3>
                     <span class="ms-3 text-success">● {{ $barang->status_barang }}</span>
@@ -117,7 +86,12 @@
 
                 <div class="d-flex align-items-center mb-4">
                     <button class="btn btn-danger me-2">Beli Sekarang</button>
-                    <button class="btn btn-outline-secondary"><i class="far fa-heart"></i></button>
+                    <form action="{{ route('keranjang.tambah', $barang->id_barang) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                </form>
                 </div>
 
                 <div class="card">

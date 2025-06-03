@@ -76,7 +76,6 @@ class PenitipanController extends Controller
         ]);
 
         try {
-            // Convert tanggal_masuk to Carbon object
             $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
             $tenggatWaktu = $tanggalMasuk->copy()->addDays(30);
 
@@ -231,9 +230,10 @@ class PenitipanController extends Controller
         $penitipan = Penitipan::findOrFail($id);
         $penitipan->delete();
 
-        $barang = Barang::where('id_penitipan', $id_penitipan)->firstOrFail();
+        $barang = Barang::where('id_penitipan', $id)->firstOrFail();
         Storage::delete('public/' . $barang->gambar_barang);
 
         return redirect()->route('gudang.inputBarang')->with('success', 'Data berhasil dihapus.');
     }
+
 }

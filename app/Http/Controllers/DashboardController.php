@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use App\Models\KategoriBarang;
+use App\Models\Transaksi;
 
 class DashboardController extends Controller
 {
@@ -32,5 +33,15 @@ class DashboardController extends Controller
                         ->orderBy('tanggal_masuk', 'desc')
                         ->take(10)
                         ->get();
+    }
+
+    public function indexCs()
+    {
+        $transaksis = Transaksi::with('pembeli')
+            ->where('status_transaksi', 'Menunggu Validasi')
+            ->get();
+
+        // ARAHKAN VIEW SESUAI ROUTE
+        return view('dashboard.cs', compact('transaksis'));
     }
 }

@@ -41,3 +41,4 @@ class ProfileController extends Controller
         return redirect()->route('login')->withErrors(['error' => 'Tidak ada guard yang aktif']);
     }
 }
+
