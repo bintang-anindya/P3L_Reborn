@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Barang;
+use Illuminate\Support\Facades\Log;
 
 class BarangController extends Controller
 {
@@ -48,12 +49,30 @@ class BarangController extends Controller
         return response()->json(['message' => 'Barang deleted']);
     }
 
-    public function dashboardPenitip()
+    public function dashboardPenitip(Request $request)
     {
-        // Ambil 10 barang terbaru
-        $barangBaru = Barang::latest()->take(10)->get();
+        if (!auth('penitip')->check()) {
+            return redirect()->route('loginPage')->with('error', 'Anda harus login sebagai penitip');
+        }
 
-        return view('dashboard.penitip', compact('barangBaru'));
+        $penitip = auth('penitip')->user();
+        $search = $request->input('search');
+
+        $barangTitipan = Barang::with(['penitipan', 'kategori'])
+            ->whereHas('penitipan', function ($query) use ($penitip) {
+                $query->where('id_penitip', $penitip->id_penitip);
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('nama_barang', 'like', "%{$search}%")
+                        ->orWhere('deskripsi_barang', 'like', "%{$search}%")
+                        ->orWhere('harga_barang', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('tanggal_masuk', 'desc')
+            ->get();
+
+        return view('dashboard.penitip', compact('barangTitipan', 'search'));
     }
     
     public function dashboardPembeli()

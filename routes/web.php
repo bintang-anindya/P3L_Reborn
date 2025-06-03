@@ -106,7 +106,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
-Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
+
 
 // --------------- GUDANG ---------------- //
 Route::get('/dashboard/gudang', [PenitipanController::class, 'index'])->name('dashboard.gudang');
@@ -136,11 +136,13 @@ Route::middleware(['web', 'auth:organisasi'])->group(function () {
     })->name('dashboard.organisasi');
 });
 
-Route::middleware(['web', 'auth:penitip'])->group(function () {
-    Route::get('/dashboard/penitip', function () {
-        return view('dashboard.penitip');
-    })->name('dashboard.penitip');
-});
+// --------------- Penitip ---------------- //
+// Route::middleware(['web', 'auth:penitip'])->group(function () {
+//     Route::get('/dashboard/penitip', function () {
+//         return view('dashboard.penitip');
+//     })->name('dashboard.penitip');
+// });
+Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
 
 // diskusi
 Route::get('/diskusi', [DiskusiController::class, 'index'])->name('diskusi.index');
@@ -176,7 +178,6 @@ Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('peg
 
 // -------------------- ACC REQUEST DONASI --------------------
 Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
-
 Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('donasi.historyPage');
 Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
 Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');

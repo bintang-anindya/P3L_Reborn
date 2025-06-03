@@ -51,6 +51,7 @@
                     <button type="submit" class="btn btn-success">Acc Donasi</button>
                 </form>
             </div>
+>>>>>>> 4ec2240b89d5fc489b7bc2f35b0f8670f070846f
         </div>
     @empty
         <div class="alert alert-info">Belum ada permintaan donasi.</div>
