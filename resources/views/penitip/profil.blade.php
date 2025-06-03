@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('content')
@@ -53,7 +54,6 @@
                     </div>
                 </div>
             @endif
-
             <!-- Pencarian Barang
             <div class="card shadow rounded-4 mb-4">
                 <div class="card-body">

@@ -225,9 +225,10 @@ class PenitipanController extends Controller
         $penitipan = Penitipan::findOrFail($id);
         $penitipan->delete();
 
-        $barang = Barang::where('id_penitipan', $id_penitipan)->firstOrFail();
+        $barang = Barang::where('id_penitipan', $id)->firstOrFail();
         Storage::delete('public/' . $barang->gambar_barang);
 
         return redirect()->route('dashboard.gudang')->with('success', 'Data berhasil dihapus.');
     }
+
 }

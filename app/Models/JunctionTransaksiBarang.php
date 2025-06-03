@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Junction_transaksi_barang extends Authenticatable
+class JunctionTransaksiBarang extends Authenticatable
 {
-    protected $table = 'junction_transaksi_barang'; // Nama tabel jika tidak mengikuti konvensi jamak
+    protected $table = 'transaksi_barang'; // Nama tabel jika tidak mengikuti konvensi jamak
 
     protected $primaryKey = 'id_transaksiBarang'; // Jika primary key bukan 'id'
 
@@ -19,10 +19,10 @@ class Junction_transaksi_barang extends Authenticatable
     ];
 
     public function Barang(){
-        return $this->belongsTo(Barang::class, 'id_barang');
+        return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');
     }
 
     public function Transaksi(){
-        return $this->belongsTo(Transaksi::class, 'id_transaksi');
+        return $this->belongsTo(Transaksi::class, 'id_transaksi', 'id_transaksi');
     }
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PenitipanController;
 use App\Http\Controllers\NotaPenitipanController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\TransaksiController;
 
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
@@ -43,6 +44,7 @@ Route::get('/kategori/{id}', [DashboardController::class, 'tampilkanKategori'])-
 
 // -------------------- BARANG --------------------
 Route::get('/barang/{id}', [BarangController::class, 'showDetail'])->name('detailBarang');
+Route::get('/pembeli/barang/{id}', [BarangController::class, 'showDetailPembeli'])->name('detailBarangPembeli');
 Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
 //Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
@@ -105,8 +107,6 @@ Route::get('/dashboard', function () {
 Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
 
-
-Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
 
 // --------------- GUDANG ---------------- //
 Route::get('/dashboard/gudang', [PenitipanController::class, 'index'])->name('dashboard.gudang');
@@ -184,6 +184,19 @@ Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi
 Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.update');
 
     // -------------------- Route Keranjang -----------------------
-        Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
-        Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
-        Route::post('/keranjang/hapus/{id_barang}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
+Route::post('/keranjang/hapus/{id_barang}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+Route::post('/keranjang/tukar-poin', [KeranjangController::class, 'tukarPoin'])->name('keranjang.tukarPoin');
+Route::post('/keranjang/pilihMetodePengiriman', [KeranjangController::class, 'pilihMetodePengiriman'])->name('keranjang.pilihMetodePengiriman');
+
+    // -------------------- Route Transaksi -----------------------
+Route::post('/checkout', [TransaksiController::class, 'checkout'])->name('transaksi.checkout');
+Route::get('/transaksi/upload-bukti/{id}', [TransaksiController::class, 'uploadBuktiForm'])->name('transaksi.uploadBukti');
+Route::post('/transaksi/upload-bukti/{id}', [TransaksiController::class, 'uploadBukti'])->name('transaksi.uploadBukti.store');
+Route::get('/transaksi/cancel-if-expired/{id_transaksi}', [TransaksiController::class, 'cancelIfExpired'])->name('transaksi.cancelIfExpired');
+Route::get('/transaksi/cancelByCs/{id_transaksi}', [TransaksiController::class, 'cancelByCs'])->name('transaksi.cancelByCs');
+Route::get('/transaksi/validasi/{id_transaksi}', [TransaksiController::class, 'validasi'])->name('transaksi.validasi');
+
+Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dashboard.cs');
+
