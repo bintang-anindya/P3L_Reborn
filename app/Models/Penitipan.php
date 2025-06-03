@@ -22,6 +22,14 @@ class Penitipan extends Model
         'tenggat_waktu',
     ];
 
+    /**
+     * Relasi ke Pegawai
+     */
+    public function pegawai(): BelongsTo
+    {
+        return $this->belongsTo(Pegawai::class, 'id_pegawai', 'id_pegawai');
+    }
+
     protected $casts = [
         'tanggal_masuk' => 'datetime',
         'tenggat_waktu' => 'datetime',
@@ -29,17 +37,11 @@ class Penitipan extends Model
 
     public function barang()
     {
-        // return $this->hasOne(Barang::class, 'id_penitipan');
         return $this->hasMany(Barang::class, 'id_penitipan');
     }
 
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
-    }
-
-    public function pegawai()
-    {
-        return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
 }

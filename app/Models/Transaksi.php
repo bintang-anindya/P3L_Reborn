@@ -51,6 +51,5 @@ class Transaksi extends Model
     {
         return $this->poin_tukar ?? 0;
     }
-    
 
 }
