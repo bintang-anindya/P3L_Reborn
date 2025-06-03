@@ -18,6 +18,8 @@ class Penitipan extends Model
         'pesan',
         'id_pegawai',
         'id_penitip',
+        'tanggal_masuk',
+        'tenggat_waktu',
     ];
 
     /**
@@ -28,14 +30,6 @@ class Penitipan extends Model
         return $this->belongsTo(Pegawai::class, 'id_pegawai', 'id_pegawai');
     }
 
-    protected $fillable = [
-        'pesan',
-        'id_pegawai',
-        'id_penitip',
-        'tanggal_masuk',
-        'tenggat_waktu',
-    ];
-
     protected $casts = [
         'tanggal_masuk' => 'datetime',
         'tenggat_waktu' => 'datetime',
@@ -43,17 +37,11 @@ class Penitipan extends Model
 
     public function barang()
     {
-        // return $this->hasOne(Barang::class, 'id_penitipan');
         return $this->hasMany(Barang::class, 'id_penitipan');
     }
 
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
-    }
-
-    public function pegawai()
-    {
-        return $this->belongsTo(Pegawai::class, 'id_pegawai');
     }
 }

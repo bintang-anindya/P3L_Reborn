@@ -53,8 +53,6 @@ class BarangController extends Controller
         // Kirim ke view
         return view('dashboard.penitip', compact('barangTitipan'));
     }
-
-    }
     
     public function dashboardPembeli()
     {

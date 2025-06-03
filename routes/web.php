@@ -18,6 +18,8 @@ use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PenitipanController;
 use App\Http\Controllers\NotaPenitipanController;
 use App\Http\Controllers\KeranjangController;
+use App\Http\Controllers\PengambilanController;
+use App\Http\Controllers\DaftarTransaksiController;
 
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
@@ -109,14 +111,8 @@ Route::get('/dashboard/penitip', fn () => view('dashboard.penitip'))->name('dash
 
 Route::get('/dashboard/cs', fn () => view('dashboard.cs'))->name('dashboard.cs');
 
-// --------------- GUDANG ---------------- //
-Route::get('/dashboard/gudang', [PenitipanController::class, 'index'])->name('dashboard.gudang');
-Route::post('/gudang', [PenitipanController::class, 'store'])->name('penitipan.store');
-Route::put('/penitipan/{id}', [PenitipanController::class, 'update'])->name('penitipan.update');
-Route::delete('/penitipan/{id}', [PenitipanController::class, 'destroy'])->name('penitipan.destroy');
-
 // --------------- Gambar Tambahan ---------------- //
-Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
+// Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
 
 // --------------- PDF ---------------- //
 Route::get('/penitipan/{id}/nota', [NotaPenitipanController::class, 'download'])->name('penitipan.nota');
@@ -160,6 +156,24 @@ Route::prefix('cs')->name('cs.')->group(function () {
     Route::delete('/data-penitip/{id}', [PenitipController::class, 'destroy'])->name('penitip.destroy');
 });
 
+// --------------- GUDANG ---------------- //
+Route::get('/dashboard/gudang', [PenitipanController::class, 'dashboard'])->name('dashboard.gudang');
+
+Route::prefix('gudang')->name('gudang.')->group(function () {
+    Route::get('/inputBarang', [PenitipanController::class, 'index'])->name('inputBarang.index');
+    Route::post('/inputBarang', [PenitipanController::class, 'store'])->name('inputBarang.store');
+    Route::put('/penitipan/{id}', [PenitipanController::class, 'update'])->name('inputBarang.update');
+    Route::delete('/penitipan/{id}', [PenitipanController::class, 'destroy'])->name('inputBarang.destroy');
+    Route::get('/daftarTransaksi', [DaftarTransaksiController::class, 'index'])->name('DaftarTransaksi.index');
+    Route::post('/daftarTransaksi/{id_transaksi}/diambil', [DaftarTransaksiController::class, 'updateDiambil'])->name('daftarTransaksi.diambil');
+});
+
+    // -------------------- Pengambilan -----------------------
+Route::prefix('gudang')->group(function() {
+    Route::get('/ambilBarang', [PengambilanController::class, 'index']) ->name('gudang.ambilBarang');      
+    Route::post('/ambilBarang/{id_barang}/ambil', [PengambilanController::class, 'ambilBarang'])->name('gudang.ambilBarang.ambil');
+});
+
 Route::prefix('organisasi')->name('organisasi.')->group(function () {
     Route::get('/requestDonasi', [RequestDonasiController::class, 'index'])->name('requestDonasi.index');
     Route::post('/requestDonasi', [RequestDonasiController::class, 'store'])->name('requestDonasi.store');
@@ -186,3 +200,6 @@ Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.up
         Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
         Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
         Route::post('/keranjang/hapus/{id_barang}', [KeranjangController::class, 'hapus'])->name('keranjang.hapus');
+
+
+      
