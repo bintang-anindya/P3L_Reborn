@@ -34,7 +34,7 @@ class Transaksi extends Model
 
     public function barangs()
     {
-        return $this->belongsToMany(Barang::class, 'junction_transaksi_barang', 'id_transaksi', 'id_barang');
+        return $this->belongsToMany(Barang::class, 'transaksi_barang', 'id_transaksi', 'id_barang');
     }
 
     public function pengiriman()
@@ -42,9 +42,9 @@ class Transaksi extends Model
         return $this->hasOne(Pengiriman::class, 'id_transaksi');
     }
 
-    public function junctionTransaksiBarang()
+    public function TransaksiBarang()
     {
-        return $this->hasMany(JunctionTransaksiBarang::class, 'id_transaksi', 'id_transaksi');
+        return $this->hasMany(TransaksiBarang::class, 'id_transaksi', 'id_transaksi');
     }
 
     public function hitungPoinTukar()
