@@ -48,6 +48,10 @@
             color: #fff;
             text-align: center;
             padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
     </style>
 </head>
@@ -60,9 +64,11 @@
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
-            <form class="d-flex ms-auto me-3">
-                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?" />
-            </form>
+            <div class="search-box d-flex ms-auto me-3">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Cari barang...">
+                </div>
+            </div>
             <div class="d-flex align-items-center gap-3">
                 @auth('penitip')
                     <a href="{{ route('penitip.profil') }}" class="text-dark d-flex align-items-center">
@@ -114,15 +120,19 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($barangTitipan as $barang)
-                                                <tr>
-                                                    <td>{{ $barang->nama_barang }}</td>
-                                                    <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
-                                                    <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
-                                                    <td>{{ ucfirst($barang->status_barang) }}</td>
-                                                    <td>{{ $barang->tanggal_masuk ? \Carbon\Carbon::parse($barang->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                                                    <td>{{ $barang->tenggat_waktu ? \Carbon\Carbon::parse($barang->tenggat_waktu)->format('d M Y') : '-' }}</td>
-                                                </tr>
-                                            @endforeach
+                                            <tr>
+                                                <td>{{ $barang->nama_barang }}</td>
+                                                <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
+                                                <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
+                                                <td>{{ ucfirst($barang->status_barang) }}</td>
+                                                <td>
+                                                    {{ optional(optional($barang->penitipan)->tanggal_masuk)->format('d M Y') ?? '-' }}
+                                                </td>
+                                                <td>
+                                                    {{ optional(optional($barang->penitipan)->tenggat_waktu)->format('d M Y') ?? '-' }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -134,8 +144,49 @@
         </div>
     </div>
 
-    <footer class="footer mt-5">
+    <footer class="footer mt-auto">
         <p>&copy; 2025 ReUseMart. All Rights Reserved.</p>
     </footer>
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+        const rows = document.querySelectorAll('tbody tr');
+
+        searchInput.addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            let hasMatch = false;
+
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                const match = rowText.includes(searchValue);
+                row.style.display = match ? '' : 'none';
+                if (match) hasMatch = true;
+            });
+
+            // Optional: show a message if no matches
+            let noResultRow = document.getElementById('noResultRow');
+            if (!hasMatch) {
+                if (!noResultRow) {
+                    noResultRow = document.createElement('tr');
+                    noResultRow.id = 'noResultRow';
+                    noResultRow.innerHTML = `<td colspan="6" class="text-center text-muted">Tidak ada barang yang cocok.</td>`;
+                    document.querySelector('tbody').appendChild(noResultRow);
+                } else {
+                    noResultRow.style.display = '';
+                }
+            } else if (noResultRow) {
+                noResultRow.style.display = 'none';
+            }
+        });
+
+        clearBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+        });
+    });
+</script>
+
 </html>

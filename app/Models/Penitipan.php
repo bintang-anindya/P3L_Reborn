@@ -18,20 +18,6 @@ class Penitipan extends Model
         'pesan',
         'id_pegawai',
         'id_penitip',
-    ];
-
-    /**
-     * Relasi ke Pegawai
-     */
-    public function pegawai(): BelongsTo
-    {
-        return $this->belongsTo(Pegawai::class, 'id_pegawai', 'id_pegawai');
-    }
-
-    protected $fillable = [
-        'pesan',
-        'id_pegawai',
-        'id_penitip',
         'tanggal_masuk',
         'tenggat_waktu',
     ];

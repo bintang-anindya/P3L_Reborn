@@ -44,7 +44,7 @@
                             <ul class="list-group list-group-flush">
                                 @foreach ($riwayatTransaksi as $transaksi)
                                     <li class="list-group-item">
-                                        <strong>Tanggal:</strong> {{ optional($transaksi->created_at)->format('d M Y') ?? '-' }} <br>
+                                        <strong>Tanggal:</strong> {{ optional($transaksi->tanggal_masuk)->format('d M Y') ?? '-' }} <br>
                                         <strong>Pesan:</strong> {{ $transaksi->pesan ?? '-' }}
                                     </li>
                                 @endforeach
@@ -80,42 +80,6 @@
                     @endif
                 </div>
             </div> -->
-
-            <!-- Daftar Barang Titipan -->
-            @if (isset($barangTitipan) && !$barangTitipan->isEmpty())
-                <div class="card shadow rounded-4 mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">📦 Barang Titipan Anda</h5>
-                        <div class="table-responsive">
-                            <table class="table table-striped align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Nama Barang</th>
-                                        <th>Kategori</th>
-                                        <th>Harga</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Masuk</th>
-                                        <th>Tenggat Waktu</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($barangTitipan as $barang)
-                                        <tr>
-                                            <td>{{ $barang->nama_barang }}</td>
-                                            <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
-                                            <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
-                                            <td>{{ ucfirst($barang->status_barang) }}</td>
-                                            <td>{{ $barang->tanggal_masuk ? \Carbon\Carbon::parse($barang->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                                            <td>{{ $barang->tenggat_waktu ? \Carbon\Carbon::parse($barang->tenggat_waktu)->format('d M Y') : '-' }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
         </div>
     </div>
 </div>

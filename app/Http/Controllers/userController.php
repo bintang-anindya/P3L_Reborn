@@ -90,15 +90,6 @@ class UserController extends Controller
 
         // 2. Login sebagai Pembeli
         $pembeli = Pembeli::where('email_pembeli', $request->email)->first();
-        // if ($pembeli && $request->password === $pembeli->password_pembeli) {
-        //     Auth::guard('pembeli')->login($pembeli);
-
-        //     session(['guard' => 'pembeli']);
-        //     Log::info('User logged in successfully as Pembeli', ['user' => $pembeli->id_pembeli]);
-        //     Log::info('Guard aktif sekarang:', ['guard' => Auth::guard('pembeli')->getName()]);
-
-        //     return redirect()->route('dashboard.pembeli');
-        // }
 
         // Login untuk pembeli
         if ($pembeli && $request->password === $pembeli->password_pembeli) {
