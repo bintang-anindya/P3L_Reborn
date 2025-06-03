@@ -22,6 +22,7 @@ class Barang extends Model
         'tanggal_keluar',
         'tenggat_waktu',
         'harga_barang',
+        'tanggal_ambil',
         'id_kategori',
         'id_penitipan',
     ];
@@ -58,4 +59,10 @@ class Barang extends Model
     {
         return $this->hasMany(GambarBarang::class, 'id_barang');
     }
+
+    public function transaksiBarang()
+    {
+        return $this->hasMany(TransaksiBarang::class, 'id_barang');
+    }
+
 }

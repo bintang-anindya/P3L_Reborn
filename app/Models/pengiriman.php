@@ -12,7 +12,8 @@ class Pengiriman extends Model
     // Menentukan kolom yang bisa diisi
     protected $fillable = [
         'tanggal_pengiriman', 
-        'id_transaksi', 
+        'id_transaksi',
+        'tanggal_pengiriman', 
         'id_pegawai'
     ];
 

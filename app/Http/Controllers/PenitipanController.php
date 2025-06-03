@@ -16,7 +16,12 @@ use Carbon\Carbon;
 
 class PenitipanController extends Controller
 {
-    public function index(Request $request)
+    public function dashboard()
+    {
+        return view('dashboard.gudang');
+    }
+
+    public function index(Request $request) // Add Request $request parameter here
     {
         $kategoriList = KategoriBarang::all();
         
@@ -49,7 +54,7 @@ class PenitipanController extends Controller
         $penitipList = Penitip::all();
         $pegawais = Pegawai::all();
 
-        return view('dashboard.gudang', compact('kategoriList', 'barangList', 'penitipList', 'pegawais'));
+        return view('gudang.inputBarang', compact('kategoriList', 'barangList', 'penitipList', 'pegawais'));
     }
 
     public function store(Request $request)
@@ -115,7 +120,7 @@ class PenitipanController extends Controller
 
             Log::info('Barang berhasil disimpan.', ['barang' => $barang]);
 
-            return redirect()->route('dashboard.gudang')->with('success', 'Transaksi berhasil disimpan.');
+            return redirect()->route('gudang.inputBarang.index')->with('success', 'Transaksi berhasil disimpan.');
         } catch (\Exception $e) {
             Log::error('Terjadi kesalahan saat menyimpan data penitipan.', [
                 'error' => $e->getMessage(),
@@ -209,7 +214,7 @@ class PenitipanController extends Controller
                 }
             }
 
-            return redirect()->route('dashboard.gudang')
+            return redirect()->route('gudang.inputBarang')
                 ->with('success', 'Data berhasil diperbarui.')
                 ->with('updated_id', $id_penitipan);
 
@@ -228,7 +233,7 @@ class PenitipanController extends Controller
         $barang = Barang::where('id_penitipan', $id)->firstOrFail();
         Storage::delete('public/' . $barang->gambar_barang);
 
-        return redirect()->route('dashboard.gudang')->with('success', 'Data berhasil dihapus.');
+        return redirect()->route('gudang.inputBarang')->with('success', 'Data berhasil dihapus.');
     }
 
 }
