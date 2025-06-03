@@ -13,7 +13,7 @@ class DaftarTransaksiController extends Controller
     {
         // Ambil transaksi dengan status 'sedang disiapkan' beserta item barangnya
         $transactions = Transaksi::with(['transaksiBarang.barang'])
-                        ->where('status_transaksi', 'sedang disiapkan')
+                        ->where('status_transaksi', 'disiapkan')
                         ->orderBy('tanggal_transaksi', 'desc')
                         ->get();
 

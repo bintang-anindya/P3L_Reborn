@@ -182,7 +182,7 @@
                         <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
                             @forelse ($barang->where('status_barang', 'tersedia') as $item)
                                 <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
-                                    <x-product-card :item="$item" />
+                                    <x-product-card2 :item="$item" />
                                 </div>
                             @empty
                                 <p class="ms-2">Tidak ada barang dalam kategori ini.</p>
@@ -196,7 +196,7 @@
                         <div class="horizontal-scroll-container mt-4 d-flex flex-nowrap overflow-auto px-2">
                             @foreach ($barangBaru->where('status_barang', 'tersedia') as $barang)
                                 <div class="me-3" style="min-width: 200px; flex-shrink: 0;">
-                                    <x-product-card :item="$barang" />
+                                    <x-product-card2 :item="$barang" />
                                 </div>
                             @endforeach
                         </div>

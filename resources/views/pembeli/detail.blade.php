@@ -24,6 +24,15 @@
         .navbar .nav-link:hover {
             color: #f44336;
         }
+        .seller-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .rating-stars {
+            color: #ffc107;
+        }
     </style>
 </head>
 
@@ -69,7 +78,32 @@
         <div class="col-md-6">
             <div class="container my-5">
                 <h2 class="fw-bold">{{ $barang->nama_barang }}</h2>
-
+                <!-- Info Penitip Barang -->
+                <div class="seller-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-store me-2 text-primary"></i>
+                        <div>
+                            <h6 class="mb-1">{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="rating-stars me-2">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= (optional(optional($barang->penitipan)->penitip)->total_rating ?? 4.5))
+                                            <i class="fas fa-star"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-muted small">
+                                    ({{ number_format(optional(optional($barang->penitipan)->penitip)->rating ?? 4.5, 1) }}/5.0)
+                                </span>
+                                <span class="text-muted small ms-2">
+                                    {{ optional(optional($barang->penitipan)->penitip)->total_penjualan ?? 0 }} produk terjual
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="d-flex align-items-center mb-2">
                     <h3 class="text-danger">Rp{{ number_format($barang->harga_barang, 0, ',', '.') }}</h3>
                     <span class="ms-3 text-success">● {{ $barang->status_barang }}</span>
