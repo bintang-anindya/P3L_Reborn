@@ -266,8 +266,8 @@
         @endif
     </div>
 
-    <footer class="footer">
+    <!-- <footer class="footer">
         &copy; 2025 ReUseMart. All Rights Reserved.
-    </footer>
+    </footer> -->
 </body>
 </html>

@@ -107,6 +107,10 @@
             color: #fff;
             text-align: center;
             padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
         .horizontal-scroll-container {
             overflow-x: auto;

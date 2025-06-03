@@ -163,7 +163,7 @@
                 <div class="mb-3">
                     <label for="metode_pengiriman" class="form-label fw-bold">Pilih Metode Pengiriman:</label>
                     <select name="metode_pengiriman" id="metode_pengiriman" class="form-select" required>
-                    <option value="" disabled selected>-- Pilih Metode Pengiriman --</option>
+                        <option value="" disabled selected>-- Pilih Metode Pengiriman --</option>
                     </select>
                 </div>
 
@@ -319,6 +319,7 @@
                     const optionAmbil = document.createElement('option');
                     optionAmbil.value = 'ambil_sendiri';
                     optionAmbil.textContent = 'Ambil Sendiri';
+
                     metodeSelect.appendChild(optionAmbil);
 
                     metodeSelect.disabled = false;
@@ -329,6 +330,7 @@
                 metodeSelect.value = "";
                 updateHarga();
             }
+
 
             function formatRupiah(angka) {
                 return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

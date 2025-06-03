@@ -52,7 +52,8 @@ class TransaksiController extends Controller
             'id_pegawai' => 0,
             'bukti_transaksi' => null,
             'nomor_transaksi'=> 'kosong',
-            'poin_tukar' => $poinTukar, // simpan poin yang ditukar
+            'poin_tukar' => $poinTukar,
+            'metode' => $request->input('metode_pengiriman') // <- Perbaikan
         ]);
 
         // Generate nomor transaksi: tahun.bulan.id_transaksi
@@ -175,7 +176,7 @@ class TransaksiController extends Controller
 
     public function cancelByCs($id_transaksi)
     {
-        $transaksi = Transaksi::with('junctionTransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
+        $transaksi = Transaksi::with('TransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
         $transaksi->status_transaksi = 'Batal';
         $id_pegawai = auth('pegawai')->user()->id_pegawai; // atau auth('pegawai')->id() jika guard khusus pegawai
 
@@ -198,7 +199,7 @@ class TransaksiController extends Controller
                 }
 
                 // Kembalikan status barang
-                foreach ($transaksi->junctionTransaksiBarang as $junction) {
+                foreach ($transaksi->TransaksiBarang as $junction) {
                     $barang = $junction->barang;
                     $barang->status_barang = 'tersedia';
                     $barang->save();

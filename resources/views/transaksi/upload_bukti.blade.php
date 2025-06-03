@@ -18,7 +18,7 @@
 </div>
 
 <script>
-    let countdown = 30;
+    let countdown = 60;
     const countdownElement = document.getElementById('countdown');
 
     const timer = setInterval(() => {
