@@ -219,7 +219,7 @@
                         </tr>
                     </table>
 
-                    @if($pembeli->transaksis && $pembeli->transaksis->isNotEmpty())
+                    @if($pembeli->transaksi && $pembeli->transaksi->isNotEmpty())
                         <div class="card shadow-sm rounded mt-4">
                             <div class="card-header bg-success text-white">
                                 <h5 class="mb-0">Riwayat Pembelian</h5>
@@ -228,25 +228,29 @@
                                 <table class="table table-striped mb-0">
                                     <thead class="table-success">
                                         <tr>
-                                            <th>#</th>
+                                            <th>NO</th>
                                             <th>Tanggal Transaksi</th>
+                                            <th>Status</th>
                                             <th>Barang</th>
                                             <th>Total Harga</th>
+                                            <th>Pegawai Verifikasi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($pembeli->transaksis as $index => $transaksi)
+                                        @foreach($pembeli->transaksi as $index => $transaksi)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('d M Y') }}</td>
+                                                <td>{{ ucfirst($transaksi->status_transaksi) }}</td>
                                                 <td>
                                                     <ul class="mb-0">
                                                         @foreach($transaksi->barangs as $barang)
-                                                            <li>{{ $barang->nama_barang }} ({{ $barang->pivot->jumlah ?? 'x' }})</li>
+                                                            <li>{{ $barang->nama_barang }}</li>
                                                         @endforeach
                                                     </ul>
                                                 </td>
                                                 <td>Rp{{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
+                                                <td>{{ ($transaksi->pegawai && $transaksi->pegawai->nama_pegawai !== 'DUMMY') ? $transaksi->pegawai->nama_pegawai : '-' }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -258,12 +262,7 @@
                             Belum ada riwayat pembelian.
                         </div>
                     @endif
-                </div>
-            </div>
-        @else
-            <div class="alert alert-warning">
-                <p>Anda belum login. <a href="{{ route('loginPage') }}">Login di sini</a></p>
-            </div>
+
         @endif
     </div>
 

@@ -16,7 +16,10 @@ class Transaksi extends Model
         'status_transaksi', 
         'total_harga', 
         'id_pembeli', 
-        'id_pegawai'
+        'id_pegawai',
+        'bukti_transaksi',
+        'nomor_transaksi',
+        'poin_tukar'
     ];
 
     public function pembeli()
@@ -31,12 +34,23 @@ class Transaksi extends Model
 
     public function barangs()
     {
-        return $this->belongsToMany(Barang::class, 'junction_transaksi_barang', 'id_transaksi', 'id_barang')
-                    ->withPivot('jumlah');
+        return $this->belongsToMany(Barang::class, 'junction_transaksi_barang', 'id_transaksi', 'id_barang');
     }
 
     public function pengiriman()
     {
         return $this->hasOne(Pengiriman::class, 'id_transaksi');
     }
+
+    public function junctionTransaksiBarang()
+    {
+        return $this->hasMany(JunctionTransaksiBarang::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function hitungPoinTukar()
+    {
+        return $this->poin_tukar ?? 0;
+    }
+    
+
 }

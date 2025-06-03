@@ -1,5 +1,6 @@
 @props(['item'])
 
+
 <a href="{{ route('detailBarangPembeli', $item->id_barang) }}" class="text-decoration-none text-dark">
     <div class="product-card">
         <div class="image-wrapper">

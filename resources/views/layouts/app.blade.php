@@ -23,7 +23,12 @@
         footer {
             background-color: #222;
             color: #ccc;
-            padding: 2rem 0;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
 
         footer a {

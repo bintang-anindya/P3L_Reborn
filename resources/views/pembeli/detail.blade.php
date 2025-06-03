@@ -86,7 +86,12 @@
 
                 <div class="d-flex align-items-center mb-4">
                     <button class="btn btn-danger me-2">Beli Sekarang</button>
-                    <button class="btn btn-outline-secondary"><i class="far fa-heart"></i></button>
+                    <form action="{{ route('keranjang.tambah', $barang->id_barang) }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                </form>
                 </div>
 
                 <div class="card">

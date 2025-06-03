@@ -38,7 +38,12 @@ class Pembeli extends Authenticatable
 
     public function alamatUtama()
     {
-        return $this->alamats->where('id_alamat', $this->id_alamat_utama)->first();
+        return $this->belongsTo(Alamat::class, 'id_alamat_utama', 'id_alamat');
+    }
+
+    public function keranjang()
+    {
+        return $this->hasMany(Keranjang::class, 'id_pembeli', 'id_pembeli');
     }
 
 }
