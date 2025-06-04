@@ -149,7 +149,7 @@
                 <a href="{{ route('profilPembeli') }}" class="me-3">
                     <i class="fas fa-user-circle fa-lg"></i>
                 </a>
-                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                <a href="{{ route('liveCode.pembeli') }}" class="text-dark"><i class="fas fa-heart"></i></a>
                 <a href="{{ route('keranjang.index') }}" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
             </div>
         </div>

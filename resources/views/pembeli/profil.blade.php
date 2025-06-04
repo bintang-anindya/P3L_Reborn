@@ -262,7 +262,7 @@
                             Belum ada riwayat pembelian.
                         </div>
                     @endif
-
+            
         @endif
     </div>
 

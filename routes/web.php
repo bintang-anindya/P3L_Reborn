@@ -109,7 +109,6 @@ Route::get('/dashboard', function () {
 Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
 
-
 // --------------- Gambar Tambahan ---------------- //
 // Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
 
@@ -213,3 +212,5 @@ Route::get('/transaksi/validasi/{id_transaksi}', [TransaksiController::class, 'v
 
 Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dashboard.cs');
 
+// ----------------------- Live Code ------------------------
+Route::get('/liveCode', [PembeliController::Class, 'liveCodePembeli'])->name('liveCode.pembeli');
