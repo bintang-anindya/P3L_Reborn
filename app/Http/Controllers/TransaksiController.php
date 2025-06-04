@@ -37,11 +37,28 @@ class TransaksiController extends Controller
 
         $totalHarga = $items->sum(fn($item) => $item->barang->harga_barang);
         $ongkir = ($totalHarga >= 1500000) ? 0 : 100000;
+
+        // Bagian potongan poin (penggunaan poin untuk diskon)
         $poinTukar = min($request->input('poin_tukar', 0), $pembeli->poin_pembeli);
-        $faktorDiskon = ($totalHarga > 500000) ? 1.2 : 1;
-        $nilaiDiskon = $poinTukar * 10000 * $faktorDiskon;
+        $nilaiDiskon = $poinTukar * 100;
         $nilaiDiskon = min($nilaiDiskon, $totalHarga + $ongkir);
+
+        // Total pembayaran akhir
         $totalPembayaran = $totalHarga + $ongkir - $nilaiDiskon;
+
+        // Bagian poin reward
+        if ($totalHarga > 500000) {
+            $poinReward = ($totalHarga / 10000) * 1.2;
+        } else {
+            $poinReward = ($totalHarga / 10000) * 1;
+        }
+
+        // Bulatkan ke bawah jika perlu (opsional)
+        $poinReward = floor($poinReward);
+
+        // Tambahkan poin reward ke poin pembeli
+        $pembeli->poin_pembeli += $poinReward;
+        $pembeli->save();
 
         // Buat transaksi
         $transaksi = Transaksi::create([
@@ -126,37 +143,45 @@ class TransaksiController extends Controller
 
     public function cancelIfExpired($id_transaksi)
     {
-        $transaksi = Transaksi::with('junctionTransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
+        $transaksi = Transaksi::with('TransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
         $transaksi->status_transaksi = 'Batal';
-        $transaksi->save;
+        $transaksi->save();
 
-            $createdAt = Carbon::parse($transaksi->tanggal_transaksi);
-            $now = Carbon::now();
+        $pembeli = $transaksi->pembeli;
 
-                // Batalkan transaksi
-                $transaksi->status_transaksi = 'Batal';
-                $transaksi->save();
+        // Hitung ulang poinReward yang diberikan saat checkout
+        // Catatan: Gunakan total harga awal (kalau tidak ada field terpisah, pakai asumsi ini)
+        $totalHargaAwal = $transaksi->total_harga + ($transaksi->poin_tukar * 100);
+        $ongkir = ($totalHargaAwal >= 1500000) ? 0 : 100000;
+        $totalHarga = $totalHargaAwal - $ongkir;
 
-                // Kembalikan poin
-                $poinTukar = $transaksi->hitungPoinTukar($transaksi); // Tambahkan helper
-                if ($poinTukar > 0) {
-                    $pembeli = $transaksi->pembeli;
-                    $pembeli->poin_pembeli += $poinTukar;
-                    $pembeli->save();
-                }
+        if ($totalHarga > 500000) {
+            $poinReward = floor(($totalHarga / 10000) * 1.2);
+        } else {
+            $poinReward = floor(($totalHarga / 10000) * 1);
+        }
 
-                // Kembalikan status barang
-                foreach ($transaksi->junctionTransaksiBarang as $junction) {
-                    $barang = $junction->barang;
-                    $barang->status_barang = 'tersedia';
-                    $barang->save();
-                }
+        // Kurangi poin reward dari pembeli
+        $pembeli->poin_pembeli -= $poinReward;
 
-                return redirect()->route('dashboard.pembeli')->with('error', 'Transaksi dibatalkan karena melebihi batas waktu.');
+        // Tambahkan kembali poin yang ditukar
+        if ($transaksi->poin_tukar > 0) {
+            $pembeli->poin_pembeli += $transaksi->poin_tukar;
+        }
 
-        // Jika bukti sudah diunggah atau belum 1 menit
-        return redirect()->route('transaksi.uploadBukti', $id_transaksi);
+        // Simpan perubahan
+        $pembeli->save();
+
+        // Kembalikan status barang
+        foreach ($transaksi->TransaksiBarang as $junction) {
+            $barang = $junction->barang;
+            $barang->status_barang = 'tersedia';
+            $barang->save();
+        }
+
+        return redirect()->route('dashboard.pembeli')->with('error', 'Transaksi dibatalkan karena melebihi batas waktu.');
     }
+
 
     public function validasi($id_transaksi)
     {
@@ -177,35 +202,52 @@ class TransaksiController extends Controller
     public function cancelByCs($id_transaksi)
     {
         $transaksi = Transaksi::with('TransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
+
         $transaksi->status_transaksi = 'Batal';
-        $id_pegawai = auth('pegawai')->user()->id_pegawai; // atau auth('pegawai')->id() jika guard khusus pegawai
 
+        // Catat pegawai yang membatalkan transaksi
+        $id_pegawai = auth('pegawai')->user()->id_pegawai;
         $transaksi->id_pegawai = $id_pegawai;
-        $transaksi->save;
+        $transaksi->save();
 
-            $createdAt = Carbon::parse($transaksi->tanggal_transaksi);
-            $now = Carbon::now();
+        $pembeli = $transaksi->pembeli;
 
-                // Batalkan transaksi
-                $transaksi->status_transaksi = 'Batal';
-                $transaksi->save();
+        // Hitung ulang poin reward yang diberikan saat checkout
+        // Asumsi: total_harga_awal = total_harga + (poin_tukar * 100)
+        $totalHargaAwal = $transaksi->total_harga + ($transaksi->poin_tukar * 100);
 
-                // Kembalikan poin
-                $poinTukar = $transaksi->hitungPoinTukar($transaksi); // Tambahkan helper
-                if ($poinTukar > 0) {
-                    $pembeli = $transaksi->pembeli;
-                    $pembeli->poin_pembeli += $poinTukar;
-                    $pembeli->save();
-                }
+        $ongkir = ($totalHargaAwal >= 1500000) ? 0 : 100000;
+        $totalHarga = $totalHargaAwal - $ongkir;
 
-                // Kembalikan status barang
-                foreach ($transaksi->TransaksiBarang as $junction) {
-                    $barang = $junction->barang;
-                    $barang->status_barang = 'tersedia';
-                    $barang->save();
-                }
+        if ($totalHarga > 500000) {
+            $poinReward = floor(($totalHarga / 10000) * 1.2);
+        } else {
+            $poinReward = floor(($totalHarga / 10000) * 1);
+        }
 
-                return redirect()->route('dashboard.cs');
+        // Kurangi poin reward dari poin pembeli
+        $pembeli->poin_pembeli -= $poinReward;
+
+        // Tambahkan kembali poin tukar
+        if ($transaksi->poin_tukar > 0) {
+            $pembeli->poin_pembeli += $transaksi->poin_tukar;
+        }
+
+        // Pastikan poin tidak negatif
+        if ($pembeli->poin_pembeli < 0) {
+            $pembeli->poin_pembeli = 0;
+        }
+
+        $pembeli->save();
+
+        // Kembalikan status barang
+        foreach ($transaksi->TransaksiBarang as $junction) {
+            $barang = $junction->barang;
+            $barang->status_barang = 'tersedia';
+            $barang->save();
+        }
+
+        return redirect()->route('dashboard.cs')->with('error', 'Transaksi dibatalkan.');
     }
 
 }

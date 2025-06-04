@@ -23,15 +23,16 @@
 
     const timer = setInterval(() => {
         countdown--;
-        countdownElement.textContent = `Sisa waktu: ${countdown} detik`;
+        countdownElement.textContent = `Sisa waktu: ${countdown} detik`; // gunakan backtick!
         console.log(`Countdown saat ini: ${countdown}`); // Debug: cek nilai countdown setiap detik
 
         if (countdown < 1) {
-            console.log('Countdown selesai, akan clear interval dan redirect'); // Debug: masuk sini gak?
+            console.log('Countdown selesai, akan clear interval dan redirect');
             clearInterval(timer);
             window.location.href = "{{ route('transaksi.cancelIfExpired', $transaksi->id_transaksi) }}";
         }
     }, 1000);
 </script>
+
 
 @endsection

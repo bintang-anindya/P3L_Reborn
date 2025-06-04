@@ -70,8 +70,8 @@
         $poinTukar = 0;
     }
 
-    $faktorDiskon = ($totalHarga > 500000) ? 1.2 : 1;
-    $nilaiDiskon = $poinTukar * 10000 * $faktorDiskon;
+    $faktorDiskon = ($totalHarga > 500000) ? 1 : 1;
+    $nilaiDiskon = $poinTukar * 100 * $faktorDiskon;
     // Ongkir default di backend, tapi nanti di JS akan diupdate otomatis
     $ongkirDefault = ($totalHarga >= 1500000) ? 0 : 100000;
     $nilaiDiskon = min($nilaiDiskon, $totalHarga + $ongkirDefault);
@@ -81,7 +81,7 @@
         $poinTukar = 0;
         session()->forget('poin_tukar');
     }
-    $maxPoinTukar = floor(($totalHarga + $ongkirDefault) / 10000 / $faktorDiskon);
+    $maxPoinTukar = floor(($totalHarga + $ongkirDefault) / 100 / $faktorDiskon);
     if ($maxPoinTukar > $pembeli->poin_pembeli) {
         $maxPoinTukar = $pembeli->poin_pembeli;
     }
@@ -347,7 +347,7 @@
                 }
 
                 let poinTukar = parseInt(poinTukarInput.value) || 0;
-                let diskon = poinTukar * 10000 * faktorDiskon;
+                let diskon = poinTukar * 100 * faktorDiskon;
                 const totalMaksimal = totalHarga + ongkir;
 
                 // Validasi supaya diskon tidak lebih dari totalMaksimal

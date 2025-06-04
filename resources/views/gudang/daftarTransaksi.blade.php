@@ -24,7 +24,7 @@
                                     <small>{{ date('d F Y', strtotime($transaction->tanggal_transaksi)) }}</small>
                                 </div>
                                 <span class="badge bg-warning text-dark py-2 px-3">
-                                    <i class="bi bi-hourglass-split"></i> {{ ucfirst($transaction->status_transaksi) }}
+                                    <i class="bi bi-hourglass-split"></i> {{ ucfirst($transaction->metode) }}
                                 </span>
                             </div>
                         </div>
@@ -39,10 +39,7 @@
                                         <div class="card h-100 border-0 shadow-sm">
                                             <div class="row g-0">
                                                 <div class="col-md-4">
-                                                    <img src="{{ asset($barang->gambar ?? 'images/default-product.png') }}" 
-                                                         class="img-fluid rounded-start h-100" 
-                                                         alt="{{ $barang->nama_barang ?? 'Produk' }}"
-                                                         style="object-fit: cover; max-height: 120px">
+                                                    <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" alt="Gambar Barang">
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body">
@@ -132,10 +129,7 @@
                                                 @endphp
                                                 <tr>
                                                     <td>
-                                                        <img src="{{ asset($barang->gambar ?? 'images/default-product.png') }}" 
-                                                             class="img-thumbnail" 
-                                                             alt="{{ $barang->nama_barang }}" 
-                                                             style="width: 80px; height: 80px; object-fit: cover">
+                                                        <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" alt="Gambar Barang">
                                                     </td>
                                                     <td>{{ $barang->nama_barang }}</td>
                                                     <td>{{ $barang->berat ?? '0' }} gram</td>
