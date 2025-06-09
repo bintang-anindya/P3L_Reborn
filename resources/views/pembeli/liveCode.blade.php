@@ -42,20 +42,27 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard.pembeli') }}">ReUseMart</a>
+            <form class="d-flex ms-auto me-3">
+                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
+            </form>
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('dashboard.pembeli') }}" class="btn btn-outline-dark btn-sm">Dashboard</a>
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
-                </form>
+                <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                <a href="{{ route('dashboard.pembeli') }}" class="text-dark">
+                    <i class="fas fa-user-circle active"></i>
+                </a>
+                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                <a href="{{ route('keranjang.index') }}" class="text-dark">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4">
         <div class="card shadow-sm rounded">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-dark text-white">
                 <h4 class="mb-0">Transaksi di Atas Rp100.000</h4>
             </div>
             <div class="card-body p-0">

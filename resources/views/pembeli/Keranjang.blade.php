@@ -7,11 +7,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
             background-color: #f8f9fa;
             color: #212529;
+            padding-bottom: 1rem;
         }
 
         .topbar {
@@ -50,7 +55,7 @@
         }
 
         .navbar .fa-shopping-cart.active {
-            border: 2px solid #212529;
+            border: 1px solid #212529;
             border-radius: 5px;
             padding: 4px;
         }
@@ -182,12 +187,34 @@
             background-color: #111;
             color: #fff;
             text-align: center;
-            padding: 1rem;
+            padding: 0rem;
             position: fixed;
             bottom: 0;
             width: 100%;
             z-index: 100;
         }   
+        .keranjang-slider .item {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin: 5px;
+        }
+        .keranjang-slider img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+        color: black; /* Ubah warna panah jadi hitam */
+        /* Jika ingin memperbesar area klik dan memperjelas tombol, bisa tambahkan juga: */
+        width: 44px;
+        height: 44px;
+        opacity: 1; /* Supaya tombol terlihat jelas */
+        }
+
     </style>
 </head>
 <body>
@@ -230,15 +257,17 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard.pembeli') }}">ReUseMart</a>
             <form class="d-flex ms-auto me-3">
-                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?" />
+                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
-                <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
-                <a href="{{ route('profilPembeli') }}" class="me-3"><i class="fas fa-user-circle fa-lg"></i></a>
-                <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
+                    <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                <a href="{{ route('profilPembeli') }}" class="text-dark">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <a href="{{ route('liveCode.pembeli') }}" class="text-dark"><i class="fas fa-heart"></i></a>
                 <a href="{{ route('dashboard.pembeli') }}" class="text-dark"><i class="fas fa-shopping-cart active"></i></a>
             </div>
         </div>
@@ -252,23 +281,27 @@
          data-faktordiskon="{{ $faktorDiskon }}">
         <h2 class= "form-label fw-bold">Keranjang Belanja</h2>
         @if($items->isEmpty())
-            <p>Belum ada barang yang Anda pilih. <a href="{{ route('dashboard.pembeli') }}" class="btn btn-primary btn-sm ms-2">Belanja Sekarang</a></p>
+            <p>Belum ada barang yang Anda pilih. <a href="{{ route('dashboard.pembeli') }}" class="btn btn-dark btn-sm ms-2 text-white">Belanja Sekarang</a></p>
         @else
-            <div class="row">
-                @foreach($items as $item)
-                <div class="col-md-4 mb-3">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    @foreach($items as $item)
+                    <div class="swiper-slide">
                     <div class="card h-100">
                         <img src="{{ asset('storage/' . $item->barang->gambar_barang) }}" class="product-img" alt="{{ $item->barang->nama_barang }}">
                         <div class="card-body">
-                            <h5 class="card-title">{{ $item->barang->nama_barang }}</h5>
-                            <p class="card-text text-danger fw-bold">
-                                Rp {{ number_format($item->barang->harga_barang, 0, ',', '.') }}
-                            </p>
-                            <button type="button" class="btn btn-danger btn-sm btnHapus" data-id="{{ $item->id_barang }}">Hapus</button>
+                        <h5 class="card-title">{{ $item->barang->nama_barang }}</h5>
+                        <p class="card-text text-danger fw-bold">
+                            Rp {{ number_format($item->barang->harga_barang, 0, ',', '.') }}
+                        </p>
+                        <button type="button" class="btn btn-danger btn-sm btnHapus" data-id="{{ $item->id_barang }}">Hapus</button>
                         </div>
                     </div>
+                    </div>
+                    @endforeach
                 </div>
-                @endforeach
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
             </div>
 
             <form id="checkoutForm" action="{{ route('transaksi.checkout') }}" method="POST" class="mt-4">
@@ -302,9 +335,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Poin Anda:</label>
-                    <div class="alert alert-warning d-flex align-items-center" role="alert">
-                        <i class="fas fa-coins me-2"></i>
+                    <label class="form-label fw-bold text-white">Poin Anda:</label>
+                    <div class="alert bg-dark text-white d-flex align-items-center" role="alert">
+                        <i class="fas fa-coins me-2 text-white"></i>
                         <div>
                             <strong id="poinPembeli">{{ $pembeli->poin_pembeli }}</strong> poin tersedia
                         </div>
@@ -325,13 +358,12 @@
                     <h5 class="mb-1">Diskon dari Poin: <span class="text-success" id="diskonDisplay">- Rp {{ number_format($nilaiDiskon, 0, ',', '.') }}</span></h5>
                     <h4 class="mb-0">Total: <span class="text-danger fw-bold" id="totalDisplay">Rp {{ number_format($totalPembayaranDefault, 0, ',', '.') }}</span></h4>
                     </div>
-                    <button type="submit" class="btn btn-success">Checkout</button>
+                    <button type="submit" class="btn btn-dark btn-success">Checkout</button>
                 </div>
             </form>
         @endif
     </div>
 
-    <!-- Footer -->
     <footer class="footer mt-auto">
         <p>&copy; 2025 ReUseMart. All Rights Reserved.</p>
     </footer>
@@ -531,6 +563,39 @@
 
         });
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var swiper = new Swiper(".mySwiper", {
+                slidesPerView: 3,
+                spaceBetween: 20,
+                loop: false,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    576: {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 15,
+                    },
+                    992: {
+                        slidesPerView: 3,
+                        spaceBetween: 20,
+                    }
+                }
+            });
+        });
+    </script>
+
 
 </body>
 </html>

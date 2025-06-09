@@ -1,60 +1,81 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Permintaan Donasi</h2>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
-    </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    <a href="{{ route('donasi.historyPage') }}" class="btn btn-outline-primary mb-3">
-        Lihat Riwayat Donasi
-    </a>
-
-    @forelse($requests as $request)
-        <div class="card shadow-sm mb-4 border-0">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">{{ $request->organisasi->nama_organisasi }}</h5>
-            </div>
-            <div class="card-body">
-                <p class="mb-3"><strong>Keterangan:</strong> {{ $request->keterangan_request }}</p>
-
-                <form action="{{ route('donasi.store') }}" method="POST">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Owner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .card-header {
+            background-color: #000;
+            color: #fff;
+        }
+        .btn-logout {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .btn-logout:hover {
+            background-color: #c82333;
+        }
+        .btn-section {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
+        }
+        .btn-section .btn {
+            min-width: 250px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <div class="card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4>Profil Owner</h4>
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <input type="hidden" name="id_request" value="{{ $request->id_request }}">
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="id_barang" class="form-label">Pilih Barang Donasi:</label>
-                            <select name="id_barang" class="form-select" required>
-                                <option value="">-- Pilih Barang --</option>
-                                @foreach($barangLayak as $barang)
-                                    <option value="{{ $barang->id_barang }}">
-                                        {{ $barang->nama_barang }} (Status: {{ $barang->status_barang }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label for="nama_penerima" class="form-label">Nama Penerima:</label>
-                            <input type="text" name="nama_penerima" class="form-control" placeholder="Masukkan nama penerima" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Acc Donasi</button>
+                    <button type="submit" class="btn btn-logout btn-sm">Logout</button>
                 </form>
             </div>
->>>>>>> 4ec2240b89d5fc489b7bc2f35b0f8670f070846f
+            <div class="card-body">
+                @if(isset($owner))
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Nama</th>
+                            <td>{{ $owner->nama_pegawai }}</td>
+                        </tr>
+                        <tr>
+                            <th>Username</th>
+                            <td>{{ $owner->username_pegawai }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ $owner->email_pegawai }}</td>
+                        </tr>
+                        <tr>
+                            <th>No Telepon</th>
+                            <td>{{ $owner->no_telp_pegawai }}</td>
+                        </tr>
+                        <tr>
+                            <th>Tanggal Lahir</th>
+                            <td>{{ $owner->tanggal_lahir }}</td>
+                        </tr>
+                    </table>
+                @else
+                    <p class="text-danger">Data owner tidak tersedia.</p>
+                @endif
+            </div>
         </div>
-    @empty
-        <div class="alert alert-info">Belum ada permintaan donasi.</div>
-    @endforelse
-</div>
-@endsection
+
+        <div class="btn-section">
+            <a href="{{ route('owner.historyPage') }}" class="btn btn-dark">History Donasi</a>
+            <a href="{{ route('owner.requestPage') }}" class="btn btn-dark">Request Donasi</a>
+            <a href="{{ url('/owner/laporan') }}" class="btn btn-dark">Laporan</a>
+        </div>
+    </div>
+</body>
+</html>

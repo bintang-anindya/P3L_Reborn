@@ -146,8 +146,8 @@
             <div class="d-flex align-items-center gap-3">
                     <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
                     <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
-                <a href="{{ route('profilPembeli') }}" class="me-3">
-                    <i class="fas fa-user-circle fa-lg"></i>
+                <a href="{{ route('profilPembeli') }}" class="text-dark">
+                    <i class="fas fa-user-circle"></i>
                 </a>
                 <a href="{{ route('liveCode.pembeli') }}" class="text-dark"><i class="fas fa-heart"></i></a>
                 <a href="{{ route('keranjang.index') }}" class="text-dark"><i class="fas fa-shopping-cart"></i></a>

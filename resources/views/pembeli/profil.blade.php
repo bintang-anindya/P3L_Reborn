@@ -43,6 +43,12 @@
             color: #f44336;
         }
 
+        .navbar .fa-user-circle.active {
+            border: 1px solid #212529;
+            border-radius: 5px;
+            padding: 4px;
+        }
+
         .hero {
             background: #000;
             color: #fff;
@@ -206,26 +212,26 @@
     </style>
 </head>
 <body>
-    <div class="topbar text-center">
+    <div class="topbar text-mid">
         Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
-        <a href="#">Belanja</a>
+        <a href="{{ route('dashboard.pembeli') }}">Belanja</a>
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">ReUseMart</a>
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard.pembeli') }}">ReUseMart</a>
             <form class="d-flex ms-auto me-3">
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
             <div class="d-flex align-items-center gap-3">
                 <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
                 <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
-                <a href="{{ route('profilPembeli') }}" class="me-3">
-                    <i class="fas fa-user-circle fa-lg"></i>
+                <a href="{{ route('dashboard.pembeli') }}" class="text-dark">
+                    <i class="fas fa-user-circle active"></i>
                 </a>
                 <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
-                <a href="{{ route('dashboard.pembeli') }}" class="text-dark">
-                    <i class="fas fa-shopping-cart active"></i>
+                <a href="{{ route('keranjang.index') }}" class="text-dark">
+                    <i class="fas fa-shopping-cart"></i>
                 </a>
             </div>
         </div>

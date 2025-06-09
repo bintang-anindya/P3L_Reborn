@@ -19,7 +19,7 @@ class DonasiController extends Controller
         $requests = RequestModel::with('organisasi')->where('status_donasi', 'menunggu')->get();
         $barangLayak = Barang::layakDidonasikan()->get();
 
-        return view('dashboard.owner', compact('requests', 'barangLayak'));
+        return view('owner.request', compact('requests', 'barangLayak'));
     }
 
     public function store(HttpRequest $request)
@@ -63,7 +63,8 @@ class DonasiController extends Controller
     public function historyPage()
     {
         $organisasiList = Organisasi::all();
-        return view('donasi.historyFilter', compact('organisasiList'));
+
+        return view('owner.donasi', compact('organisasiList'));
     }
 
     public function historyFiltered(Request $request)
@@ -81,13 +82,13 @@ class DonasiController extends Controller
 
         $organisasiList = Organisasi::all();
 
-        return view('donasi.historyFilter', compact('organisasi', 'donasiList', 'organisasiList'));
+        return view('owner.donasi', compact('organisasi', 'donasiList', 'organisasiList'));
     }
 
     public function edit($id)
     {
         $donasi = Donasi::with('barang')->findOrFail($id);
-        return view('donasi.edit', compact('donasi'));
+        return view('owner.edit', compact('donasi'));
     }
 
     public function update(Request $request, $id)
@@ -107,6 +108,6 @@ class DonasiController extends Controller
         $donasi->barang->status_barang = $request->status_barang;
         $donasi->barang->save();
 
-        return redirect()->route('donasi.historyFiltered')->with('success', 'Donasi berhasil diperbarui.');
+        return redirect()->route('owner.historyFiltered')->with('success', 'Donasi berhasil diperbarui.');
     }
 }
