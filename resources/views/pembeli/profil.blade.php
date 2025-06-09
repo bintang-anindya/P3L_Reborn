@@ -12,78 +12,100 @@
             font-family: 'Roboto', sans-serif;
             background-color: #fff;
             color: #000;
+            line-height: 1.6;
         }
+
         .topbar {
             background-color: #000;
             color: #fff;
-            padding: 5px 15px;
+            padding: 8px 20px;
             font-size: 0.875rem;
         }
+
+        .topbar a {
+            color: #fff;
+            text-decoration: underline;
+        }
+
         .navbar {
             background-color: #fff;
             border-bottom: 1px solid #ddd;
+            padding: 0.75rem 1rem;
         }
+
         .navbar .nav-link {
             color: #000;
             font-weight: 500;
+            transition: color 0.3s ease;
         }
+
         .navbar .nav-link:hover {
             color: #f44336;
         }
+
         .hero {
             background: #000;
             color: #fff;
-            padding: var(--hero-padding-y, 0rem) var(--hero-padding-x, 2rem);
+            padding: var(--hero-padding-y, 0.5rem) var(--hero-padding-x, 2rem);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 10px;
+            margin-top: 1rem;
         }
 
-        .hero-small {
-            --hero-padding-y: 0.5rem;
-        }
-
-        .hero-large {
-            --hero-padding-y: 3rem;
-        }
         .hero img {
             max-width: 400px;
         }
+
         .hero h1 {
             font-size: 2rem;
             font-weight: bold;
+            margin-bottom: 0;
         }
+
         .sidebar {
             border-right: 1px solid #ddd;
             padding: 1rem;
         }
+
         .sidebar a {
             display: block;
             padding: 8px 0;
             color: #000;
             text-decoration: none;
         }
+
         .sidebar a:hover {
             color: #f44336;
         }
+
         .flash-sale {
             background: #fff;
             padding: 2rem;
         }
-        .flash-sale .product-card {
+
+        .product-card {
             border: 1px solid #eee;
             border-radius: 10px;
             padding: 10px;
             text-align: center;
+            position: relative;
+            transition: box-shadow 0.3s ease;
         }
+
+        .product-card:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
         .product-card img {
             width: 100%;
             height: 150px;
             object-fit: contain;
-            border-radius: 20px; 
+            border-radius: 20px;
         }
-        .product-card .discount {
+
+        .discount {
             background: #f44336;
             color: #fff;
             font-size: 0.8rem;
@@ -93,21 +115,30 @@
             top: 10px;
             left: 10px;
         }
+
         .product-price {
             color: #f44336;
             font-weight: bold;
+            margin-top: 5px;
         }
+
         .original-price {
             text-decoration: line-through;
             color: #888;
             font-size: 0.9rem;
         }
+
         .footer {
             background-color: #111;
             color: #fff;
             text-align: center;
             padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
         }
+
         .horizontal-scroll-container {
             overflow-x: auto;
             white-space: nowrap;
@@ -127,31 +158,57 @@
             background: #f1f1f1;
         }
 
-        /* Footer menempel di bawah */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            z-index: 100;
+        .container.mt-5 {
+            padding-bottom: 80px; /* agar footer tidak menutupi konten */
         }
 
-        /* Agar konten tidak tertutup footer, beri padding bawah pada kontainer */
-        .container.mt-4 {
-            padding-bottom: 80px; /* Sesuaikan dengan tinggi footer */
-        }
-
-        /* Border hitam pada ikon keranjang yang aktif */
         .navbar .fa-shopping-cart.active {
             border: 2px solid #000;
             border-radius: 5px;
             padding: 4px;
         }
 
+        .card-header h4, 
+        .card-header h5 {
+            margin: 0;
+        }
+
+        .card {
+            margin-bottom: 1rem;
+            border-radius: 10px;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #fafafa;
+        }
+
+        .alert {
+            margin-top: 1rem;
+        }
+
+        .btn {
+            border-radius: 20px;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
     </style>
 </head>
 <body>
-    <div class="topbar text-mid">
-        Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! <a href="#" class="text-white text-decoration-underline">Belanja</a>
+    <div class="topbar text-center">
+        Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
+        <a href="#">Belanja</a>
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-light">
@@ -161,24 +218,26 @@
                 <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
             <div class="d-flex align-items-center gap-3">
-                    <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
-                    <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
+                <a href="{{ route('diskusi.index') }}" class="btn btn-outline-dark btn-sm">Diskusi</a>
+                <a href="{{ route('alamat.manager') }}" class="btn btn-outline-dark btn-sm">Kelola Alamat</a>
                 <a href="{{ route('profilPembeli') }}" class="me-3">
                     <i class="fas fa-user-circle fa-lg"></i>
                 </a>
                 <a href="#" class="text-dark"><i class="fas fa-heart"></i></a>
-                <a href="{{ route('dashboard.pembeli') }}" class="text-dark"><i class="fas fa-shopping-cart active"></i></a>
+                <a href="{{ route('dashboard.pembeli') }}" class="text-dark">
+                    <i class="fas fa-shopping-cart active"></i>
+                </a>
             </div>
         </div>
     </nav>
 
     <div class="container mt-5">
         @if(Auth::check())
-            <div class="card shadow-sm rounded">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Profil Pembeli</h4>
+            <div class="card shadow-sm">
+                <div class="card-header bg-black text-white d-flex justify-content-between align-items-center">
+                    <h4>Profil Pembeli</h4>
                     <div class="d-flex align-items-center gap-2">
-                        <a href="{{ route('dashboard.pembeli') }}" class="btn btn-light btn-sm text-primary">← Dashboard</a>
+                        <a href="{{ route('dashboard.pembeli') }}" class="btn btn-light btn-sm text-black">← Dashboard</a>
                         <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
                             <button type="submit" class="btn btn-danger btn-sm">Logout</button>
@@ -220,12 +279,12 @@
                     </table>
 
                     @if($pembeli->transaksi && $pembeli->transaksi->isNotEmpty())
-                        <div class="card shadow-sm rounded mt-4">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0">Riwayat Pembelian</h5>
+                        <div class="card shadow-sm mt-4">
+                            <div class="card-header bg-black text-white">
+                                <h5>Riwayat Pembelian</h5>
                             </div>
                             <div class="card-body p-0">
-                                <table class="table table-striped mb-0">
+                                <table class="table table-striped table-hover mb-0">
                                     <thead class="table-success">
                                         <tr>
                                             <th>NO</th>
@@ -243,7 +302,7 @@
                                                 <td>{{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('d M Y') }}</td>
                                                 <td>{{ ucfirst($transaksi->status_transaksi) }}</td>
                                                 <td>
-                                                    <ul class="mb-0">
+                                                    <ul class="mb-0 ps-3">
                                                         @foreach($transaksi->barangs as $barang)
                                                             <li>{{ $barang->nama_barang }}</li>
                                                         @endforeach
@@ -262,12 +321,9 @@
                             Belum ada riwayat pembelian.
                         </div>
                     @endif
-            
+                </div>
+            </div>
         @endif
     </div>
-
-    <!-- <footer class="footer">
-        &copy; 2025 ReUseMart. All Rights Reserved.
-    </footer> -->
 </body>
 </html>

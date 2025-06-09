@@ -10,26 +10,174 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #fff;
-            color: #000;
+            background-color: #f8f9fa;
+            color: #212529;
         }
+
         .topbar {
             background-color: #000;
             color: #fff;
-            padding: 5px 15px;
-            font-size: 0.875rem;
+            padding: 6px 20px;
+            font-size: 0.9rem;
+            text-align: center;
         }
+
         .navbar {
             background-color: #fff;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #dee2e6;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
         }
+
         .navbar .nav-link {
-            color: #000;
+            color: #212529;
             font-weight: 500;
         }
+
         .navbar .nav-link:hover {
-            color: #f44336;
+            color: #dc3545;
         }
+
+        .footer {
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .container.mt-4 {
+            padding-bottom: 2rem;
+        }
+
+        .navbar .fa-shopping-cart.active {
+            border: 2px solid #212529;
+            border-radius: 5px;
+            padding: 4px;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            transition: transform 0.3s;
+        }
+
+        .product-img:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .btnHapus {
+            background-color: #dc3545;
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 0.5rem;
+            padding: 0.4rem 0.8rem;
+        }
+
+        .btnHapus:hover {
+            background-color: #c82333;
+        }
+
+        h2.form-label {
+            border-left: 5px solid #dc3545;
+            padding-left: 10px;
+            font-size: 1.4rem;
+        }
+
+        .form-select,
+        .form-control {
+            border-radius: 0.5rem;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+        }
+
+        .btn-success {
+            font-weight: bold;
+            border-radius: 0.5rem;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-outline-dark {
+            border-radius: 0.5rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-outline-dark:hover {
+            background-color: #212529;
+            color: #fff;
+        }
+
+        .summary {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+            padding: 1rem;
+        }
+
+        #subtotalDisplay,
+        #ongkirDisplay,
+        #diskonDisplay,
+        #totalDisplay {
+            font-weight: bold;
+        }
+
+        .modal-content {
+            border-radius: 0.5rem;
+        }
+
+        .modal-header,
+        .modal-footer {
+            background-color: #f8f9fa;
+            border: none;
+        }
+
+        .btn-primary, .btn-secondary, .btn-danger {
+            border-radius: 0.5rem;
+        }
+
+        select:disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        /* Responsive spacing on small screens */
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 0.75rem;
+            }
+            .btnHapus {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+
         .footer {
             background-color: #111;
             color: #fff;
@@ -39,21 +187,7 @@
             bottom: 0;
             width: 100%;
             z-index: 100;
-        }
-        .container.mt-4 {
-            padding-bottom: 120px;
-        }
-        .navbar .fa-shopping-cart.active {
-            border: 2px solid #000;
-            border-radius: 5px;
-            padding: 4px;
-        }
-        .product-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+        }   
     </style>
 </head>
 <body>
