@@ -75,6 +75,7 @@
             <a href="{{ route('owner.historyPage') }}" class="btn btn-dark">History Donasi</a>
             <a href="{{ route('owner.requestPage') }}" class="btn btn-dark">Request Donasi</a>
             <a href="{{ url('/owner/laporan') }}" class="btn btn-dark">Laporan</a>
+            <a href="{{ route('laporan.penitip') }}" class="btn btn-dark">Laporan Transaksi</a>
         </div>
     </div>
 </body>

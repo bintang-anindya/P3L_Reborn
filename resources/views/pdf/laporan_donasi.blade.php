@@ -47,10 +47,10 @@
         <tbody>
             @foreach($donasiList as $donasi)
                 <tr>
-                    <td>{{ $donasi->barang->kode_barang ?? '-' }}</td>
+                    <td>{{ $donasi->barang->id_barang ?? '-' }}</td>
                     <td>{{ $donasi->barang->nama_barang ?? '-' }}</td>
-                    <td>{{ $donasi->penitip->id_penitip ?? '-' }}</td>
-                    <td>{{ $donasi->penitip->nama_penitip ?? '-' }}</td>
+                    <td>{{ $donasi->barang->penitipan->id_penitip ?? '-' }}</td>
+                    <td>{{ $donasi->barang->penitipan->penitip->nama_penitip ?? '-' }}</td>
                     <td>{{ $donasi->tanggal_donasi ? $donasi->tanggal_donasi->format('d/m/Y') : '-' }}</td>
                     <td>{{ $donasi->request && $donasi->request->organisasi ? $donasi->request->organisasi->nama_organisasi : '-' }}</td>
                     <td>{{ $donasi->nama_penerima ?? '-' }}</td>

@@ -208,8 +208,12 @@ Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dash
 Route::get('/liveCode', [PembeliController::Class, 'liveCodePembeli'])->name('liveCode.pembeli');
 
 // ----------------------- Laporan --------------------------
+Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
 Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
 Route::get('/laporan/donasi', [LaporanController::class, 'Donasi'])->name('laporan.donasi');
 Route::get('/laporan/donasi/pdf', [LaporanController::class, 'donasiPdf'])->name('laporan.donasi.pdf');
+Route::get('/laporan/request-donasi', [LaporanController::class, 'requestDonasi'])->name('laporan.request');
+Route::get('/laporan/request-donasi/pdf', [LaporanController::class, 'requestDonasiPdf'])->name('laporan.request.pdf');
+Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
 
 
