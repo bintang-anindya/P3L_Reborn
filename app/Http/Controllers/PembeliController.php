@@ -62,4 +62,9 @@ class PembeliController extends Controller
 
         return view('pembeli.liveCode', compact('pembeli', 'Transaksis'));
     }
+
+    public function klaimMerchandise()
+    {
+        return $this->hasMany(PembeliMerchandise::class, 'id_pembeli', 'id_pembeli');
+    }
 }

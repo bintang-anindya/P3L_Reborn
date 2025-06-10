@@ -24,8 +24,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('gudang/pengiriman') ? 'active' : '' }}" href="">
-                            🚚 Daftar Pengiriman
+                        <a class="nav-link {{ request()->is('gudang/cetak-pdf') ? 'active' : '' }}" href="/gudang/cetak">
+                            🧾 Cetak PDF
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->is('gudang/konfirmasi-pengambilan') ? 'active' : '' }}" href="/gudang/konfirmasi">
+                            ✅ Konfirmasi Pengambilan
                         </a>
                     </li>
                 </ul>

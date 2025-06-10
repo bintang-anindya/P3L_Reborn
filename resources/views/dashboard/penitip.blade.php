@@ -1,3 +1,4 @@
+<!-- Blade file: resources/views/penitip/dashboard.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -103,41 +104,84 @@
                     <h5 class="text-primary">Barang yang Anda Titipkan</h5>
                     <h2 class="fw-bold">Daftar Produk</h2>
                     @if (isset($barangTitipan) && !$barangTitipan->isEmpty())
-                        <div class="card shadow rounded-4 mb-4">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">📦 Barang Titipan Anda</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-striped align-middle">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>Nama Barang</th>
-                                                <th>Kategori</th>
-                                                <th>Harga</th>
-                                                <th>Status</th>
-                                                <th>Tanggal Masuk</th>
-                                                <th>Tenggat Waktu</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($barangTitipan as $barang)
-                                            <tr>
-                                                <td>{{ $barang->nama_barang }}</td>
-                                                <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
-                                                <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
-                                                <td>{{ ucfirst($barang->status_barang) }}</td>
-                                                <td>
-                                                    {{ optional(optional($barang->penitipan)->tanggal_masuk)->format('d M Y') ?? '-' }}
-                                                </td>
-                                                <td>
-                                                    {{ optional(optional($barang->penitipan)->tenggat_waktu)->format('d M Y') ?? '-' }}
-                                                </td>
-                                            </tr>
+                    <div class="card shadow rounded-4 mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">📦 Barang Titipan Anda</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nama Barang</th>
+                                            <th>Kategori</th>
+                                            <th>Harga</th>
+                                            <th>Status</th>
+                                            <th>Tanggal Masuk</th>
+                                            <th>Tenggat Waktu</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($barangTitipan as $barang)
+                                        @php
+                                            $tenggatWaktu = optional($barang->penitipan)->tenggat_waktu;
+                                            $isLewatTenggat = $tenggatWaktu && $tenggatWaktu->lt(now());
+                                            $statusPerpanjangan = $barang->penitipan->status_perpanjangan ?? false;
+                                        @endphp
+                                        <tr class="{{ $isLewatTenggat ? 'table-warning' : '' }}">
+                                            <td>{{ $barang->nama_barang }}</td>
+                                            <td>{{ $barang->kategori->nama_kategori ?? '-' }}</td>
+                                            <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
+                                            <td>
+                                                @if($barang->status_barang === 'diambil penitip')
+                                                    <span class="badge bg-secondary">Diambil</span>
+                                                @elseif($isLewatTenggat)
+                                                    <span class="expired-badge">Kadaluarsa</span>
+                                                @else
+                                                    {{ ucfirst($barang->status_barang) }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                {{ optional(optional($barang->penitipan)->tanggal_masuk)->format('d M Y') ?? '-' }}
+                                            </td>
+                                            <td>
+                                                {{ optional($tenggatWaktu)->format('d M Y') ?? '-' }}
+                                            </td>
+                                            <td>
+                                                @if($isLewatTenggat && $barang->status_barang !== 'diambil penitip')
+                                                    <div class="action-buttons">
+                                                        <!-- Tombol Ambil -->
+                                                        <form action="{{ route('barang.ambil', $barang->id_barang) }}" method="POST" class="mb-1">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-primary btn-sm"
+                                                                onclick="return confirm('Anda yakin ingin mengambil barang?')">
+                                                                Ambil
+                                                            </button>
+                                                        </form>
+                                                        <!-- Tombol Perpanjang -->
+                                                        @if(!$barang->status_perpanjangan)
+                                                            <form action="{{ route('barang.perpanjang', $barang->id_barang) }}" method="POST">
+                                                                @csrf
+                                                                <input type="hidden" name="hari_perpanjangan" value="30">
+                                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                                    onclick="return confirm('Anda yakin ingin memperpanjang 30 hari dari hari ini?')">
+                                                                    Perpanjang
+                                                                </button>
+                                                            </form>
+                                                        @else
+                                                            <button class="btn btn-secondary btn-sm" disabled>Sudah Diperpanjang</button>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    -
+                                                @endif
+                                            </td>
+                                        </tr>
                                         @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    </div>
                     @endif
                 </section>
             </main>
@@ -152,7 +196,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearSearch');
         const rows = document.querySelectorAll('tbody tr');
 
         searchInput.addEventListener('input', function () {
@@ -166,13 +209,12 @@
                 if (match) hasMatch = true;
             });
 
-            // Optional: show a message if no matches
             let noResultRow = document.getElementById('noResultRow');
             if (!hasMatch) {
                 if (!noResultRow) {
                     noResultRow = document.createElement('tr');
                     noResultRow.id = 'noResultRow';
-                    noResultRow.innerHTML = `<td colspan="6" class="text-center text-muted">Tidak ada barang yang cocok.</td>`;
+                    noResultRow.innerHTML = `<td colspan="7" class="text-center text-muted">Tidak ada barang yang cocok.</td>`;
                     document.querySelector('tbody').appendChild(noResultRow);
                 } else {
                     noResultRow.style.display = '';
@@ -180,11 +222,6 @@
             } else if (noResultRow) {
                 noResultRow.style.display = 'none';
             }
-        });
-
-        clearBtn.addEventListener('click', function () {
-            searchInput.value = '';
-            searchInput.dispatchEvent(new Event('input'));
         });
     });
 </script>

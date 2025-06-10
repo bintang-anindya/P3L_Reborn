@@ -25,6 +25,7 @@ class Barang extends Model
         'tanggal_ambil',
         'id_kategori',
         'id_penitipan',
+        'status_perpanjangan',
     ];
 
     protected $casts = [
