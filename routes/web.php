@@ -216,4 +216,7 @@ Route::get('/laporan/request-donasi', [LaporanController::class, 'requestDonasi'
 Route::get('/laporan/request-donasi/pdf', [LaporanController::class, 'requestDonasiPdf'])->name('laporan.request.pdf');
 Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
 
+// ------------------------- Belum Fix ----------------------
+Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
+
 

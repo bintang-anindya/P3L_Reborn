@@ -52,9 +52,29 @@
                                         <td>{{ $penitip->id_penitip }}</td>
                                         <td>{{ $penitip->nama_penitip }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-sm btn-danger" title="Cetak PDF">
-                                                <i class="fas fa-print"></i> Cetak PDF
-                                            </a>
+                                            <form action="{{ route('laporan.printPenitip', $penitip->id_penitip) }}" method="GET" class="d-inline">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <select name="bulan" class="form-select" required>
+                                                            @for($m = 1; $m <= 12; $m++)
+                                                                <option value="{{ $m }}">{{ \Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM') }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
+                                                    <div class="col">
+                                                        <select name="tahun" class="form-select" required>
+                                                            @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                                                                <option value="{{ $y }}">{{ $y }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
+                                                    <div class="col">
+                                                        <button type="submit" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-print"></i> Cetak PDF
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach
