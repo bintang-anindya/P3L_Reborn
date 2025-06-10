@@ -14,6 +14,7 @@ use App\Http\Controllers\RequestDonasiController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\DonasiController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PenitipanController;
 use App\Http\Controllers\NotaPenitipanController;
@@ -34,12 +35,9 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::post('/alamat/{id}/set-primary', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
 });
 
-
-// Landing page (public)
-// Route::get('/', function () {
-//     return view('dashboard');
-// })->name('dashboard');
-
+// -------------------- PEMBELI --------------------
+Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
+Route::post('/submit-rating', [PembeliController::class, 'submitRating'])->name('submit.rating');
 // Profile
 Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
 
@@ -50,8 +48,6 @@ Route::get('/kategori/{id}', [DashboardController::class, 'tampilkanKategori'])-
 // -------------------- BARANG --------------------
 Route::get('/barang/{id}', [BarangController::class, 'showDetail'])->name('detailBarang');
 Route::get('/pembeli/barang/{id}', [BarangController::class, 'showDetailPembeli'])->name('detailBarangPembeli');
-Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
-//Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
 Route::put('/barang/{id}', [BarangController::class, 'update'])->name('barang.update');
 Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
@@ -100,7 +96,6 @@ Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('baran
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/register', [UserController::class, 'register'])->name('register');
 
-Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
 
 // Logout
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
@@ -112,11 +107,6 @@ Route::get('/dashboard', function () {
 
 Route::get('/dashboard/pembeli', [BarangController::class, 'dashboardPembeli'])->name('dashboard.pembeli');
 
-
-
-// --------------- Gambar Tambahan ---------------- //
-// Route::delete('/gambar/{id}', [GambarBarangController::class, 'destroy'])->name('gambar.destroy');
-
 // --------------- PDF ---------------- //
 Route::get('/penitipan/{id}/nota', [NotaPenitipanController::class, 'download'])->name('penitipan.nota');
 
@@ -127,8 +117,10 @@ Route::get('/dashboard/admin', function() {
 
 Route::get('/dashboard/kurir', fn () => view('dashboard.kurir'))->name('dashboard.kurir');
 Route::get('/dashboard/hunter', fn () => view('dashboard.hunter'))->name('dashboard.hunter');
+Route::get('/dashboard/owner', [PegawaiController::class, 'indexOwner'])->name('dashboard.owner');
 
-Route::get('/dashboard/owner', [DonasiController::class, 'index'])->name('dashboard.owner');
+// -------------------- donasi --------------- //
+Route::get('/owner/donasi', [DonasiController::class, 'index'])->name('donasi.owner');
 
 Route::middleware(['web', 'auth:organisasi'])->group(function () {
     Route::get('/dashboard/organisasi', function () {
@@ -136,12 +128,6 @@ Route::middleware(['web', 'auth:organisasi'])->group(function () {
     })->name('dashboard.organisasi');
 });
 
-// --------------- Penitip ---------------- //
-// Route::middleware(['web', 'auth:penitip'])->group(function () {
-//     Route::get('/dashboard/penitip', function () {
-//         return view('dashboard.penitip');
-//     })->name('dashboard.penitip');
-// });
 Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])->name('dashboard.penitip');
 
 // diskusi
@@ -162,6 +148,10 @@ Route::prefix('cs')->name('cs.')->group(function () {
     Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
     Route::post('/merchandise/{id}/update', [MerchandiseController::class, 'update'])->name('merchandise.update');
 });
+
+// --------------- Live Code ---------------- //
+Route::get('/rating-rendah', [PenitipController::class, 'ratingRendah'])->name('penitip.ratingRendah');
+
 
 // --------------- GUDANG ---------------- //
 Route::get('/dashboard/gudang', [PenitipanController::class, 'dashboard'])->name('dashboard.gudang');
@@ -187,7 +177,7 @@ Route::prefix('gudang')->group(function() {
 });
 
 Route::prefix('organisasi')->name('organisasi.')->group(function () {
-    Route::get('/requestDonasi', [RequestDonasiController::class, 'index'])->name('requestDonasi.index');
+    Route::get('/requestDonasi', [RequestDonasiController::class, 'index'])->name('requestDonasi.inde   x');
     Route::post('/requestDonasi', [RequestDonasiController::class, 'store'])->name('requestDonasi.store');
     Route::get('/request-donasi/{requestDonasi}/edit', [RequestDonasiController::class, 'edit'])->name('requestDonasi.edit');
     Route::put('/request-donasi/{requestDonasi}', [RequestDonasiController::class, 'update'])->name('requestDonasi.update');
@@ -203,10 +193,15 @@ Route::delete('/pegawai/{id}', [PegawaiController::class, 'destroy'])->name('peg
 
 // -------------------- ACC REQUEST DONASI --------------------
 Route::post('/donasi', [DonasiController::class, 'store'])->name('donasi.store');
-Route::get('/donasi/history', [DonasiController::class, 'historyPage'])->name('donasi.historyPage');
-Route::post('/donasi/history', [DonasiController::class, 'historyFiltered'])->name('donasi.historyFiltered');
-Route::get('/donasi/{id}/edit', [DonasiController::class, 'edit'])->name('donasi.edit');
-Route::put('/donasi/{id}', [DonasiController::class, 'update'])->name('donasi.update');
+Route::get('/owner/request', [DonasiController::class, 'index'])->name('owner.requestPage');
+// GET route untuk menampilkan form filter
+Route::get('/owner/history', [DonasiController::class, 'historyPage'])->name('owner.historyPage');
+
+// POST route untuk handle filter
+Route::post('/owner/history', [DonasiController::class, 'historyFiltered'])->name('owner.historyFiltered');
+
+Route::get('/owner/{id}/edit', [DonasiController::class, 'edit'])->name('owner.edit');
+Route::put('/owner/{id}', [DonasiController::class, 'update'])->name('donasi.update');
 
 Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
 Route::post('/keranjang/tambah/{id_barang}', [KeranjangController::class, 'tambah'])->name('keranjang.tambah');
@@ -226,7 +221,19 @@ Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dash
 
 Route::post('/barang/perpanjang/{id_barang}', [BarangController::class, 'perpanjang'])->name('barang.perpanjang');
 Route::post('/barang/ambil/{id_barang}', [BarangController::class, 'ambil'])->name('barang.ambil');
+// ----------------------- Live Code ------------------------
+Route::get('/liveCode', [PembeliController::Class, 'liveCodePembeli'])->name('liveCode.pembeli');
 
+// ----------------------- Laporan --------------------------
+Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+Route::get('/owner/laporan', [LaporanController::class, 'index'])->name('owner.laporan');
+Route::get('/laporan/donasi', [LaporanController::class, 'Donasi'])->name('laporan.donasi');
+Route::get('/laporan/donasi/pdf', [LaporanController::class, 'donasiPdf'])->name('laporan.donasi.pdf');
+Route::get('/laporan/request-donasi', [LaporanController::class, 'requestDonasi'])->name('laporan.request');
+Route::get('/laporan/request-donasi/pdf', [LaporanController::class, 'requestDonasiPdf'])->name('laporan.request.pdf');
+Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
 
+// ------------------------- Belum Fix ----------------------
+Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
 
 

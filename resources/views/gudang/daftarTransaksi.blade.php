@@ -49,10 +49,7 @@
                                         <div class="card h-100 border-0 shadow-sm">
                                             <div class="row g-0">
                                                 <div class="col-md-4">
-                                                    <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" 
-                                                         class="img-fluid rounded-start" 
-                                                         alt="{{ $barang->nama_barang }}"
-                                                         style="height: 120px; object-fit: cover;">
+                                                    <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" alt="Gambar Barang">
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body">
@@ -154,9 +151,7 @@
                                                 @endphp
                                                 <tr>
                                                     <td>
-                                                        <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" 
-                                                             class="img-thumbnail" 
-                                                             style="width: 60px; height: 60px; object-fit: cover;">
+                                                        <img src="{{ asset('storage/' . ($barang->gambar_barang ?? 'default-product.png')) }}" alt="Gambar Barang">
                                                     </td>
                                                     <td>{{ $barang->nama_barang }}</td>
                                                     <td>{{ $barang->berat }}</td>

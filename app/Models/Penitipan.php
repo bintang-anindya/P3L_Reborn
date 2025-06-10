@@ -18,6 +18,7 @@ class Penitipan extends Model
         'pesan',
         'id_pegawai',
         'id_penitip',
+        'id_hunter',
         'tanggal_masuk',
         'tenggat_waktu',
     ];

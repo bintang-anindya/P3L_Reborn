@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
 
 class PegawaiController extends Controller
 {
@@ -28,6 +30,16 @@ class PegawaiController extends Controller
         $roles = Role::all();
         
         return view('dashboard.admin', compact('pegawaiList', 'roles', 'search'));
+    }
+
+    public function indexOwner(Request $request)
+    {        
+        $owner = Auth::guard('pegawai')->user();
+        if (!$owner) {
+            return redirect()->route('login')->withErrors(['message' => 'Anda belum login sebagai owner.']);
+        }
+        
+        return view('dashboard.owner', compact('owner'));
     }
 
     public function store(Request $request)

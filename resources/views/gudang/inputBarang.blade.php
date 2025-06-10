@@ -132,6 +132,26 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="id_hunter" class="form-label">Hunter <span class="text-muted">(Opsional)</span></label>
+                    <select name="id_hunter" id="id_hunter" class="form-control @error('id_hunter') is-invalid @enderror">
+                        <option value="">-- Pilih Hunter (Opsional) --</option>
+                        @if(isset($hunterList) && $hunterList->count() > 0)
+                            @foreach($hunterList as $hunter)
+                                <option value="{{ $hunter->id_pegawai }}" {{ old('id_hunter') == $hunter->id_pegawai ? 'selected' : '' }}>
+                                    {{ $hunter->nama_pegawai }}
+                                </option>
+                            @endforeach
+                        @else
+                            <option value="" disabled>Tidak ada hunter tersedia</option>
+                        @endif
+                    </select>
+                    @error('id_hunter')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-text text-muted">Hunter adalah pegawai yang bertugas mengumpulkan/mencari barang</small>
+                </div>
+
+                <div class="mb-3">
                     <label for="gambar_barang" class="form-label">Gambar Barang</label>
                     <input type="file" name="gambar_barang" id="gambar_barang" class="form-control @error('gambar_barang') is-invalid @enderror" accept="image/*" required>
                     @error('gambar_barang')
@@ -199,6 +219,7 @@
                         <th>Gambar</th>
                         <th>Penitip</th>
                         <th>QC By</th>
+                        <th>Hunter</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -251,6 +272,16 @@
                             </td>
                             <td>{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</td>
                             <td>{{ optional(optional($barang->penitipan)->pegawai)->nama_pegawai ?? '-' }}</td>
+                            <td>
+                                @if($barang->penitipan && $barang->penitipan->id_hunter)
+                                    @php
+                                        $hunter = $hunterList->where('id_pegawai', $barang->penitipan->id_hunter)->first();
+                                    @endphp
+                                    {{ $hunter->nama_pegawai ?? '-' }}
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>
                                 @if($barang->penitipan)
                                     <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editPenitipanModal{{ $barang->penitipan->id_penitipan }}">Edit</button>
@@ -388,6 +419,19 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="mb-3">
+                                                <label for="id_hunter" class="form-label">Hunter <span class="text-muted">(Opsional)</span></label>
+                                                <select name="id_hunter" id="id_hunter" class="form-control @error('id_hunter') is-invalid @enderror">
+                                                    @foreach($hunterList as $hunter)
+                                                        <option value="{{ $hunter->id_pegawai }}" {{ old('id_hunter') == $hunter->id_pegawai ? 'selected' : '' }}>
+                                                            {{ $hunter->nama_pegawai }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('id_hunter')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -413,10 +457,16 @@
                                 </div>
                                 <div class="modal-body">
                                     <p>Apakah Anda yakin ingin menghapus data penitipan milik <strong>{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? 'Unknown' }}</strong> beserta seluruh barang yang dititipkan?</p>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>Peringatan:</strong> Tindakan ini tidak dapat dibatalkan!
+                                    </div>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-danger">Hapus</button>
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="fas fa-trash"></i> Hapus
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -520,7 +570,7 @@
                     // Tampilkan pesan sukses
                     alert('Data berhasil diperbarui');
                     // Reload halaman
-                    window.location.reload();
+                    window.location.href = "{{ route('gudang.inputBarang.index') }}";
                 },
                 error: function(xhr) {
                     let errorMessage = 'Terjadi kesalahan';
