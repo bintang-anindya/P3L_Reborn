@@ -21,6 +21,9 @@ use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\PengambilanController;
 use App\Http\Controllers\DaftarTransaksiController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\KonfirmasiPengambilanController;
+use App\Http\Controllers\PDFController;
+use App\Http\Controllers\MerchandiseController;
 
 Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::get('/alamatManager', [AlamatController::class, 'index'])->name('alamat.manager');
@@ -56,6 +59,7 @@ Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('baran
 // Halaman login & register
 Route::get('/login', [UserController::class, 'showLoginForm'])->name('loginPage');
 Route::get('/register', [UserController::class, 'showRegisterForm'])->name('registerPage');
+
 
 // Halaman Change Password
 Route::get('/change-password', [ChangePasswordController::class, 'showForm'])->name('changePasswordPage');
@@ -155,6 +159,8 @@ Route::prefix('cs')->name('cs.')->group(function () {
     Route::get('/data-penitip/{id}/edit', [PenitipController::class, 'edit'])->name('penitip.edit');
     Route::put('/data-penitip/{id}', [PenitipController::class, 'update'])->name('penitip.update');
     Route::delete('/data-penitip/{id}', [PenitipController::class, 'destroy'])->name('penitip.destroy');
+    Route::get('/merchandise', [MerchandiseController::class, 'index'])->name('merchandise.index');
+    Route::post('/merchandise/{id}/update', [MerchandiseController::class, 'update'])->name('merchandise.update');
 });
 
 // --------------- GUDANG ---------------- //
@@ -167,6 +173,11 @@ Route::prefix('gudang')->name('gudang.')->group(function () {
     Route::delete('/penitipan/{id}', [PenitipanController::class, 'destroy'])->name('inputBarang.destroy');
     Route::get('/daftarTransaksi', [DaftarTransaksiController::class, 'index'])->name('DaftarTransaksi.index');
     Route::post('/daftarTransaksi/{id_transaksi}/diambil', [DaftarTransaksiController::class, 'updateDiambil'])->name('daftarTransaksi.diambil');
+    Route::post('/daftarTransaksi/{id_transaksi}/dikirim', [DaftarTransaksiController::class, 'updateDikirim'])->name('daftarTransaksi.dikirim');
+    Route::get('/konfirmasi', [KonfirmasiPengambilanController::class, 'index'])->name('konfirmasi.index');
+    Route::post('/konfirmasi/{id_transaksi}', [KonfirmasiPengambilanController::class, 'konfirmasi'])->name('konfirmasi.konfirmasi');
+    Route::get('/cetak', [PDFController::class, 'index'])->name('cetak.index');
+    Route::get('/cetak/pdf/{id_transaksi}', [PDFController::class, 'generatePdf'])->name('cetak.pdf');
 });
 
     // -------------------- Pengambilan -----------------------
@@ -212,4 +223,10 @@ Route::get('/transaksi/cancelByCs/{id_transaksi}', [TransaksiController::class, 
 Route::get('/transaksi/validasi/{id_transaksi}', [TransaksiController::class, 'validasi'])->name('transaksi.validasi');
 
 Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dashboard.cs');
+
+Route::post('/barang/perpanjang/{id_barang}', [BarangController::class, 'perpanjang'])->name('barang.perpanjang');
+Route::post('/barang/ambil/{id_barang}', [BarangController::class, 'ambil'])->name('barang.ambil');
+
+
+
 

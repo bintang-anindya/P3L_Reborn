@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Barang;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class BarangController extends Controller
 {
@@ -82,4 +83,63 @@ class BarangController extends Controller
 
         return view('dashboard.pembeli', compact('barangBaru'));
     } 
+
+    public function perpanjang(Request $request, $id_barang)
+{
+    $barang = Barang::findOrFail($id_barang);
+
+    Log::info("Memulai proses perpanjangan untuk barang ID: {$id_barang}");
+
+    // Validasi apakah ada relasi penitipan
+    if (!$barang->penitipan) {
+        Log::warning("Barang ID {$id_barang} tidak memiliki data penitipan.");
+        return back()->with('error', 'Data penitipan tidak ditemukan.');
+    }
+
+    // Perpanjangan hanya jika belum diperpanjang
+    if (!$barang->status_perpanjangan) {
+        $hari = (int) $request->hari_perpanjangan;
+        $tenggatBaru = now()->addDays($hari);
+
+        // Update tenggat di penitipan
+        $barang->penitipan->update([
+            'tenggat_waktu' => $tenggatBaru,
+        ]);
+        Log::info("Tenggat waktu untuk penitipan barang ID {$id_barang} diperpanjang sampai: {$tenggatBaru}");
+
+        // Update status barang
+        $barang->update([
+            'status_barang' => 'tersedia',
+            'status_perpanjangan' => true,
+        ]);
+        Log::info("Status barang ID {$id_barang} diperbarui menjadi tersedia dan status_perpanjangan = true");
+
+        return back()->with('success', 'Tenggat waktu berhasil diperpanjang 30 hari dari hari ini.');
+    }
+
+    Log::info("Barang ID {$id_barang} sudah pernah diperpanjang sebelumnya.");
+    return back()->with('info', 'Barang ini sudah diperpanjang sebelumnya.');
+}
+
+
+    public function ambil($id_barang)
+{
+    try {
+        $barang = Barang::findOrFail($id_barang);
+
+        $barang->update([
+            'status_barang' => 'diambil penitip',
+            'tanggal_ambil' => Carbon::now()->addWeek()
+        ]);
+
+        Log::info("Barang ID {$id_barang} berhasil di-update sebagai 'diambil penitip'.");
+
+        return back()->with('success', 'Barang telah diambil oleh penitip.');
+    } catch (\Exception $e) {
+        Log::error("Gagal mengupdate barang ID {$id_barang}: " . $e->getMessage());
+        return back()->with('error', 'Terjadi kesalahan saat mengupdate barang.');
+    }
+}
+
+
 }

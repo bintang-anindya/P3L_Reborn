@@ -25,4 +25,9 @@ class PembeliController extends Controller
         $pembeli = Pembeli::with(['alamat', 'transaksis.barangs'])->findOrFail($id);
         return view('pembeli.show', compact('pembeli'));
     }
+
+    public function klaimMerchandise()
+    {
+        return $this->hasMany(PembeliMerchandise::class, 'id_pembeli', 'id_pembeli');
+    }
 }
