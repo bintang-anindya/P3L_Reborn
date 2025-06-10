@@ -56,7 +56,7 @@
 
             @foreach($barangs as $barang)
                 @php
-                    // Hitung harga jual bersih (setelah potongan 20%)
+                    // Harga jual bersih = harga barang - 20%
                     $hargaJualBersih = $barang->harga_barang * 0.8;
 
                     // Hitung bonus cepat
@@ -64,12 +64,17 @@
                     if ($barang->tanggal_keluar) {
                         $tanggalMasuk = \Carbon\Carbon::parse($barang->tanggal_masuk);
                         $tanggalKeluar = \Carbon\Carbon::parse($barang->tanggal_keluar);
-                        if ($tanggalKeluar->diffInDays($tanggalMasuk) < 7) {
-                            $bonusCepat = $barang->harga_barang * 0.02;
+                        
+                        // Hitung selisih hari, hanya kalau barang keluar setelah masuk
+                        if ($tanggalKeluar->greaterThan($tanggalMasuk)) {
+                            $selisihHari = $tanggalMasuk->diffInDays($tanggalKeluar, false);
+                            if ($selisihHari < 7) {
+                                $bonusCepat = $barang->harga_barang * 0.02;
+                            }
                         }
                     }
 
-                    // Hitung pendapatan = harga jual bersih + bonus cepat
+                    // Pendapatan = harga jual bersih + bonus cepat
                     $pendapatan = $hargaJualBersih + $bonusCepat;
 
                     // Update total
