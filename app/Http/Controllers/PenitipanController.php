@@ -108,6 +108,7 @@ class PenitipanController extends Controller
                 'tenggat_waktu' => $tenggatWaktu, // Store as Carbon object
                 'id_penitipan' => $penitipan->id_penitipan,
                 'gambar_barang' => $path,
+                'status_perpanjangan'=> false,
                 'id_kategori' => $request->id_kategori,
             ]);
 

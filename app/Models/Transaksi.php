@@ -53,4 +53,16 @@ class Transaksi extends Model
         return $this->poin_tukar ?? 0;
     }
 
+    public function barang()
+    {
+        return $this->belongsToMany(Barang::class, 'transaksi_barang', 'id_transaksi', 'id_barang');
+    }
+
+        public function kurir()
+    {
+        return $this->belongsTo(Pegawai::class, 'id_pegawai')->where('id_role', 4);
+    }
+
+
+
 }

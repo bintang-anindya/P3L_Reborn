@@ -137,26 +137,6 @@
         Your browser does not support HTML5 video.
     </video>
 
-    <!-- Bagian atas -->
-    <div class="topbar text-mid">
-        Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
-        <a href="#" class="text-white text-decoration-underline">Belanja</a>
-    </div>
-
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">ReUseMart</a>
-            <form class="d-flex ms-auto me-3">
-                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
-            </form>
-            <div>
-                <i class="fas fa-user me-3"></i>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-        </div>
-    </nav>
-
     <div class="overlay"></div>
 
     <div class="register-container">
