@@ -66,7 +66,7 @@ class LaporanController extends Controller
         return view('owner.penitip', compact('penitipList'));
     }
 
-    public function printPenitip(Request $request, $id)
+    public function printPenitipSampaiBulanTersebut(Request $request, $id)
     {
         // Ambil penitip
         $penitip = Penitip::findOrFail($id);
@@ -100,5 +100,42 @@ class LaporanController extends Controller
 
         return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
     }
+
+    public function printPenitip(Request $request, $id)
+    {
+        // Ambil penitip
+        $penitip = Penitip::findOrFail($id);
+
+        // Ambil bulan dan tahun dari request
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        // Validasi
+        if (!$bulan || !$tahun) {
+            return redirect()->back()->with('error', 'Bulan dan tahun harus dipilih.');
+        }
+
+        // Buat rentang tanggal awal bulan dan akhir bulan
+        $tanggalAwal = \Carbon\Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $tanggalAkhir = \Carbon\Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        // Ambil penitipan
+        $penitipans = Penitipan::where('id_penitip', $id)->get();
+
+        // Ambil id_penitipan dari penitipan
+        $penitipanIds = $penitipans->pluck('id_penitipan');
+
+        // Filter barang yang masuk pada bulan dan tahun yang dipilih
+        $barangs = Barang::whereIn('id_penitipan', $penitipanIds)
+                        ->whereBetween('tanggal_masuk', [$tanggalAwal->toDateString(), $tanggalAkhir->toDateString()])
+                        ->get();
+
+        // Buat PDF
+        $pdf = Pdf::loadView('pdf.laporan_penitip', compact('penitip', 'penitipans', 'barangs', 'bulan', 'tahun'))
+                    ->setPaper('a4', 'portrait');
+
+        return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
+    }
+
 
 }
