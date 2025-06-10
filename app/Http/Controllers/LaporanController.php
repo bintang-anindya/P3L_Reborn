@@ -25,22 +25,43 @@ class LaporanController extends Controller
     public function index(Request $request)
     {
         $tab = $request->get('tab', 'donasi');
+        $tahun = $request->get('tahun', date('Y')); // default tahun ini kalau tidak dipilih
 
-        $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])->get();
-        $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        if ($tab === 'donasi') {
+            $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])
+                                ->whereYear('tanggal_donasi', $tahun)
+                                ->get();
+        } else {
+            $donasiList = collect(); // kosongin kalau tab bukan donasi
+        }
 
-        return view('owner.laporan', compact('tab', 'donasiList', 'requestDonasiList'));
+        if ($tab === 'request') {
+            $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        } else {
+            $requestDonasiList = collect(); // kosongin kalau tab bukan request
+        }
+
+        return view('owner.laporan', compact('tab', 'donasiList', 'requestDonasiList', 'tahun'));
     }
 
-    public function donasiPdf()
+    public function donasiPdf(Request $request)
     {
-        $donasiList = Donasi::with(['barang', 'penitip', 'request.organisasi'])->get();
+        $tahun = $request->get('tahun', date('Y'));
 
-        $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList'))
-                  ->setPaper('a4', 'portrait');
+        $query = Donasi::with(['barang', 'penitip', 'request.organisasi']);
 
-        return $pdf->download('laporan-donasi-barang-' . date('Ymd') . '.pdf');
+        if ($tahun) {
+            $query->whereYear('tanggal_donasi', $tahun);
+        }
+
+        $donasiList = $query->get();
+
+        $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList', 'tahun'))
+                ->setPaper('a4', 'portrait');
+
+        return $pdf->download('laporan-donasi-barang-' . $tahun . '-' . date('Ymd') . '.pdf');
     }
+
 
     public function requestDonasi()
     {
