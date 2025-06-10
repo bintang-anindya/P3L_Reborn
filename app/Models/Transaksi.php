@@ -19,7 +19,8 @@ class Transaksi extends Model
         'id_pegawai',
         'bukti_transaksi',
         'nomor_transaksi',
-        'poin_tukar'
+        'poin_tukar',
+        'metode'
     ];
 
     public function pembeli()

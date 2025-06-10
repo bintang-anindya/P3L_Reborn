@@ -28,4 +28,15 @@ class Donasi extends Model
         return $this->belongsTo(\App\Models\Barang::class, 'id_barang');
     }
 
+    public function penitip()
+    {
+        return $this->belongsTo(\App\Models\Penitip::class, 'id_penitip');
+    }
+
+    public function organisasi()
+    {
+        return $this->belongsTo(\App\Models\Organisasi::class, 'id_organisasi');
+    }
+
+
 }
