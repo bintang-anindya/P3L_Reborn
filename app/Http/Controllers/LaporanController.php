@@ -60,10 +60,25 @@ class LaporanController extends Controller
         return $pdf->download('laporan-request-donasi-' . date('Ymd') . '.pdf');
     }
 
-    public function penitip()
+    public function penitip(Request $request)
     {
         $penitipList = Penitip::all();
-        return view('owner.penitip', compact('penitipList'));
+
+        $barangs = [];
+
+        if ($request->filled(['penitip', 'bulan', 'tahun'])) {
+            $barangs = Barang::whereHas('penitipan', function ($query) use ($request) {
+                    $query->where('id_penitip', $request->penitip);
+                })
+                ->whereMonth('tanggal_masuk', $request->bulan)
+                ->whereYear('tanggal_masuk', $request->tahun)
+                ->get();
+        }
+
+        return view('owner.penitip', [
+            'penitipList' => $penitipList,
+            'barangs' => $barangs,
+        ]);
     }
 
     public function printPenitipSampaiBulanTersebut(Request $request, $id)
@@ -101,32 +116,25 @@ class LaporanController extends Controller
         return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
     }
 
-    public function printPenitip(Request $request, $id)
+    public function printPenitip(Request $request)
     {
-        $penitip = Penitip::findOrFail($id);
+        // Cari penitip yang sesuai
+        $penitip = Penitip::findOrFail($request->penitip);
+
+        // Query barang yang berelasi dengan penitip
+        $barangs = Barang::whereHas('penitipan', function ($query) use ($request) {
+                $query->where('id_penitip', $request->penitip);
+            })
+            ->whereMonth('tanggal_masuk', $request->bulan)
+            ->whereYear('tanggal_masuk', $request->tahun)
+            ->get();
 
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
-        if (!$bulan || !$tahun) {
-            return redirect()->back()->with('error', 'Bulan dan tahun harus dipilih.');
-        }
-
-        $tanggalAwal = \Carbon\Carbon::create($tahun, $bulan, 1)->startOfMonth();
-        $tanggalAkhir = \Carbon\Carbon::create($tahun, $bulan, 1)->endOfMonth();
-
-        $penitipans = Penitipan::where('id_penitip', $id)->get();
-
-        $penitipanIds = $penitipans->pluck('id_penitipan');
-
-        $barangs = Barang::whereIn('id_penitipan', $penitipanIds)
-                        ->whereBetween('tanggal_masuk', [$tanggalAwal->toDateString(), $tanggalAkhir->toDateString()])
-                        ->get();
-
-        $pdf = Pdf::loadView('pdf.laporan_penitip', compact('penitip', 'penitipans', 'barangs', 'bulan', 'tahun'))
-                    ->setPaper('a4', 'portrait');
-
-        return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
+        // Generate PDF menggunakan DOMPDF
+        $pdf = PDF::loadView('pdf.laporan_penitip', compact('penitip', 'barangs', 'bulan', 'tahun'));
+        return $pdf->download('laporan_penitip.pdf');
     }
 
 

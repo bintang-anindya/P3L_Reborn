@@ -235,5 +235,8 @@ Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('lap
 
 // ------------------------- Belum Fix ----------------------
 Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
+Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
+Route::get('/laporan/penitip/cetak', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
+
 
 
