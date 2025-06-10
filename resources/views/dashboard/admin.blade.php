@@ -27,7 +27,6 @@
                     <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Reset</a>
                 </div>
             </form>
->>>>>>> 4ec2240b89d5fc489b7bc2f35b0f8670f070846f
         </div>
     </div>
 

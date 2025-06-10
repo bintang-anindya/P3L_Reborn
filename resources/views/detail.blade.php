@@ -36,24 +36,24 @@
     </style>
 </head>
 
-
 <div class="topbar text-mid">
-        Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! <a href="#" class="text-white text-decoration-underline">Belanja</a>
-    </div>
+    Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! <a href="#" class="text-white text-decoration-underline">Belanja</a>
+</div>
 
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('home') }}">ReUseMart</a>
-            <form class="d-flex ms-auto me-3">
-                <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
-            </form>
-            <div>
-                <i class="fas fa-heart me-3"></i>
-                <i class="fas fa-shopping-cart"></i>
-                <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
-            </div>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ route('home') }}">ReUseMart</a>
+        <form class="d-flex ms-auto me-3">
+            <input class="form-control me-2" type="search" placeholder="Apa yang anda butuhkan?">
+        </form>
+        <div>
+            <i class="fas fa-heart me-3"></i>
+            <i class="fas fa-shopping-cart"></i>
+            <a href="{{ route('loginPage') }}" class="btn btn-outline-dark btn-sm">Login/Register</a>
         </div>
-    </nav>
+    </div>
+</nav>
+
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
@@ -82,19 +82,43 @@
                             <h6 class="mb-1">{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</h6>
                             <div class="d-flex align-items-center">
                                 <div class="rating-stars me-2">
+                                    @php
+                                        $penitip = optional(optional($barang->penitipan)->penitip);
+                                        $totalRating = $penitip->total_rating ?? 0;
+                                        $jumlahPeRating = $penitip->jumlah_perating ?? 0;
+                                        $averageRating = $jumlahPeRating > 0 ? $totalRating / $jumlahPeRating : 0;
+                                        $roundedRating = round($averageRating, 1);
+                                        
+                                        // Hitung jumlah produk terjual untuk penitip ini menggunakan query
+                                        $totalProdukTerjual = 0;
+                                        if ($penitip && $penitip->id_penitip) {
+                                            $totalProdukTerjual = DB::table('transaksi_barang')
+                                                ->join('barang', 'transaksi_barang.id_barang', '=', 'barang.id_barang')
+                                                ->join('penitipan', 'barang.id_penitipan', '=', 'penitipan.id_penitipan')
+                                                ->where('penitipan.id_penitip', $penitip->id_penitip)
+                                                ->count();
+                                        }
+                                    @endphp
+                                    
                                     @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= (optional(optional($barang->penitipan)->penitip)->total_rating ?? 4.5))
+                                        @if($i <= floor($averageRating))
                                             <i class="fas fa-star"></i>
+                                        @elseif($i - 0.5 <= $averageRating)
+                                            <i class="fas fa-star-half-alt"></i>
                                         @else
                                             <i class="far fa-star"></i>
                                         @endif
                                     @endfor
                                 </div>
                                 <span class="text-muted small">
-                                    ({{ number_format(optional(optional($barang->penitipan)->penitip)->rating ?? 4.5, 1) }}/5.0)
+                                    @if($jumlahPeRating > 0)
+                                        ({{ $roundedRating }}/5.0 dari {{ $jumlahPeRating }} rating)
+                                    @else
+                                        (Belum ada rating)
+                                    @endif
                                 </span>
                                 <span class="text-muted small ms-2">
-                                    {{ optional(optional($barang->penitipan)->penitip)->total_penjualan ?? 0 }} produk terjual
+                                    {{ $totalProdukTerjual }} produk terjual
                                 </span>
                             </div>
                         </div>
@@ -133,7 +157,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
