@@ -65,7 +65,12 @@
 
     <div class="info">
         <p><strong>Penitip :</strong>T{{$penitipan->id_penitipan}} / {{$penitipan->penitip->nama_penitip }}</p>
-        <p><strong>Delivery:</strong> Kurir ReUseMart ({{ $penitipan->pegawai->nama_pegawai }})</p>
+        @if($penitipan->id_hunter)
+            @php
+                $hunter = $hunterList->where('id_pegawai', $penitipan->id_hunter)->first();
+            @endphp
+            <p><strong>Hunter :</strong> Hunter ReUseMart ({{ $hunter->nama_pegawai }})</p>
+        @endif
     </div>
 
     <table class="barang">

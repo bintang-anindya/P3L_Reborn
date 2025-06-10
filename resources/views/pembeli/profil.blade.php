@@ -19,7 +19,7 @@
     Perbanyak Belanja dan Dapatkan Poin Serta Merchandise Menarik! 
     <a href="{{ route('dashboard.pembeli') }}" class="underline ml-2">Belanja</a>
   </div>
-
+  
   <!-- Navbar -->
   <nav class="bg-white border-b border-gray-300">
     <div class="container mx-auto flex justify-between items-center py-3 px-4">
@@ -152,5 +152,6 @@
 
   <!-- Font Awesome -->
   <script src="https://kit.fontawesome.com/yourkit.js" crossorigin="anonymous"></script>
+
 </body>
 </html>

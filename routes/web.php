@@ -32,6 +32,9 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
     Route::post('/alamat/{id}/set-primary', [AlamatController::class, 'setPrimary'])->name('alamat.setPrimary');
 });
 
+// -------------------- PEMBELI --------------------
+Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
+Route::post('/submit-rating', [PembeliController::class, 'submitRating'])->name('submit.rating');
 // Profile
 Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
 
@@ -42,8 +45,6 @@ Route::get('/kategori/{id}', [DashboardController::class, 'tampilkanKategori'])-
 // -------------------- BARANG --------------------
 Route::get('/barang/{id}', [BarangController::class, 'showDetail'])->name('detailBarang');
 Route::get('/pembeli/barang/{id}', [BarangController::class, 'showDetailPembeli'])->name('detailBarangPembeli');
-Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
-//Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
 Route::put('/barang/{id}', [BarangController::class, 'update'])->name('barang.update');
 Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('barang.destroy');
@@ -91,7 +92,6 @@ Route::delete('/barang/{id}', [BarangController::class, 'destroy'])->name('baran
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/register', [UserController::class, 'register'])->name('register');
 
-Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
 
 // Logout
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
@@ -142,6 +142,10 @@ Route::prefix('cs')->name('cs.')->group(function () {
     Route::put('/data-penitip/{id}', [PenitipController::class, 'update'])->name('penitip.update');
     Route::delete('/data-penitip/{id}', [PenitipController::class, 'destroy'])->name('penitip.destroy');
 });
+
+// --------------- Live Code ---------------- //
+Route::get('/rating-rendah', [PenitipController::class, 'ratingRendah'])->name('penitip.ratingRendah');
+
 
 // --------------- GUDANG ---------------- //
 Route::get('/dashboard/gudang', [PenitipanController::class, 'dashboard'])->name('dashboard.gudang');

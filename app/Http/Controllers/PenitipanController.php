@@ -53,8 +53,9 @@ class PenitipanController extends Controller
 
         $penitipList = Penitip::all();
         $pegawais = Pegawai::all();
+        $hunterList = Pegawai::where('id_role', 5)->get();
 
-        return view('gudang.inputBarang', compact('kategoriList', 'barangList', 'penitipList', 'pegawais'));
+        return view('gudang.inputBarang', compact('kategoriList', 'barangList', 'penitipList', 'pegawais', 'hunterList'));
     }
 
     public function store(Request $request)
@@ -72,6 +73,7 @@ class PenitipanController extends Controller
             'tanggal_garansi' => 'nullable|date',
             'gambar_barang' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'id_penitip' => 'required|exists:penitip,id_penitip',
+            'id_hunter' => 'nullable|exists:pegawai,id_pegawai',
             'gambar_tambahan.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -83,6 +85,7 @@ class PenitipanController extends Controller
                 'pesan' => $request->pesan,
                 'id_pegawai' => $request->id_pegawai,
                 'id_penitip' => $request->id_penitip,
+                'id_hunter' => $request->id_hunter,
                 'tanggal_masuk' => $tanggalMasuk, // Store as Carbon object
                 'tenggat_waktu' => $tenggatWaktu, // Store as Carbon object
             ]);
@@ -152,6 +155,7 @@ class PenitipanController extends Controller
             'tanggal_garansi' => 'nullable|date',
             'id_penitip' => 'required|exists:penitip,id_penitip',
             'id_pegawai' => 'required|exists:pegawai,id_pegawai',
+            'id_hunter' => 'nullable|exists:pegawai,id_pegawai',
             'gambar_tambahan.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -159,17 +163,16 @@ class PenitipanController extends Controller
             $tanggalMasuk = Carbon::parse($request->tanggal_masuk);
             $tenggatWaktu = $tanggalMasuk->copy()->addDays(30);
 
-            // Update data penitipan
             $penitipan = Penitipan::findOrFail($id_penitipan);
             $penitipan->update([
                 'pesan' => $request->pesan,
                 'id_pegawai' => $request->id_pegawai,
                 'id_penitip' => $request->id_penitip,
+                'id_hunter' => $request->id_hunter,
                 'tanggal_masuk' => $tanggalMasuk,
                 'tenggat_waktu' => $tenggatWaktu,
             ]);
 
-            // Update data barang yang terkait
             $barang = Barang::where('id_penitipan', $id_penitipan)->firstOrFail();
             $barang->update([
                 'nama_barang' => $request->nama_barang,
@@ -182,13 +185,11 @@ class PenitipanController extends Controller
                 'tenggat_waktu' => $tenggatWaktu,
             ]);
 
-            // Handle gambar jika diupdate
             if ($request->hasFile('gambar_barang')) {
                 if ($barang->gambar_barang && Storage::exists('public/' . $barang->gambar_barang)) {
                     Storage::delete('public/' . $barang->gambar_barang);
                 }
                 
-                // Simpan gambar baru
                 $path = $request->file('gambar_barang')->store('barang', 'public');
                 $barang->update(['gambar_barang' => $path]);
             }
@@ -197,11 +198,10 @@ class PenitipanController extends Controller
                 $existingImages = GambarBarang::where('id_barang', $barang->id_barang)->get();
             
                 foreach ($existingImages as $image) {
-                    // Hapus file dari storage
                     if (Storage::exists('public/' . $image->path_gambar)) {
                         Storage::delete('public/' . $image->path_gambar);
                     }
-                    // Hapus record dari database
+                    
                     $image->delete();
                 }
                 
@@ -213,11 +213,7 @@ class PenitipanController extends Controller
                     ]);
                 }
             }
-
-            return redirect()->route('gudang.inputBarang')
-                ->with('success', 'Data berhasil diperbarui.')
-                ->with('updated_id', $id_penitipan);
-
+            return redirect()->route('gudang.inputBarang.index')->with('success', 'Transaksi berhasil diubah.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating data:', ['error' => $e->getMessage()]);
@@ -227,13 +223,39 @@ class PenitipanController extends Controller
 
     public function destroy($id)
     {
-        $penitipan = Penitipan::findOrFail($id);
-        $penitipan->delete();
+        try {
+            DB::beginTransaction();
+            
+            $penitipan = Penitipan::findOrFail($id);
+            $barangList = Barang::where('id_penitipan', $id)->get();
+            
+            foreach ($barangList as $barang) {
+                if ($barang->gambar_barang && Storage::exists('public/' . $barang->gambar_barang)) {
+                    Storage::delete('public/' . $barang->gambar_barang);
+                }
+                
+                if ($barang->gambarTambahan && $barang->gambarTambahan->count() > 0) {
+                    foreach ($barang->gambarTambahan as $gambarTambahan) {
+                        if (Storage::exists('public/' . $gambarTambahan->path_gambar)) {
+                            Storage::delete('public/' . $gambarTambahan->path_gambar);
+                        }
+                        $gambarTambahan->delete();
+                    }
+                }
+                
+                $barang->delete();
+            }
+        
+            $penitipan->delete();
+            
+            DB::commit();
 
-        $barang = Barang::where('id_penitipan', $id)->firstOrFail();
-        Storage::delete('public/' . $barang->gambar_barang);
-
-        return redirect()->route('gudang.inputBarang')->with('success', 'Data berhasil dihapus.');
+            return redirect()->route('gudang.inputBarang.index')->with('success', 'Transaksi berhasil dihapus.');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('gudang.inputBarang.index')->with('error', 'Gagal menghapus transaksi: ' . $e->getMessage());
+        }
     }
 
 }
