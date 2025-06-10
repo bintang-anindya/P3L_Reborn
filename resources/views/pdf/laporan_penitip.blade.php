@@ -48,24 +48,47 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $totalHarga = 0;
+                $totalBonus = 0;
+                $totalPendapatan = 0;
+            @endphp
+
             @foreach($barangs as $barang)
+                @php
+                    // Hitung harga jual bersih (setelah potongan 20%)
+                    $hargaJualBersih = $barang->harga_barang * 0.8;
+
+                    // Hitung bonus cepat
+                    $bonusCepat = 0;
+                    if ($barang->tanggal_keluar) {
+                        $tanggalMasuk = \Carbon\Carbon::parse($barang->tanggal_masuk);
+                        $tanggalKeluar = \Carbon\Carbon::parse($barang->tanggal_keluar);
+                        if ($tanggalKeluar->diffInDays($tanggalMasuk) < 7) {
+                            $bonusCepat = $barang->harga_barang * 0.02;
+                        }
+                    }
+
+                    // Hitung pendapatan = harga jual bersih + bonus cepat
+                    $pendapatan = $hargaJualBersih + $bonusCepat;
+
+                    // Update total
+                    $totalHarga += $hargaJualBersih;
+                    $totalBonus += $bonusCepat;
+                    $totalPendapatan += $pendapatan;
+                @endphp
+
                 <tr>
                     <td>{{ $barang->id_barang }}</td>
                     <td>{{ $barang->nama_barang }}</td>
                     <td>{{ \Carbon\Carbon::parse($barang->tanggal_masuk)->format('d M Y') }}</td>
                     <td>{{ $barang->tanggal_keluar ? \Carbon\Carbon::parse($barang->tanggal_keluar)->format('d M Y') : '-' }}</td>
-                    <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
-                    <td>-</td>
-                    <td>Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($hargaJualBersih, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($bonusCepat, 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($pendapatan, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
 
-            {{-- Tambahkan baris total --}}
-            @php
-                $totalHarga = $barangs->sum('harga_barang');
-                $totalBonus = 0; // kamu bisa hitung jika ada logic bonusnya, untuk sementara diisi 0
-                $totalPendapatan = $totalHarga; // asumsi pendapatan = harga_barang total
-            @endphp
             <tr>
                 <td colspan="4" style="text-align: center; font-weight: bold;">Total</td>
                 <td style="font-weight: bold;">Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
