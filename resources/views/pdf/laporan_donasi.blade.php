@@ -29,7 +29,7 @@
     <div style="margin-bottom: 1rem;"></div>
 
     <h5>Laporan Donasi Barang</h5>
-    <div>Tahun : {{ date('Y') }}</div>
+    <div>Tahun : {{ $tahun }}</div>
     <div>Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</div>
 
     <table>
