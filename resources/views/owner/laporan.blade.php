@@ -48,7 +48,7 @@
                     <div class="mb-2"></div>
 
                     <div>
-                        Tahun : {{ date('Y') }}<br>
+                        Tahun : {{ $tahun }}<br>
                         Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
                     </div>
 

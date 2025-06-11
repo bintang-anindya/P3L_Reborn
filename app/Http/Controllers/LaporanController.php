@@ -32,13 +32,15 @@ class LaporanController extends Controller
                                 ->whereYear('tanggal_donasi', $tahun)
                                 ->get();
         } else {
-            $donasiList = collect(); // kosongin kalau tab bukan donasi
+            $donasiList = collect(); // kosongkan kalau tab bukan donasi
         }
 
         if ($tab === 'request') {
-            $requestDonasiList = RequestDonasi::with('organisasi')->get();
+            $requestDonasiList = RequestDonasi::with('organisasi')
+                                            ->where('status_donasi', 'menunggu') // tambahkan filter ini
+                                            ->get();
         } else {
-            $requestDonasiList = collect(); // kosongin kalau tab bukan request
+            $requestDonasiList = collect(); // kosongkan kalau tab bukan request
         }
 
         return view('owner.laporan', compact('tab', 'donasiList', 'requestDonasiList', 'tahun'));
@@ -65,15 +67,18 @@ class LaporanController extends Controller
 
     public function requestDonasi()
     {
-        // Ambil semua request donasi dengan relasi organisasi
-        $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        $requestDonasiList = RequestDonasi::with('organisasi')
+                                ->where('status_donasi', 'menunggu')
+                                ->get();
 
         return view('owner.laporan_request', compact('requestDonasiList'));
     }
 
     public function requestDonasiPdf()
     {
-        $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        $requestDonasiList = RequestDonasi::with('organisasi')
+                                            ->where('status_donasi', 'menunggu') // tambahkan filter ini
+                                            ->get();
 
         $pdf = Pdf::loadView('pdf.laporan_request', compact('requestDonasiList'))
                     ->setPaper('a4', 'portrait');
@@ -158,5 +163,33 @@ class LaporanController extends Controller
         return $pdf->download('laporan_penitip.pdf');
     }
 
+    public function liveCode(Request $request)
+    {
+        $tahun = $request->tahun ?? date('Y');
+
+        $donasiList = Donasi::whereYear('tanggal_donasi', $tahun)
+            ->whereHas('barang', function ($query) {
+                $query->where('id_kategori', 1);
+            })
+            ->with(['barang.penitipan.penitip', 'request.organisasi'])
+            ->get();
+
+        return view('owner.liveCode', compact('donasiList', 'tahun'));
+    }
+
+    public function liveCodePdf(Request $request)
+    {
+        $tahun = $request->tahun ?? date('Y');
+
+        $donasiList = Donasi::whereYear('tanggal_donasi', $tahun)
+            ->whereHas('barang', function ($query) {
+                $query->where('id_kategori', 1);
+            })
+            ->with(['barang.penitipan.penitip', 'request.organisasi'])
+            ->get();
+
+        $pdf = PDF::loadView('pdf.liveCode', compact('donasiList', 'tahun'));
+        return $pdf->stream("laporan_donasi_kategori_1_{$tahun}.pdf");
+    }
 
 }
