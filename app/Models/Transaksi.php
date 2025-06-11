@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaksi extends Model
 {
-    protected $table = 'transaksi'; // Nama tabel yang sesuai dengan tabel di database
-    protected $primaryKey = 'id_transaksi'; // Primary key
-    public $timestamps = false; // Jika tabel tidak menggunakan timestamp (created_at, updated_at)
+    protected $table = 'transaksi'; 
+    protected $primaryKey = 'id_transaksi'; 
+    public $timestamps = false; 
 
     protected $fillable = [
         'tanggal_transaksi', 
@@ -44,6 +44,11 @@ class Transaksi extends Model
     }
 
     public function TransaksiBarang()
+    {
+        return $this->hasMany(TransaksiBarang::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function TransaksiBarangs()
     {
         return $this->hasMany(TransaksiBarang::class, 'id_transaksi', 'id_transaksi');
     }

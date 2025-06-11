@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Models\Penitipan; // Import model Penitipan
+use App\Models\Kategori;  // Import model Kategori
 
 class Barang extends Model
 {
@@ -23,6 +25,9 @@ class Barang extends Model
         'tenggat_waktu',
         'harga_barang',
         'tanggal_ambil',
+        'komisi_hunter',
+        'komisi_reusemart', 
+        'bonus_penitip',
         'id_kategori',
         'id_penitipan',
         'status_perpanjangan',
@@ -64,6 +69,11 @@ class Barang extends Model
     public function transaksiBarang()
     {
         return $this->hasMany(TransaksiBarang::class, 'id_barang');
+    }
+
+    public function getPenitipAttribute()
+    {
+        return $this->penitipan->penitip ?? null;
     }
 
 }

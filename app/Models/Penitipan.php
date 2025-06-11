@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
+use App\Models\Penitip; // Import model Penitip
+use App\Models\Pegawai; // Import model Pegawai (untuk CS dan Hunter)
+use App\Models\Barang;  // Import model Barang
 
 
 class Penitipan extends Model
@@ -44,5 +47,13 @@ class Penitipan extends Model
     public function penitip()
     {
         return $this->belongsTo(Penitip::class, 'id_penitip');
+    }
+
+    public function getHunterAttribute()
+    {
+        if ($this->id_hunter) {
+            return Pegawai::find($this->id_hunter);
+        }
+        return null;
     }
 }
