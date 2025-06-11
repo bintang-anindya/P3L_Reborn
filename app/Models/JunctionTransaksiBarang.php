@@ -7,11 +7,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class JunctionTransaksiBarang extends Authenticatable
 {
-    protected $table = 'transaksi_barang'; // Nama tabel jika tidak mengikuti konvensi jamak
-
-    protected $primaryKey = 'id_transaksiBarang'; // Jika primary key bukan 'id'
-
-    public $timestamps = false; // Jika tabel tidak pakai created_at dan updated_at
+    protected $table = 'transaksi_barang';
+    protected $primaryKey = 'id_transaksiBarang'; 
+    public $timestamps = false; 
 
     protected $fillable = [
         'id_barang',
