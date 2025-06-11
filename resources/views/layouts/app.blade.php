@@ -10,6 +10,7 @@
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #f8f9fa;
+            margin-bottom: 5rem;
         }
 
         .nav-link {

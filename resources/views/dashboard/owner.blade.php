@@ -8,6 +8,7 @@
         body {
             background-color: #f8f9fa;
             font-family: Arial, sans-serif;
+            margin-bottom : 5rem;
         }
         .card-header {
             background-color: #000;
