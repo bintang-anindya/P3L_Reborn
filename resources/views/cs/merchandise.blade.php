@@ -165,7 +165,7 @@
                             @if ($klaim->tanggal_ambil_merchandise)
                                 {{ \Carbon\Carbon::parse($klaim->tanggal_ambil_merchandise)->format('d M Y') }}
                             @else
-                                Belum diambil
+                                Belum Ada
                             @endif
                         </td>
                         <td>{{ $klaim->status_merchandise }}</td>

@@ -233,6 +233,11 @@ Route::get('/laporan/donasi/pdf', [LaporanController::class, 'donasiPdf'])->name
 Route::get('/laporan/request-donasi', [LaporanController::class, 'requestDonasi'])->name('laporan.request');
 Route::get('/laporan/request-donasi/pdf', [LaporanController::class, 'requestDonasiPdf'])->name('laporan.request.pdf');
 Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
+Route::post('/laporan/penjualan-bulanan/pdf', [LaporanController::class, 'penjualanBulananPdf'])->name('laporan.penjualan_bulanan.pdf');
+Route::get('/laporan/stok-gudang/pdf', [LaporanController::class, 'stokGudangPdf'])->name('laporan.stok_gudang.pdf');
+Route::get('/laporan/penjualan-kategori/pdf', [LaporanController::class, 'penjualanKategoriPdf'])->name('laporan.penjualan_kategori.pdf');
+Route::get('/laporan/masa-penitipan-habis/pdf', [LaporanController::class, 'masaPenitipanHabisPdf'])->name('laporan.masa_penitipan_habis.pdf');
+Route::get('/laporan/komisi-bulanan/pdf', [LaporanController::class, 'komisiBulananPdf'])->name('laporan.komisi_bulanan.pdf');
 
 // ------------------------- Belum Fix ----------------------
 Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
