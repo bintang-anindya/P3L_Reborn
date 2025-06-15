@@ -1,4 +1,3 @@
-<!-- resources/views/changePassword.blade.php -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,15 +13,17 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         .topbar {
             background-color: #000;
             color: #fff;
-            padding: 5px 15px;
-            font-size: 0.875rem;
+            padding: 8px 20px; /* Increased padding for better visual */
+            font-size: 0.9rem; /* Slightly larger font */
             position: relative;
             z-index: 10;
+            text-align: center; /* Centered text */
         }
 
         .navbar {
@@ -30,15 +31,31 @@
             border-bottom: 1px solid #ddd;
             position: relative;
             z-index: 10;
+            padding: 15px 0; /* Added vertical padding */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
         }
 
         .navbar .nav-link {
             color: #000;
             font-weight: 500;
+            transition: color 0.3s ease; /* Smooth transition on hover */
         }
 
         .navbar .nav-link:hover {
             color: #f44336;
+        }
+
+        .navbar-brand {
+            font-size: 1.75rem; /* Larger brand name */
+            font-weight: 700 !important; /* Ensure bold is applied */
+            color: #333 !important; /* Darker brand color */
+        }
+
+        .form-control.me-2 {
+            border-radius: 25px; /* Pill-shaped search bar */
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            border: 1px solid #ccc;
         }
 
         .main-content {
@@ -46,40 +63,77 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 3rem 1rem; /* Increased padding for more breathing room */
         }
 
         .change-password-card {
             background-color: #fff;
             border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem; /* Increased padding inside the card */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
             width: 100%;
-            max-width: 420px;
+            max-width: 450px; /* Slightly wider card */
+            border: 1px solid #eee; /* Light border */
         }
 
         .change-password-card h3 {
-            margin-bottom: 1.5rem;
-            font-weight: bold;
-            color: #333;
+            margin-bottom: 2rem; /* More space below heading */
+            font-weight: 700; /* Bolder heading */
+            color: #222; /* Darker heading color */
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: .5rem;
         }
 
         .form-control, .form-select {
-            border-radius: 8px;
+            border-radius: 10px; /* Slightly more rounded corners */
+            padding: 0.75rem 1rem; /* Better padding within inputs */
+            border: 1px solid #ddd;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Inner shadow for depth */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #f44336; /* Highlight on focus */
+            box-shadow: 0 0 0 0.25rem rgba(244, 67, 54, 0.25); /* Glow effect on focus */
+            outline: none;
         }
 
         .btn-submit {
-            border-radius: 8px;
-            background-color: #000;
+            border-radius: 10px;
+            background-color: #f44336; /* Red primary button */
             color: #fff;
+            padding: 0.85rem 1.5rem; /* Generous button padding */
+            font-size: 1.1rem; /* Larger font size for button */
+            font-weight: 700;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         .btn-submit:hover {
-            background-color: #333;
+            background-color: #e63946; /* Darker red on hover */
+            transform: translateY(-2px); /* Slight lift effect */
         }
 
         .register-link {
-            font-size: 0.9rem;
+            font-size: 0.95rem; /* Slightly larger text */
+            color: #666;
+            margin-top: 1.5rem; /* More space above the link */
+        }
+
+        .register-link a {
+            color: #f44336; /* Red link color */
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #e63946;
+            text-decoration: underline;
         }
 
         video.bg-video {
@@ -90,6 +144,26 @@
             min-height: 100%;
             z-index: -1;
             object-fit: cover;
+            filter: brightness(0.7); /* Slightly dim the video for better text readability */
+        }
+
+        .alert {
+            border-radius: 8px;
+            font-size: 0.95rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem; /* More space below alerts */
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
         }
     </style>
 </head>
@@ -117,15 +191,13 @@
         <div class="change-password-card">
             <h3 class="text-center">Ganti Password</h3>
 
-            <!-- Flash message -->
             @if(session('status'))
                 <div class="alert alert-success">{{ session('status') }}</div>
             @endif
 
-            <!-- Error messages -->
             @if ($errors->any())
                 <div class="alert alert-danger">
-                    <ul class="mb-0">
+                    <ul class="mb-0 ps-3"> {{-- Added padding-left for list --}}
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach

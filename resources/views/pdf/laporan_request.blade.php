@@ -28,7 +28,6 @@
     <div>Jl. Green Eco Park No. 456 Yogyakarta</div>    
     <br>
     <h4 style="text-decoration: underline;">Laporan Request Donasi</h4>
-    <div>Tahun: {{ date('Y') }}</div>
     <div>Tanggal Cetak: {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}</div>
 
     <table>

@@ -200,7 +200,6 @@
                                 </div>
                             </div>
                         </form>
-
                         @if(isset($monthlyCommissionList) && $monthlyCommissionList->count() > 0)
                             <table class="table table-bordered table-striped">
                                 <thead class="table-light">
@@ -254,7 +253,6 @@
                                     </tr>
                                 </tfoot>
                             </table>
-
                             <div class="mt-3">
                                 <a href="{{ route('laporan.komisi_bulanan.pdf', ['month' => $selectedMonth, 'year' => $selectedYear]) }}" target="_blank" class="btn btn-primary">
                                     Cetak PDF
@@ -265,7 +263,6 @@
                                 Tidak ada data komisi untuk bulan {{ \Carbon\Carbon::create(null, $selectedMonth, 1)->locale('id')->isoFormat('MMMM') }} tahun {{ $selectedYear }}.
                             </div>
                         @endif
-
                     {{-- Bagian Laporan Stok Gudang --}}
                     @elseif($tab == 'stok-gudang')
                         @if(isset($stokGudangList) && $stokGudangList->count() > 0)
@@ -440,6 +437,25 @@
 
                     {{-- Bagian Laporan Donasi Barang --}}
                     @elseif($tab == 'donasi')
+                        <form method="GET" action="{{ route('laporan.index') }}" class="mb-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="tahun" class="form-label">Pilih Tahun:</label>
+                                    <select name="tahun" id="tahun" class="form-select" onchange="this.form.submit()">
+                                        @php
+                                            $currentYear = date('Y');
+                                            $startYear = $currentYear - 5; // Sesuaikan rentang tahun
+                                        @endphp
+                                        @for($year = $currentYear; $year >= $startYear; $year--)
+                                            <option value="{{ $year }}" {{ $tahun == $year ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <input type="hidden" name="tab" value="{{ $tab }}">
+                            </div>
+                        </form>
                         @if(isset($donasiList) && $donasiList->count() > 0)
                             <table class="table table-bordered table-striped">
                                 <thead class="table-light">
@@ -468,7 +484,7 @@
                                 </tbody>
                             </table>
                             <div class="mt-3">
-                                <a href="{{ route('laporan.donasi.pdf') }}" target="_blank" class="btn btn-primary">
+                                <a href="{{ route('laporan.donasi.pdf', ['tahun' => $tahun]) }}" target="_blank" class="btn btn-primary">
                                     Cetak PDF
                                 </a>
                             </div>

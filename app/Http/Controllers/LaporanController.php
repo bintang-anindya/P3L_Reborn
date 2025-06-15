@@ -289,13 +289,30 @@ class LaporanController extends Controller
         return $pdf->download('laporan-donasi-barang-' . date('Ymd') . '.pdf');
     }
 
-    /**
-     * Menampilkan halaman request donasi.
-     */
+    public function donasiPdf(Request $request)
+    {
+        $tahun = $request->get('tahun', date('Y'));
+
+        $query = Donasi::with(['barang', 'penitip', 'request.organisasi']);
+
+        if ($tahun) {
+            $query->whereYear('tanggal_donasi', $tahun);
+        }
+
+        $donasiList = $query->get();
+
+        $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList', 'tahun'))
+                ->setPaper('a4', 'portrait');
+
+        return $pdf->download('laporan-donasi-barang-' . $tahun . '-' . date('Ymd') . '.pdf');
+    }
+
+
     public function requestDonasi()
     {
-        Log::info("requestDonasi: Menampilkan halaman request donasi.");
-        $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        $requestDonasiList = RequestDonasi::with('organisasi')
+                                ->where('status_donasi', 'menunggu')
+                                ->get();
         return view('owner.laporan_request', compact('requestDonasiList'));
     }
 
@@ -304,21 +321,34 @@ class LaporanController extends Controller
      */
     public function requestDonasiPdf()
     {
-        Log::info("requestDonasiPdf: Mencetak laporan request donasi.");
-        $requestDonasiList = RequestDonasi::with('organisasi')->get();
+        $requestDonasiList = RequestDonasi::with('organisasi')
+                                            ->where('status_donasi', 'menunggu') // tambahkan filter ini
+                                            ->get();
         $pdf = Pdf::loadView('pdf.laporan_request', compact('requestDonasiList'))
                     ->setPaper('a4', 'portrait');
         return $pdf->download('laporan-request-donasi-' . date('Ymd') . '.pdf');
     }
 
-    /**
-     * Menampilkan data penitip.
-     */
-    public function penitip()
+    public function penitip(Request $request)
     {
         Log::info("penitip: Menampilkan data penitip.");
         $penitipList = Penitip::all();
-        return view('owner.penitip', compact('penitipList'));
+
+        $barangs = [];
+
+        if ($request->filled(['penitip', 'bulan', 'tahun'])) {
+            $barangs = Barang::whereHas('penitipan', function ($query) use ($request) {
+                    $query->where('id_penitip', $request->penitip);
+                })
+                ->whereMonth('tanggal_masuk', $request->bulan)
+                ->whereYear('tanggal_masuk', $request->tahun)
+                ->get();
+        }
+
+        return view('owner.penitip', [
+            'penitipList' => $penitipList,
+            'barangs' => $barangs,
+        ]);
     }
 
     /**
@@ -351,41 +381,27 @@ class LaporanController extends Controller
         return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
     }
 
-    /**
-     * Mencetak laporan penitip untuk bulan tertentu (PDF).
-     */
-    public function printPenitip(Request $request, $id)
+    public function printPenitip(Request $request)
     {
-        Log::info("printPenitip: Mencetak laporan penitip ID {$id} untuk bulan tertentu.");
-        $penitip = Penitip::findOrFail($id);
+        // Cari penitip yang sesuai
+        $penitip = Penitip::findOrFail($request->penitip);
+
+        // Query barang yang berelasi dengan penitip
+        $barangs = Barang::whereHas('penitipan', function ($query) use ($request) {
+                $query->where('id_penitip', $request->penitip);
+            })
+            ->whereMonth('tanggal_masuk', $request->bulan)
+            ->whereYear('tanggal_masuk', $request->tahun)
+            ->get();
+
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
-        if (!$bulan || !$tahun) {
-            Log::warning("printPenitip: Bulan atau tahun tidak dipilih.");
-            return redirect()->back()->with('error', 'Bulan dan tahun harus dipilih.');
-        }
-
-        $tanggalAwal = Carbon::create($tahun, $bulan, 1)->startOfMonth();
-        $tanggalAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth();
-
-        $penitipans = Penitipan::where('id_penitip', $id)->get();
-        $penitipanIds = $penitipans->pluck('id_penitipan');
-
-        $barangs = Barang::whereIn('id_penitipan', $penitipanIds)
-                         ->whereBetween('tanggal_masuk', [$tanggalAwal->toDateString(), $tanggalAkhir->toDateString()])
-                         ->get();
-
-        $pdf = Pdf::loadView('pdf.laporan_penitip', compact('penitip', 'penitipans', 'barangs', 'bulan', 'tahun'))
-                    ->setPaper('a4', 'portrait');
-
-        return $pdf->download('laporan-penitip-' . $penitip->nama_penitip . '-' . $bulan . '-' . $tahun . '.pdf');
+        // Generate PDF menggunakan DOMPDF
+        $pdf = PDF::loadView('pdf.laporan_penitip', compact('penitip', 'barangs', 'bulan', 'tahun'));
+        return $pdf->download('laporan_penitip.pdf');
     }
 
-    /**
-     * Mencetak PDF Laporan Penjualan Bulanan Keseluruhan (dengan grafik).
-     * Menerima data gambar grafik via POST.
-     */
     public function penjualanBulananPdf(Request $request)
     {
         // Gunakan $request->input() untuk mengambil data dari GET atau POST
@@ -535,4 +551,5 @@ class LaporanController extends Controller
 
         return $pdf->download('laporan-komisi-bulanan-' . $selectedYear . '-' . $selectedMonth . '.pdf');
     }
+
 }
