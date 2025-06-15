@@ -179,8 +179,7 @@
             <a href="{{ route('owner.historyPage') }}" class="btn btn-dark">History Donasi</a>
             <a href="{{ route('owner.requestPage') }}" class="btn btn-dark">Request Donasi</a>
             <a href="{{ url('/owner/laporan') }}" class="btn btn-dark">Laporan</a>
-            <a href="{{ route('laporan.liveCode') }}" class="btn btn-dark">Laporan Donasi Elektronik</a>
-
+            <!-- <a href="{{ route('laporan.liveCode') }}" class="btn btn-dark">Laporan Donasi Elektronik</a> -->
         </div>
     </div>
 </body>
