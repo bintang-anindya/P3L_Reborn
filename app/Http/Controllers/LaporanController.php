@@ -72,7 +72,16 @@ class LaporanController extends Controller
             $selectedYear = $dataKomisi['selectedYear']; // Pastikan selectedYear diperbarui jika ada dari request
             $selectedMonth = $dataKomisi['selectedMonth']; // Pastikan selectedMonth diperbarui jika ada dari request
             Log::info("LaporanController@index: Memuat data komisi bulanan.");
+        } elseif('perpanjangan-per-kategori'){
+            $perpanjanganPerKategoriList = Kategori::select('kategori_barang.nama_kategori')
+            ->selectRaw('COUNT(barang.id_barang) as total_diperpanjang')
+            ->join('barang', 'kategori_barang.id_kategori', '=', 'barang.id_kategori')
+            ->where('barang.status_perpanjangan', 1) // Pastikan kolom ini benar
+            ->groupBy('kategori_barang.nama_kategori')
+            ->get();
         }
+
+
         // Anda dapat menambahkan 'else if' untuk tab laporan lainnya di sini
 
         return view('owner.laporan', compact(
@@ -131,6 +140,26 @@ class LaporanController extends Controller
         ];
     }
 
+    public function perpanjanganPerKategoriPdf(Request $request)
+    {
+        $perpanjanganPerKategoriList = Kategori::select('kategori_barang.nama_kategori')
+            ->selectRaw('COUNT(barang.id_barang) as total_diperpanjang')
+            ->join('barang', 'kategori_barang.id_kategori', '=', 'barang.id_kategori')
+            ->where('barang.status_perpanjangan', 1) 
+            ->groupBy('kategori_barang.nama_kategori')
+            ->get();
+
+        $cetakDate = Carbon::now()->locale('id')->isoFormat('D MMMM Y');
+
+        // Load view PDF dan pass data
+        $pdf = Pdf::loadView('laporan_perpanjangan_per_kategori_pdf', compact('perpanjanganPerKategoriList', 'cetakDate'));
+
+        // Opsional: Atur ukuran kertas dan orientasi
+        $pdf->setPaper('A4', 'portrait');
+
+        return $pdf->download('laporan_perpanjangan_per_kategori_' . Carbon::now()->format('YmdHis') . '.pdf');
+    }
+
     /**
      * Mengambil data untuk laporan stok gudang.
      */
@@ -163,7 +192,7 @@ class LaporanController extends Controller
                 id_kategori,
                 COUNT(id_barang) as total_terjual
             ')
-            ->whereIn('status_barang', ['terjual', 'donasi'])
+            ->whereIn('status_barang', ['diperpanjang'])
             ->whereYear('tanggal_keluar', $selectedYear)
             ->groupBy('id_kategori')
             ->get();
@@ -236,7 +265,7 @@ class LaporanController extends Controller
             ->whereHas('transaksi', function($query) use ($selectedYear, $selectedMonth) {
                 $query->whereYear('tanggal_transaksi', $selectedYear)
                       ->whereMonth('tanggal_transaksi', $selectedMonth)
-                      ->where('status_transaksi', 'transaksi selesai');
+                      ->where('status_transaksi', 'transaksi selesai', 'selesai');
             })
             ->get();
         Log::debug("getMonthlyCommissionData: Jumlah item transaksi komisi: " . $monthlyCommissionList->count());
