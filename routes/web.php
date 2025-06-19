@@ -77,6 +77,7 @@ Route::get('/reset-password', [ChangePasswordController::class, 'showResetForm']
 
 // Organisasi
 Route::resource('organisasi', OrganisasiController::class);
+Route::get('organisasi/request-donasi', [OrganisasiController::class, 'requestDonasi'])->name('organisasi.requestDonasi.index');
 Route::post('/organisasi/delete', [OrganisasiController::class, 'destroy'])->name('organisasi.destroy');
 
 // Dashboard
@@ -240,5 +241,9 @@ Route::get('/laporan/komisi-bulanan/pdf', [LaporanController::class, 'komisiBula
 
 // ------------------------- Belum Fix ----------------------
 Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
+Route::get('/laporan/penitip', [LaporanController::class, 'penitip'])->name('laporan.penitip');
+Route::get('/laporan/penitip/cetak', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');
 
+Route::get('/laporan/live-code', [LaporanController::class, 'liveCode'])->name('laporan.liveCode');
+Route::get('/laporan/live-code/pdf', [LaporanController::class, 'liveCodePdf'])->name('laporan.liveCode.pdf');
 
