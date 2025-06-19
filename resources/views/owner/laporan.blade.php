@@ -66,19 +66,7 @@
                 </div>
                 <div class="card-body">
                     {{-- Bagian Laporan Penjualan Bulanan --}}
-                    @if($tab == 'penjualan-bulanan')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-                        <div class="mb-2"></div>
-                        <div>
-                            <h4>LAPORAN PENJUALAN BULANAN</h4>
-                            Tahun : {{ $selectedYear }}<br>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-                        <br>
+@if($tab == 'penjualan-bulanan')
                         <form id="penjualanBulananForm" action="{{ route('laporan.index') }}" method="GET" class="mb-4">
                             <input type="hidden" name="tab" value="penjualan-bulanan">
                             <div class="row g-3 align-items-center">
@@ -170,26 +158,8 @@
                                 Tidak ada data penjualan bulanan untuk tahun {{ $selectedYear }}.
                             </div>
                         @endif
-
                     {{-- Bagian Laporan Komisi Bulanan per Produk --}}
                     @elseif($tab == 'komisi-bulanan')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-
-                        <div class="mb-2"></div>
-
-                        <div>
-                            <h4>LAPORAN KOMISI BULANAN</h4>
-                            Bulan : {{ \Carbon\Carbon::create(null, $selectedMonth, 1)->locale('id')->isoFormat('MMMM') }}<br>
-                            Tahun : {{ $selectedYear }}<br>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-
-                        <br>
-
                         <form action="{{ route('laporan.index') }}" method="GET" class="mb-4">
                             <input type="hidden" name="tab" value="komisi-bulanan">
                             <div class="row g-3 align-items-center">
@@ -297,21 +267,6 @@
 
                     {{-- Bagian Laporan Stok Gudang --}}
                     @elseif($tab == 'stok-gudang')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-                        <div class="mb-2"></div>
-                        <div>
-                            <h4>LAPORAN Stok Gudang</h4>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-                        <div class="alert alert-info mt-3" style="float: right; margin-left: 15px; width: 40%;">
-                            Stok yang bisa dilihat adalah stok per hari ini (sama dengan tanggal cetak). Tidak bisa dilihat stok yang kemarin-kemarin.
-                        </div>
-                        <div style="clear: both;"></div>
-                        <br>
                         @if(isset($stokGudangList) && $stokGudangList->count() > 0)
                             <table class="table table-bordered table-striped">
                                 <thead class="table-light">
@@ -356,18 +311,6 @@
 
                     {{-- Bagian Laporan Penjualan Per Kategori Barang --}}
                     @elseif($tab == 'penjualan-kategori')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-                        <div class="mb-2"></div>
-                        <div>
-                            <h4>LAPORAN PENJUALAN PER KATEGORI BARANG</h4>
-                            Tahun : {{ $selectedYear }}<br>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-                        <br>
                         <form action="{{ route('laporan.index') }}" method="GET" class="mb-4">
                             <input type="hidden" name="tab" value="penjualan-kategori">
                             <div class="row g-3 align-items-center">
@@ -440,21 +383,6 @@
 
                     {{-- Bagian Laporan Barang yang Masa Penitipannya Sudah Habis --}}
                     @elseif($tab == 'masa-penitipan-habis')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-
-                        <div class="mb-2"></div>
-
-                        <div>
-                            <h4>LAPORAN Barang yang Masa Penitipannya Sudah Habis</h4>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-
-                        <br>
-
                         @if(isset($expiredConsignmentList) && $expiredConsignmentList->count() > 0)
                             <table class="table table-bordered table-striped">
                                 <thead class="table-light">

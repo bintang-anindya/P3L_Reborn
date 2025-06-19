@@ -32,7 +32,7 @@ class MerchandiseController extends Controller
         }
 
         $klaim->tanggal_ambil_merchandise = $request->input('tanggal_ambil');
-        $klaim->status_merchandise = 'diambil'; // Atau status lain yang Anda inginkan
+        $klaim->status_merchandise = 'diambil';
         $klaim->save();
 
         return redirect()->back()->with('success', 'Tanggal ambil merchandise berhasil diperbarui.');
