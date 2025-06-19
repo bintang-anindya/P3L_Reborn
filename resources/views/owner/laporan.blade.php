@@ -158,7 +158,6 @@
                                 Tidak ada data penjualan bulanan untuk tahun {{ $selectedYear }}.
                             </div>
                         @endif
-
                     {{-- Bagian Laporan Komisi Bulanan per Produk --}}
                     @elseif($tab == 'komisi-bulanan')
                         <form action="{{ route('laporan.index') }}" method="GET" class="mb-4">
@@ -381,21 +380,6 @@
 
                     {{-- Bagian Laporan Barang yang Masa Penitipannya Sudah Habis --}}
                     @elseif($tab == 'masa-penitipan-habis')
-                        <div class="mb-3">
-                            <h4 class="float-left">ReUseMart</h4>
-                            <div style="clear: both;"></div>
-                            <div>Jl. Green Eco Park No. 456 Yogyakarta</div>
-                        </div>
-
-                        <div class="mb-2"></div>
-
-                        <div>
-                            <h4>LAPORAN Barang yang Masa Penitipannya Sudah Habis</h4>
-                            Tanggal Cetak : {{ \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM Y') }}
-                        </div>
-
-                        <br>
-
                         @if(isset($expiredConsignmentList) && $expiredConsignmentList->count() > 0)
                             <table class="table table-bordered table-striped">
                                 <thead class="table-light">

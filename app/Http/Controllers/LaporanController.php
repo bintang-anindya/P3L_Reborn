@@ -121,6 +121,7 @@ class LaporanController extends Controller
             ->get();
         
         Log::debug("getMonthlySalesData: Hasil query mentah: " . json_encode($monthlySales));
+        
 
         $allMonthsData = [];
         for ($i = 1; $i <= 12; $i++) {
@@ -192,7 +193,7 @@ class LaporanController extends Controller
                 id_kategori,
                 COUNT(id_barang) as total_terjual
             ')
-            ->whereIn('status_barang', ['diperpanjang'])
+            ->whereIn('status_barang', ['sold out', 'donasi'])
             ->whereYear('tanggal_keluar', $selectedYear)
             ->groupBy('id_kategori')
             ->get();
