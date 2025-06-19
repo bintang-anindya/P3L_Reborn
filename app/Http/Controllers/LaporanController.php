@@ -106,7 +106,7 @@ class LaporanController extends Controller
             ')
             ->join('transaksi_barang', 'transaksi.id_transaksi', '=', 'transaksi_barang.id_transaksi')
             ->whereYear('tanggal_transaksi', $selectedYear)
-            ->where('status_transaksi', 'transaksi selesai', 'selesai')
+            ->where('status_transaksi', 'transaksi selesai')
             ->groupBy('month')
             ->orderBy('month')
             ->get();
