@@ -195,7 +195,7 @@ class LaporanController extends Controller
                 id_kategori,
                 COUNT(id_barang) as total_terjual
             ')
-            ->whereIn('status_barang', ['sold out', 'donasi'])
+            ->where('status_barang', ['sold out'])
             ->whereYear('tanggal_keluar', $selectedYear)
             ->groupBy('id_kategori')
             ->get();
@@ -280,9 +280,9 @@ class LaporanController extends Controller
         ];
     }
 
-    // /**
-    //  * Menampilkan laporan donasi barang (PDF).
-    //  */
+    /**
+     * Menampilkan laporan donasi barang (PDF).
+     */
     // public function donasiPdf()
     // {
     //     Log::info("donasiPdf: Mencetak laporan donasi barang.");
