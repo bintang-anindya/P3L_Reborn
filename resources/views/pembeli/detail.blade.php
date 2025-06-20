@@ -155,11 +155,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Diskusi Produk</h5>
-                        <form action="" method="POST">
+                        <form action="{{ route('diskusi.storeDiskusi', $barang->id_barang) }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="pesan" class="form-label">Pesan Anda</label>
-                                <textarea class="form-control" id="pesan" name="pesan" rows="3" placeholder="Tanyakan sesuatu tentang produk ini..."></textarea>
+                                <label for="isi_balasan" class="form-label">Pesan Anda</label>
+                                <textarea class="form-control" id="isi_balasan" name="isi_balasan" rows="3" placeholder="Tanyakan sesuatu tentang produk ini..."></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">Kirim Pesan</button>
                         </form>

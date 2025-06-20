@@ -135,6 +135,8 @@ Route::get('/dashboard/penitip', [BarangController::class, 'dashboardPenitip'])-
 Route::get('/diskusi', [DiskusiController::class, 'index'])->name('diskusi.index');
 Route::get('/diskusi/{id}', [DiskusiController::class, 'show'])->name('diskusi.show');
 Route::post('/diskusi/{id}/balasan', [DiskusiController::class, 'storeBalasan'])->name('diskusi.storeBalasan');
+Route::post('/diskusi/produk/{id_barang}', [DiskusiController::class, 'storeDiskusiBaru'])->name('diskusi.storeDiskusi');
+
 
 Route::get('/pegawai/reset-password', [UserController::class, 'showResetPasswordPegawai'])->name('pegawai.resetPassword');
 Route::post('/pegawai/reset-password/{id}', [UserController::class, 'resetPasswordPegawai'])->name('pegawai.resetPassword.submit');
@@ -246,4 +248,3 @@ Route::get('/laporan/penitip/cetak', [LaporanController::class, 'printPenitip'])
 
 Route::get('/laporan/live-code', [LaporanController::class, 'liveCode'])->name('laporan.liveCode');
 Route::get('/laporan/live-code/pdf', [LaporanController::class, 'liveCodePdf'])->name('laporan.liveCode.pdf');
-

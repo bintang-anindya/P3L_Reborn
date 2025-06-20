@@ -24,11 +24,11 @@ class LaporanController extends Controller
      */
     public function index(Request $request)
     {
-        $tab = $request->get('tab', 'penjualan-bulanan'); // Default tab ke 'penjualan-bulanan'
+        $tab = $request->get('tab', 'penjualan-bulanan'); // Default tab
         $selectedYear = $request->get('year', date('Y'));
-        $selectedMonth = $request->get('month', date('n')); // 'n' for month without leading zero
+        $selectedMonth = $request->get('month', date('n')); // 'n' for numeric month
 
-        // Inisialisasi semua variabel yang mungkin dibutuhkan oleh view untuk semua tab
+        // Inisialisasi semua variabel default
         $donasiList = collect();
         $requestDonasiList = collect();
         $monthlySales = collect();
@@ -38,66 +38,68 @@ class LaporanController extends Controller
         $allCategories = collect();
         $expiredConsignmentList = collect();
         $monthlyCommissionList = collect();
+        $perpanjanganPerKategoriList = collect();
 
         Log::info("LaporanController@index: Tab yang diakses: {$tab}");
         Log::info("LaporanController@index: Tahun yang dipilih: {$selectedYear}, Bulan: {$selectedMonth}");
 
         if ($tab == 'donasi') {
             $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])->get();
-            Log::info("LaporanController@index: Memuat data donasi.");
+            Log::info("Memuat data donasi.");
         } elseif ($tab == 'request') {
             $requestDonasiList = RequestDonasi::with('organisasi')->get();
-            Log::info("LaporanController@index: Memuat data request donasi.");
+            Log::info("Memuat data request donasi.");
         } elseif ($tab == 'penjualan-bulanan') {
             $dataPenjualan = $this->getMonthlySalesData($request);
             $monthlySales = $dataPenjualan['monthlySales'];
             $chartData = $dataPenjualan['chartData'];
-            $selectedYear = $dataPenjualan['selectedYear']; // Pastikan selectedYear diperbarui jika ada dari request
-            Log::info("LaporanController@index: Memuat data penjualan bulanan.");
+            $selectedYear = $dataPenjualan['selectedYear'];
+            Log::info("Memuat data penjualan bulanan.");
         } elseif ($tab == 'stok-gudang') {
             $stokGudangList = $this->getStokGudangData();
-            Log::info("LaporanController@index: Memuat data stok gudang.");
+            Log::info("Memuat data stok gudang.");
         } elseif ($tab == 'penjualan-kategori') {
             $dataKategori = $this->getCategorySalesData($request);
             $categorySales = $dataKategori['categorySales'];
             $allCategories = $dataKategori['allCategories'];
-            $selectedYear = $dataKategori['selectedYear']; // Pastikan selectedYear diperbarui jika ada dari request
-            Log::info("LaporanController@index: Memuat data penjualan per kategori.");
+            $selectedYear = $dataKategori['selectedYear'];
+            Log::info("Memuat data penjualan per kategori.");
         } elseif ($tab == 'masa-penitipan-habis') {
             $expiredConsignmentList = $this->getExpiredConsignmentData();
-            Log::info("LaporanController@index: Memuat data masa penitipan habis.");
+            Log::info("Memuat data masa penitipan habis.");
         } elseif ($tab == 'komisi-bulanan') {
             $dataKomisi = $this->getMonthlyCommissionData($request);
             $monthlyCommissionList = $dataKomisi['monthlyCommissionList'];
-            $selectedYear = $dataKomisi['selectedYear']; // Pastikan selectedYear diperbarui jika ada dari request
-            $selectedMonth = $dataKomisi['selectedMonth']; // Pastikan selectedMonth diperbarui jika ada dari request
-            Log::info("LaporanController@index: Memuat data komisi bulanan.");
-        } elseif('perpanjangan-per-kategori'){
+            $selectedYear = $dataKomisi['selectedYear'];
+            $selectedMonth = $dataKomisi['selectedMonth'];
+            Log::info("Memuat data komisi bulanan.");
+        } elseif ($tab == 'perpanjangan-per-kategori') {
             $perpanjanganPerKategoriList = Kategori::select('kategori_barang.nama_kategori')
-            ->selectRaw('COUNT(barang.id_barang) as total_diperpanjang')
-            ->join('barang', 'kategori_barang.id_kategori', '=', 'barang.id_kategori')
-            ->where('barang.status_perpanjangan', 1) // Pastikan kolom ini benar
-            ->groupBy('kategori_barang.nama_kategori')
-            ->get();
+                ->selectRaw('COUNT(barang.id_barang) as total_diperpanjang')
+                ->join('barang', 'kategori_barang.id_kategori', '=', 'barang.id_kategori')
+                ->where('barang.status_perpanjangan', 1)
+                ->groupBy('kategori_barang.nama_kategori')
+                ->get();
+            Log::info("Memuat data perpanjangan per kategori.");
         }
 
+        return view('owner.laporan', [
+            'tab' => $tab,
+            'donasiList' => $donasiList,
+            'requestDonasiList' => $requestDonasiList,
+            'monthlySales' => $monthlySales,
+            'chartData' => $chartData,
+            'stokGudangList' => $stokGudangList,
+            'categorySales' => $categorySales,
+            'allCategories' => $allCategories,
+            'expiredConsignmentList' => $expiredConsignmentList,
+            'monthlyCommissionList' => $monthlyCommissionList,
+            'perpanjanganPerKategoriList' => $perpanjanganPerKategoriList,
 
-        // Anda dapat menambahkan 'else if' untuk tab laporan lainnya di sini
-
-        return view('owner.laporan', compact(
-            'tab',
-            'donasiList',
-            'requestDonasiList',
-            'monthlySales',
-            'selectedYear',
-            'chartData',
-            'stokGudangList',
-            'categorySales',
-            'allCategories',
-            'expiredConsignmentList',
-            'monthlyCommissionList',
-            'selectedMonth'
-        ));
+            // Data tambahan untuk kebutuhan filter tahun/bulan
+            'selectedYear' => $selectedYear,
+            'selectedMonth' => $selectedMonth,
+        ]);
     }
 
     /**
@@ -278,17 +280,17 @@ class LaporanController extends Controller
         ];
     }
 
-    /**
-     * Menampilkan laporan donasi barang (PDF).
-     */
-    public function donasiPdf()
-    {
-        Log::info("donasiPdf: Mencetak laporan donasi barang.");
-        $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])->get();
-        $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList'))
-                  ->setPaper('a4', 'portrait');
-        return $pdf->download('laporan-donasi-barang-' . date('Ymd') . '.pdf');
-    }
+    // /**
+    //  * Menampilkan laporan donasi barang (PDF).
+    //  */
+    // public function donasiPdf()
+    // {
+    //     Log::info("donasiPdf: Mencetak laporan donasi barang.");
+    //     $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])->get();
+    //     $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList'))
+    //               ->setPaper('a4', 'portrait');
+    //     return $pdf->download('laporan-donasi-barang-' . date('Ymd') . '.pdf');
+    // }
 
     public function donasiPdf(Request $request)
     {

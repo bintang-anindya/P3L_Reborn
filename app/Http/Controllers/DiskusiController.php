@@ -11,11 +11,12 @@ use Carbon\Carbon;
 
 class DiskusiController extends Controller
 {
-    public function index()
+   public function index()
     {
-        $idPembeli = Auth::guard('pembeli')->id(); // atau sesuai guard yang kamu pakai
+        $idPembeli = Auth::guard('pembeli')->id();
 
         $diskusi = Diskusi::where('id_pembeli', $idPembeli)
+                        ->whereNull('id_diskusi_induk') // ⬅️ hanya diskusi utama
                         ->with('barang')
                         ->get();
 
@@ -76,4 +77,31 @@ class DiskusiController extends Controller
 
         return abort(403, 'Akses ditolak.');
     }
+
+    public function storeDiskusiBaru(Request $request, $id_barang)
+    {
+        $request->validate([
+            'isi_balasan' => 'required|string',
+        ]);
+
+        $pembeli = Auth::guard('pembeli')->user();
+
+        if (!$pembeli) {
+            return abort(403, 'Hanya pembeli yang dapat mengirim diskusi.');
+        }
+
+        try {
+            Diskusi::create([
+                'id_pembeli' => $pembeli->id_pembeli,
+                'id_barang' => $id_barang,
+                'isi_diskusi' => $request->isi_balasan,
+                'tanggal_diskusi' => Carbon::now(),
+            ]);
+
+            return redirect()->back()->with('success', 'Diskusi berhasil dikirim.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan diskusi: ' . $e->getMessage());
+        }
+    }
+
 }
