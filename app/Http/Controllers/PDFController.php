@@ -14,7 +14,7 @@ class PDFController extends Controller
     public function index()
     {
         $transactions = Transaksi::with(['pembeli', 'transaksiBarang.barang', 'kurir'])
-            ->whereIn('status_transaksi', ['dikirim', 'selesai'])
+            ->whereIn('status_transaksi', ['dikirim', 'transaksi selesai'])
             ->orderBy('tanggal_transaksi', 'desc')
             ->get();
 
@@ -30,7 +30,7 @@ class PDFController extends Controller
             ->findOrFail($id_transaksi);
 
         // Tentukan view dan nama file berdasarkan status
-        if ($transaction->status_transaksi === 'dikirim') {
+        if ($transaction->metode === 'kurir') {
             $view = 'pdf.nota_kurir';
             $filename = 'nota_kurir_' . $id_transaksi . '.pdf';
         } else {

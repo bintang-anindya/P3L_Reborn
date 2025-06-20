@@ -430,11 +430,14 @@
                                             $currentYear = date('Y');
                                             $startYear = $currentYear - 5; // Sesuaikan rentang tahun
                                         @endphp
-                                        @for($year = $currentYear; $year >= $startYear; $year--)
-                                            <option value="{{ $year }}" {{ $tahun == $year ? 'selected' : '' }}>
+                                        @for ($year = $currentYear; $year >= $startYear; $year--)
+                                            <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>{{ $year }}</option>
+                                        @endfor
+                                        <!-- @for($year = $currentYear; $year >= $startYear; $year--)
+                                            <option value="{{ $year }}" {{ $year == $year ? 'selected' : '' }}>
                                                 {{ $year }}
                                             </option>
-                                        @endfor
+                                        @endfor -->
                                     </select>
                                 </div>
                                 <input type="hidden" name="tab" value="{{ $tab }}">
