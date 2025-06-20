@@ -471,9 +471,10 @@
                                 </tbody>
                             </table>
                             <div class="mt-3">
-                                <a href="{{ route('laporan.donasi.pdf', ['tahun' => $tahun]) }}" target="_blank" class="btn btn-primary">
+                                <a href="{{ route('laporan.donasi.pdf', ['tahun' => $selectedYear]) }}" target="_blank" class="btn btn-primary">
                                     Cetak PDF
                                 </a>
+
                             </div>
                         @else
                             <div class="alert alert-info">

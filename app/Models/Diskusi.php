@@ -13,8 +13,13 @@ class Diskusi extends Model
     public $timestamps = false; // Jika tabel tidak punya created_at dan updated_at
 
     protected $fillable = [
+        'id_pembeli',
+        'id_barang',
         'isi_diskusi',
+        'tanggal_diskusi',
+        'id_diskusi_induk' // jika nanti kamu butuh relasi diskusi induk
     ];
+
 
     public function pembeli()
     {
