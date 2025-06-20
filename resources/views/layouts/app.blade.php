@@ -1,84 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id"> {{-- Mengubah lang ke id untuk konsistensi --}}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReUseMart</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    {{-- Hapus Bootstrap CSS karena kita akan pakai Tailwind --}}
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"> --}}
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"> --}}
+
+    {{-- Tailwind CSS CDN. Pastikan ini selalu dimuat. --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Jika Anda menggunakan konfigurasi kustom atau postcss, Anda akan mengkompilasi Tailwind dan menyertakan file CSS Anda di sini. --}}
+    {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
+
+    {{-- Font Awesome untuk ikon, jika diperlukan --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         body {
-            margin-top : 30px;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f8f9fa;
-            /* Flexbox untuk sticky footer */
+            font-family: 'Roboto', sans-serif; {{-- Menggunakan font Roboto yang konsisten dengan halaman utama --}}
+            background-color: #f8f9fa; {{-- Warna latar belakang terang --}}
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Pastikan body setidaknya setinggi viewport */
-            margin: 0; /* Hapus margin default browser */
+            min-height: 100vh;
+            margin: 0;
         }
 
-        .nav-link {
+        /* Navigasi (jika ada di layout ini, menyesuaikan dengan ReUseMart home) */
+        .nav-link-custom { /* Nama kelas kustom untuk menghindari konflik */
             color: #000 !important;
+            transition: color 0.2s ease-in-out; /* Animasi transisi hover */
         }
 
-        .nav-link:hover {
-            color: #dc3545 !important;
+        .nav-link-custom:hover {
+            color: #dc3545 !important; /* Warna merah yang digunakan di halaman utama */
         }
 
-        /* Hapus properti positioning dari footer */
+        /* Penyesuaian untuk sticky footer */
         footer {
-            background-color: #222;
-            color: #ccc;
+            background-color: #1a202c; /* Warna abu-abu gelap dari footer halaman utama */
+            color: #cbd5e0; /* Warna teks abu-abu terang */
             text-align: center;
             padding: 1rem;
-            /* Flexbox untuk mendorong footer ke bawah */
-            margin-top: auto; /* Ini akan mendorong footer ke bagian bawah */
-            width: 100%; /* Pastikan footer mengambil seluruh lebar */
-            /* Z-index tidak lagi diperlukan karena tidak fixed */
-            /* z-index: 100; */
+            margin-top: auto; /* Mendorong footer ke bagian bawah */
+            width: 100%;
         }
 
         footer a {
-            color: #ccc;
+            color: #cbd5e0; /* Warna tautan di footer */
             text-decoration: none;
+            transition: color 0.2s ease-in-out;
         }
 
         footer a:hover {
             color: #fff;
         }
-
-        /* Menambahkan margin-bottom pada konten agar tidak tumpang tindih dengan footer */
-        /* ini jika Anda ingin memastikan ada ruang di atas footer */
-        /* .content-wrapper {
-            padding-bottom: 70px;
-        } */
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen"> {{-- Memindahkan properti flexbox ke body --}}
 
-    <div class="flex-grow-1">
+    {{-- Main content area --}}
+    <div class="flex-grow"> {{-- flex-grow-1 di Bootstrap, menjadi flex-grow di Tailwind --}}
         @yield('content')
     </div>
 
-    <footer class="mt-5">
-        <div class="container text-center">
+    <footer class="mt-auto py-4 bg-gray-900 text-white text-center"> {{-- Menggunakan kelas Tailwind untuk styling footer --}}
+        <div class="container mx-auto px-4"> {{-- container text-center --}}
             <p>&copy; {{ date('Y') }} ReUseMart. All rights reserved.</p>
-            <div>
-                <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a>
+            <div class="mt-2">
+                <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a>
+                <span class="mx-2">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Terms & Conditions</a>
             </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Hapus Bootstrap JS karena kita tidak memakainya lagi --}}
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> --}}
 
     <script>
-        // Pastikan elemen 'countdown' ada di halaman yang meng-extend layout ini
-        // Jika tidak ada, script ini akan error atau tidak berfungsi.
-        // Anda mungkin ingin menambahkan pengecekan sebelum mengakses countdownEl.
+        // Logika JavaScript untuk 'countdown' tetap sama, pastikan elemennya ada di halaman anak.
         const countdownEl = document.getElementById('countdown');
 
-        // Hanya jalankan logic countdown jika elemen ditemukan
         if (countdownEl) {
             const end = new Date();
             end.setDate(end.getDate() + 3); // Default 3 hari dari sekarang
@@ -89,7 +92,7 @@
 
                 if (distance < 0) {
                     countdownEl.innerHTML = "EXPIRED";
-                    clearInterval(countdownInterval); // Hentikan interval
+                    clearInterval(countdownInterval);
                     return;
                 }
 
@@ -105,11 +108,11 @@
             }
 
             updateCountdown();
-            const countdownInterval = setInterval(updateCountdown, 1000); // Simpan ID interval
+            const countdownInterval = setInterval(updateCountdown, 1000);
         } else {
             console.warn("Element with ID 'countdown' not found. Countdown script will not run.");
         }
     </script>
-    @stack('scripts') 
+    @stack('scripts')
 </body>
 </html>

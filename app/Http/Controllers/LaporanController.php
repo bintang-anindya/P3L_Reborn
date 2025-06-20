@@ -25,7 +25,7 @@ class LaporanController extends Controller
     public function index(Request $request)
     {
         $tab = $request->get('tab', 'penjualan-bulanan'); // Default tab ke 'penjualan-bulanan'
-        $selectedYear = $request->get('year', date('Y'));
+        $selectedYear = $request->get('tahun', date('Y'));
         $selectedMonth = $request->get('month', date('n')); // 'n' for month without leading zero
 
         // Inisialisasi semua variabel yang mungkin dibutuhkan oleh view untuk semua tab
@@ -97,7 +97,8 @@ class LaporanController extends Controller
             'expiredConsignmentList',
             'monthlyCommissionList',
             'selectedMonth'
-        ));
+        ))->with('tahun', $selectedYear); // Menambahkan alias variabel
+
     }
 
     /**
@@ -275,18 +276,6 @@ class LaporanController extends Controller
             'selectedYear' => $selectedYear,
             'selectedMonth' => $selectedMonth
         ];
-    }
-
-    /**
-     * Menampilkan laporan donasi barang (PDF).
-     */
-    public function donasiPdf()
-    {
-        Log::info("donasiPdf: Mencetak laporan donasi barang.");
-        $donasiList = Donasi::with(['barang.penitipan.penitip', 'request.organisasi'])->get();
-        $pdf = Pdf::loadView('pdf.laporan_donasi', compact('donasiList'))
-                  ->setPaper('a4', 'portrait');
-        return $pdf->download('laporan-donasi-barang-' . date('Ymd') . '.pdf');
     }
 
     public function donasiPdf(Request $request)
