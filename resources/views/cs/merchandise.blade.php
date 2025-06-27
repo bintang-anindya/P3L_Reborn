@@ -1,10 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Hapus tag <!DOCTYPE html>, <html>, <head>, dan <body> dari sini --}}
-{{-- Karena sudah di-handle oleh layouts/app.blade.php --}}
-
-    {{-- Style spesifik halaman ini (jika ada) bisa tetap di sini, atau lebih baik lagi didorong ke stack styles --}}
     <style>
         /* Menggunakan flex-shrink-0 untuk memastikan sidebar tidak menyusut */
         .sidebar-fixed {
@@ -150,34 +146,34 @@
             </div>
         </main>
     </div>
-
-{{-- Tutup @section('content') di sini --}}
 @endsection
 
-{{-- PUSH MODALS KE DALAM STACK 'modals' DI LAYOUTS/APP.BLADE.PHP --}}
 @push('modals')
     <div id="fillDateConfirmModal" class="modal-overlay hidden opacity-0 pointer-events-none">
         <div class="modal-container">
             <form id="formFillDate" method="POST">
                 @csrf
-                @method('PUT') {{-- Asumsi ini adalah operasi update, jadi gunakan PUT --}}
+                {{-- No @method('PUT') here, as your route is POST --}}
                 <div class="modal-header">
-                    <h5 class="text-xl font-semibold" id="fillDateConfirmModalLabel">Konfirmasi Pengambilan</h5>
+                    <h5 class="text-xl font-semibold" id="fillDateConfirmModalLabel">Konfirmasi Pengambilan Merchandise</h5>
                     <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl" onclick="closeModal('fillDateConfirmModal')">&times;</button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin mengisi tanggal pengambilan untuk merchandise ini?
+                    <p class="mb-4">Pilih tanggal pengambilan untuk merchandise ini:</p>
+                    <div class="mb-3">
+                        <label for="modal_tanggal_ambil" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Ambil</label>
+                        <input type="date" name="tanggal_ambil_merchandise" id="modal_tanggal_ambil" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300" onclick="closeModal('fillDateConfirmModal')">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Ya, Isi</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Konfirmasi</button>
                 </div>
             </form>
         </div>
     </div>
 @endpush
 
-{{-- PUSH SCRIPT TAMBAHAN KE DALAM STACK 'scripts' DI LAYOUTS/APP.BLADE.PHP --}}
 @push('scripts')
     <script>
         // Custom Modal Functions
@@ -209,12 +205,23 @@
                 button.addEventListener('click', function () {
                     const claimId = this.dataset.id;
                     const fillDateForm = document.getElementById('formFillDate');
-                    // Pastikan rute ini benar. Jika Anda mengupdate status, biasanya menggunakan PUT/PATCH.
-                    // Contoh: /cs/merchandise/{id}/update-status
-                    fillDateForm.action = `/cs/merchandise/${claimId}`;
+
+                    // DEBUG LOG — PENTING DI SINI
+                    console.log("== DEBUG ==")
+                    console.log("Claim ID:", claimId);
+                    console.log("Before setting action:", fillDateForm.action);
+
+                    // Set the action URL for the form
+                    fillDateForm.action = "{{ route('cs.merchandise.update', ':id') }}".replace(':id', claimId);
+
+                    // DEBUG: cek hasil URL
+                    console.log("After setting action:", fillDateForm.action);
+
+                    // Show the modal
                     showModal('fillDateConfirmModal');
                 });
             });
         });
+
     </script>
 @endpush
