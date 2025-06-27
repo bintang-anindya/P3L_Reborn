@@ -10,6 +10,21 @@
                     Menu Laporan
                 </div>
                 <div class="list-group list-group-flush">
+                    <a href="{{ route('laporan.index', ['tab' => 'penjualan-bulanan']) }}" class="list-group-item list-group-item-action">
+                        Penjualan Bulanan
+                    </a>
+                    <a href="{{ route('laporan.index', ['tab' => 'komisi-bulanan']) }}" class="list-group-item list-group-item-action">
+                        Komisi Bulanan
+                    </a>
+                    <a href="{{ route('laporan.index', ['tab' => 'stok-gudang']) }}" class="list-group-item list-group-item-action">
+                        Stok Gudang
+                    </a>
+                    <a href="{{ route('laporan.index', ['tab' => 'penjualan-kategori']) }}" class="list-group-item list-group-item-action">
+                        Penjualan Kategori
+                    </a>
+                    <a href="{{ route('laporan.index', ['tab' => 'masa-penitipan-habis']) }}" class="list-group-item list-group-item-action">
+                        Barang yang Masa Penitipannya Habis
+                    </a>
                     <a href="{{ route('laporan.index', ['tab' => 'donasi']) }}" class="list-group-item list-group-item-action">
                         Donasi Barang
                     </a>

@@ -39,7 +39,7 @@ Route::middleware(['web', 'auth:pembeli'])->group(function () {
 Route::middleware(['auth:pembeli'])->get('/profil', [PembeliController::class, 'profil'])->name('profilPembeli');
 Route::post('/submit-rating', [PembeliController::class, 'submitRating'])->name('submit.rating');
 // Profile
-Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
+// Route::get('/profile', [ProfileController::class, 'showProfilePenitip'])->middleware('web', 'auth:penitip')->name('penitip.profil');
 
 // LandingPage
 Route::get('/', [DashboardController::class, 'index'])->name('home');

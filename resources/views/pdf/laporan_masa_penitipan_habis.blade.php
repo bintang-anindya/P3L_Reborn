@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Laporan Barang yang Masa Penitipannya Sudah Habis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body { 
-            font-family: sans-serif; 
+            font-family: 'Poppins', 'Roboto', sans-serif; /* Menggunakan font dari Poppins/Roboto */
             font-size: 12px;
             margin: 0;
             padding: 20px;

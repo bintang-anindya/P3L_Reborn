@@ -1,186 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id"> {{-- Mengubah lang ke id untuk konsistensi --}}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Owner</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Dashboard Owner - ReUseMart</title> {{-- Menambahkan ReUseMart ke judul --}}
+    
+    {{-- Hapus Bootstrap CSS --}}
+    {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
+    
+    {{-- Load Font Roboto dan Tailwind CSS --}}
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Font Awesome untuk ikon, jika diperlukan (seperti icon print) --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         body {
-            background-color: #f0f2f5; /* Light gray background */
-            font-family: 'Poppins', sans-serif;
-            /* Subtle pattern for background */
-            background-image: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="p" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="%23e0e0e0"/></pattern></defs><rect width="100%" height="100%" fill="url(%23p)"/></svg>');
-            background-size: 20px 20px;
+            font-family: 'Poppins', 'Roboto', sans-serif; /* Menggunakan font dari Poppins/Roboto */
+            background-color: #f8f9fa; /* Warna latar belakang umum ReUseMart */
+            /* Hapus background-image kustom untuk konsistensi */
         }
-        .container {
-            max-width: 960px;
-        }
-        .card {
-            border-radius: 15px; /* Softer rounded corners */
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Enhanced shadow */
-            border: none; /* Remove default border */
-        }
-        .card-header {
-            background-color: #212529; /* Darker header */
-            color: #fff;
-            padding: 1.5rem 2rem;
-            border-bottom: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-        .card-body {
-            padding: 2rem;
-            background-color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Center content in the body */
-        }
-        /* Style for profile picture */
+        /* Penyesuaian khusus untuk beberapa elemen yang mungkin sulit diatur langsung di Tailwind class */
+        /* Contoh: jika ingin menargetkan profil-picture-container dengan ukuran fixed */
         .profile-picture-container {
             width: 120px;
             height: 120px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        .profile-picture {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .table {
-            margin-bottom: 0;
-            width: 100%; /* Ensure table takes full width */
-        }
-        .table th, .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-top: 1px solid #e9ecef; /* Lighter border for table rows */
-        }
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-            width: 30%; /* Adjust width for better alignment */
-        }
-        .table tr:first-child th, .table tr:first-child td {
-            border-top: none;
-        }
-        .btn-logout {
-            background-color: #dc3545;
-            color: #fff;
-            border-radius: 8px; /* Slightly rounded buttons */
-            padding: 0.5rem 1.25rem;
-            font-weight: 600;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2); /* Subtle shadow on logout */
-        }
-        .btn-logout:hover {
-            background-color: #c82333;
-            transform: translateY(-2px); /* Lift effect on hover */
-            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.3);
-        }
-        .btn-section {
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping for smaller screens */
-            justify-content: center;
-            gap: 25px; /* Reduced gap for better fit */
-            margin-top: 40px; /* Slightly reduced margin */
-        }
-        .btn-section .btn {
-            min-width: 220px; /* Slightly reduced min-width */
-            padding: 1rem 1.5rem;
-            border-radius: 10px; /* More rounded buttons */
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Shadow for main buttons */
-            background-color: #343a40; /* Darker shade for consistency */
-            color: #fff;
-        }
-        .btn-section .btn:hover {
-            background-color: #495057; /* Lighter on hover */
-            transform: translateY(-3px); /* More pronounced lift */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-        .text-danger {
-            font-weight: 500;
-            color: #dc3545 !important;
-        }
-
-        @media (max-width: 768px) {
-            .btn-section {
-                flex-direction: column;
-                align-items: center;
-            }
-            .btn-section .btn {
-                min-width: 80%; /* Full width on small screens */
-            }
-            .card-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 10px;
-            }
         }
     </style>
 </head>
-<body>
-    <div class="container my-5">
-        <div class="card shadow">
-            <div class="card-header">
+<body class="bg-gray-50 text-gray-900"> {{-- bg-f0f2f5, text-gray-900 (default) --}}
+    <div class="container mx-auto px-4 py-8 max-w-3xl"> {{-- container my-5, max-width: 960px menjadi max-w-3xl (768px) atau max-w-4xl (896px) --}}
+        <div class="bg-white shadow-lg rounded-2xl overflow-hidden mb-8"> {{-- card shadow menjadi shadow-lg rounded-2xl --}}
+            <div class="bg-gray-900 text-white px-8 py-6 flex justify-between items-center text-xl font-semibold md:flex-row flex-col text-center md:text-left gap-4"> {{-- card-header bg-dark, padding, flex justify-between, font-weight, font-size, responsive --}}
                 <h4>Profil Owner</h4>
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                <form action="{{ route('logout') }}" method="POST" class="inline-block"> {{-- d-inline --}}
                     @csrf
-                    <button type="submit" class="btn btn-logout">Logout</button>
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">Logout</button> {{-- btn btn-logout --}}
                 </form>
             </div>
-            <div class="card-body">
-                <div class="profile-picture-container">
-                    <img src="{{ asset('assets/images/komeng.jpeg') }}" alt="Profile Picture" class="profile-picture">
+            <div class="p-8 flex flex-col items-center"> {{-- card-body --}}
+                <div class="profile-picture-container rounded-full overflow-hidden mb-6 shadow-xl"> {{-- profile-picture-container, box-shadow --}}
+                    <img src="{{ asset('assets/images/komeng.jpeg') }}" alt="Profile Picture" class="w-full h-full object-cover"> {{-- profile-picture --}}
                 </div>
                 @if(isset($owner))
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Nama</th>
-                            <td>{{ $owner->nama_pegawai }}</td>
-                        </tr>
-                        <tr>
-                            <th>Username</th>
-                            <td>{{ $owner->username_pegawai }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ $owner->email_pegawai }}</td>
-                        </tr>
-                        <tr>
-                            <th>No Telepon</th>
-                            <td>{{ $owner->no_telp_pegawai }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Lahir</th>
-                            <td>{{ $owner->tanggal_lahir }}</td>
-                        </tr>
-                    </table>
+                    <div class="w-full overflow-x-auto"> {{-- Tambahkan div untuk responsivitas tabel --}}
+                        <table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-md"> {{-- table table-bordered --}}
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50 w-1/3">Nama</th> {{-- table th --}}
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $owner->nama_pegawai }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50 w-1/3">Username</th>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $owner->username_pegawai }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50 w-1/3">Email</th>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $owner->email_pegawai }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50 w-1/3">No Telepon</th>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $owner->no_telp_pegawai }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700 bg-gray-50 w-1/3">Tanggal Lahir</th>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{{ $owner->tanggal_lahir }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 @else
-                    <p class="text-danger text-center">Data owner tidak tersedia.</p>
+                    <p class="text-red-600 text-center font-medium">Data owner tidak tersedia.</p> {{-- text-danger text-center --}}
                 @endif
             </div>
         </div>
 
-        <div class="btn-section">
-            <a href="{{ route('owner.historyPage') }}" class="btn btn-dark">History Donasi</a>
-            <a href="{{ route('owner.requestPage') }}" class="btn btn-dark">Request Donasi</a>
-            <a href="{{ url('/owner/laporan') }}" class="btn btn-dark">Laporan</a>
-            <!-- <a href="{{ route('laporan.liveCode') }}" class="btn btn-dark">Laporan Donasi Elektronik</a> -->
-        </div>
+        <div class="flex flex-wrap justify-center gap-6 mt-10 md:flex-row flex-col items-center"> {{-- btn-section, responsive --}}
+            <a href="{{ route('owner.historyPage') }}" class="inline-block min-w-56 px-6 py-4 bg-gray-900 text-white font-semibold rounded-xl shadow-md hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1">History Donasi</a> {{-- btn btn-dark --}}
+            <a href="{{ route('owner.requestPage') }}" class="inline-block min-w-56 px-6 py-4 bg-gray-900 text-white font-semibold rounded-xl shadow-md hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1">Request Donasi</a>
+            <a href="{{ url('/owner/laporan') }}" class="inline-block min-w-56 px-6 py-4 bg-gray-900 text-white font-semibold rounded-xl shadow-md hover:bg-gray-800 transition-all duration-300 transform hover:-translate-y-1">Laporan</a>
+            </div>
     </div>
 </body>
 </html>

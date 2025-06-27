@@ -34,6 +34,37 @@
         tr:nth-child(even) {
             background-color: #f9fafb; /* Warna latar belakang bergantian untuk baris tabel */
         }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+        .star-rating .star {
+            font-size: 2rem;
+            color: #d1d5db; /* Gray star */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star-rating .star.filled {
+            color: #f59e0b; /* Amber star */
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -151,6 +182,7 @@
                                     <th class="px-4 py-3 text-left">Barang</th>
                                     <th class="px-4 py-3 text-left">Total Harga</th>
                                     <th class="px-4 py-3 text-left">Pegawai Verifikasi</th>
+                                    <th class="px-4 py-3 text-left">Aksi</th> <!-- New column for action -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,6 +202,15 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <ul class="list-disc pl-5 space-y-1">
+                                            @php
+                                                $sellerIdForTransaction = null;
+                                                if ($transaksi->barangs->isNotEmpty()) {
+                                                    // Assuming one seller per transaction or rating the seller of the first item
+                                                    $firstItem = $transaksi->barangs->first();
+                                                    // Ensure that 'penitip' relationship is loaded and exists
+                                                    $sellerIdForTransaction = $firstItem->penitip->id_penitip ?? null;
+                                                }
+                                            @endphp
                                             @foreach($transaksi->barangs as $barangItem)
                                                 <li>{{ $barangItem->nama_barang }}</li>
                                             @endforeach
@@ -178,6 +219,30 @@
                                     <td class="px-4 py-3">Rp{{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
                                     <td class="px-4 py-3">
                                         {{ ($transaksi->pegawai && $transaksi->pegawai->nama_pegawai !== 'DUMMY') ? $transaksi->pegawai->nama_pegawai : '-' }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @if($transaksi->status_transaksi == 'transaksi selesai' && $sellerIdForTransaction)
+                                            @if($transaksi->is_rated_by_pembeli)
+                                                <div class="flex items-center text-yellow-500">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $transaksi->rating_pembeli_value)
+                                                            <i class="fas fa-star text-sm"></i>
+                                                        @else
+                                                            <i class="far fa-star text-sm"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <span class="ml-2 text-gray-600 text-xs font-medium">Telah Dirating ({{ $transaksi->rating_pembeli_value }}/5)</span>
+                                                </div>
+                                            @else
+                                                <button class="open-rating-modal bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-xs font-semibold transition duration-300"
+                                                        data-transaction-id="{{ $transaksi->id_transaksi }}"
+                                                        data-seller-id="{{ $sellerIdForTransaction }}">
+                                                    Rating
+                                                </button>
+                                            @endif
+                                        @else
+                                        -
+                                        @endif
                                     </td>
                                 </tr>
                                 @endforeach
@@ -195,10 +260,118 @@
         @endif
     </main>
 
-    <!-- Footer -->
-    <!-- <footer class="bg-gray-900 text-white text-center py-4 absolute bottom-0 w-full shadow-inner">
-        &copy; {{ date('Y') }} ReUseMart. All rights reserved.
-    </footer> -->
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800 text-center">Beri Penilaian</h3>
+            <form id="ratingForm" action="{{ route('submit.rating') }}" method="POST">
+                @csrf
+                <input type="hidden" name="transaction_id" id="modalTransactionId">
+                <input type="hidden" name="seller_id" id="modalSellerId">
+                <input type="hidden" name="rating" id="modalRating" value="0">
+
+                <div class="flex justify-center mb-6">
+                    <div class="star-rating text-gray-400">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="fas fa-star star" data-value="{{ $i }}"></i>
+                        @endfor
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="comment" class="block text-gray-700 text-sm font-medium mb-2">Komentar (Opsional):</label>
+                    <textarea name="comment" id="comment" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-300" placeholder="Berikan komentar Anda tentang transaksi ini..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="closeRatingModal" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300">Batal</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Kirim Penilaian</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ratingModal = document.getElementById('ratingModal');
+            const closeRatingModalBtn = document.getElementById('closeRatingModal');
+            const openRatingButtons = document.querySelectorAll('.open-rating-modal');
+            const modalTransactionId = document.getElementById('modalTransactionId');
+            const modalSellerId = document.getElementById('modalSellerId');
+            const modalRatingInput = document.getElementById('modalRating');
+            const stars = document.querySelectorAll('.star-rating .star');
+
+            let currentRating = 0;
+
+            // Function to update star display
+            function updateStars(rating) {
+                stars.forEach(star => {
+                    if (parseInt(star.dataset.value) <= rating) {
+                        star.classList.add('filled');
+                    } else {
+                        star.classList.remove('filled');
+                    }
+                });
+            }
+
+            // Event listeners for stars
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    currentRating = parseInt(this.dataset.value);
+                    modalRatingInput.value = currentRating;
+                    updateStars(currentRating);
+                });
+
+                star.addEventListener('mouseover', function() {
+                    updateStars(parseInt(this.dataset.value));
+                });
+
+                star.addEventListener('mouseout', function() {
+                    updateStars(currentRating);
+                });
+            });
+
+            // Open modal
+            openRatingButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const transactionId = this.dataset.transactionId;
+                    const sellerId = this.dataset.sellerId;
+
+                    modalTransactionId.value = transactionId;
+                    modalSellerId.value = sellerId;
+                    ratingModal.classList.remove('hidden');
+                    currentRating = 0; // Reset rating when modal opens
+                    modalRatingInput.value = 0;
+                    updateStars(0);
+                });
+            });
+
+            // Close modal
+            closeRatingModalBtn.addEventListener('click', function() {
+                ratingModal.classList.add('hidden');
+            });
+
+            // Close modal when clicking outside
+            ratingModal.addEventListener('click', function(event) {
+                if (event.target === ratingModal) {
+                    ratingModal.classList.add('hidden');
+                }
+            });
+
+            // Handle success/error messages (optional)
+            @if(session('success'))
+                // For a real application, consider a custom, non-alert notification
+                alert('Success: {{ session('success') }}');
+                // Reload the page to reflect the new rating status and stars
+                window.location.reload();
+            @endif
+
+            @if(session('error'))
+                // For a real application, consider a custom, non-alert notification
+                alert('Error: {{ session('error') }}');
+            @endif
+        });
+    </script>
 
 </body>
 </html>

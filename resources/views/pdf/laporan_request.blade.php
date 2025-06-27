@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>Laporan Request Donasi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', 'Roboto', sans-serif; /* Menggunakan font dari Poppins/Roboto */
             font-size: 12px;
         }
         table {
