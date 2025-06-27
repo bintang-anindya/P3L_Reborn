@@ -7,6 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -63,7 +70,7 @@
     <div class="container mt-4">
         <div class="card shadow-sm rounded">
             <div class="card-header bg-dark text-white">
-                <h4 class="mb-0">Transaksi di Atas Rp100.000</h4>
+                <h4 class="mb-0">Pembatalan Transaksi Valid</h4>
             </div>
             <div class="card-body p-0">
                 @if($Transaksis->count() > 0)
@@ -71,40 +78,39 @@
                         <thead class="table-success">
                             <tr>
                                 <th>NO</th>
+                                <th>Nomor Transaksi</th>
                                 <th>Tanggal Transaksi</th>
-                                <th>Status</th>
-                                <th>Barang (Nama & Harga)</th>
                                 <th>Total Harga</th>
-                                <th>Pegawai Verifikasi</th>
+                                <th>Status</th>
+                                <th>Batal</th>     
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($Transaksis as $index => $transaksi)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
+                                    <td>{{ ucfirst($transaksi->nomor_transaksi) }}</td>
                                     <td>{{ \Carbon\Carbon::parse($transaksi->tanggal_transaksi)->format('d M Y') }}</td>
+                                    <td>Rp{{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
                                     <td>{{ ucfirst($transaksi->status_transaksi) }}</td>
                                     <td>
-                                        <ul class="mb-0">
-                                            @foreach($transaksi->transaksiBarang as $transaksiBarang)
-                                                <li>
-                                                    {{ $transaksiBarang->barang->nama_barang }} - 
-                                                    Rp{{ number_format($transaksiBarang->barang->harga_barang, 0, ',', '.') }}
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </td>
-                                    <td>Rp{{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
-                                    <td>
-                                        {{ ($transaksi->pegawai && $transaksi->pegawai->nama_pegawai !== 'DUMMY') ? $transaksi->pegawai->nama_pegawai : '-' }}
-                                    </td>
+                                        @if($transaksi->status_transaksi === 'disiapkan')
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-danger btn-sm btnHapus" 
+                                                data-id="{{ $transaksi->id_transaksi }}" 
+                                                data-total="{{ $transaksi->total_harga }}">
+                                                Batalkan
+                                            </button>
+                                        @endif
+                                    </td>                             
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 @else
                     <div class="alert alert-info m-3">
-                        Belum ada transaksi di atas Rp100.000.
+                        Belum ada transaksi yang dibatalkan.
                     </div>
                 @endif
             </div>
@@ -114,5 +120,63 @@
     <div class="footer">
         &copy; 2025 ReUseMart. All rights reserved.
     </div>
+
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formDelete" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Konfirmasi Batal</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div id="konfirmasiTeks" style="line-height: 1.6; font-size: 1rem;">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                        <button type="submit" class="btn btn-danger">Ya, Batalkan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+
+        document.querySelectorAll('.btnHapus').forEach(btn => {
+            btn.addEventListener('click', function () {
+                let id_transaksi = this.dataset.id;
+                let total_harga = parseInt(this.dataset.total);
+
+                let formatRupiah = new Intl.NumberFormat('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR'
+                }).format(total_harga);
+
+                let poin = Math.floor(total_harga / 10000);
+
+                let form = document.getElementById('formDelete');
+                form.action = '/transaksi/cancelByPembeli/' + id_transaksi;
+
+                document.getElementById('konfirmasiTeks').innerHTML = `
+                    <p>Apakah Anda yakin ingin <strong>membatalkan transaksi</strong> berikut?</p>
+                    <ul class="mb-2">
+                        <li>Total Transaksi: <strong>${formatRupiah}</strong></li>
+                        <li>Poin Reward: <strong>${poin} poin</strong></li>
+                    </ul>
+                    <p class="text-danger">Tindakan ini tidak dapat dibatalkan.</p>
+                `;
+
+                confirmDeleteModal.show();
+            });
+        });
+    });
+    </script>
+
 </body>
 </html>

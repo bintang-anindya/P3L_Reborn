@@ -40,6 +40,7 @@
                 <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" type="search" placeholder="Apa yang anda butuhkan?">
             </form>
             <div class="flex items-center space-x-6">
+                <!-- <a href="{{ route('liveCode.pembeli') }}" class="px-3 py-1.5 border border-gray-800 text-gray-800 rounded-lg text-sm hover:bg-gray-800 hover:text-white transition-colors duration-200">Batal Transaksi</a> -->
                 <a href="{{ route('diskusi.index') }}" class="px-3 py-1.5 border border-gray-800 text-gray-800 rounded-lg text-sm hover:bg-gray-800 hover:text-white transition-colors duration-200">Diskusi</a>
                 <a href="{{ route('alamat.manager') }}" class="px-3 py-1.5 border border-gray-800 text-gray-800 rounded-lg text-sm hover:bg-gray-800 hover:text-white transition-colors duration-200">Kelola Alamat</a>
                 <a href="{{ route('profilPembeli') }}" class="text-gray-800 hover:text-red-500 transition-colors duration-200">

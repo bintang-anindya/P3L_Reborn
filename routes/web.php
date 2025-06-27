@@ -248,3 +248,5 @@ Route::get('/laporan/penitip/cetak', [LaporanController::class, 'printPenitip'])
 
 Route::get('/laporan/live-code', [LaporanController::class, 'liveCode'])->name('laporan.liveCode');
 Route::get('/laporan/live-code/pdf', [LaporanController::class, 'liveCodePdf'])->name('laporan.liveCode.pdf');
+
+Route::post('/transaksi/cancelByPembeli/{id_barang}', [PembeliController::class, 'cancelByPembeli'])->name('pembeli.cancelByPembeli');

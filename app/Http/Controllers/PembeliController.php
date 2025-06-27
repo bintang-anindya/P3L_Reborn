@@ -55,8 +55,7 @@ class PembeliController extends Controller
     {
         $pembeli = Auth::user();
         $Transaksis = Transaksi::with(['transaksiBarang.barang'])
-                        ->where('status_transaksi', '=', 'disiapkan')
-                        ->where('total_harga', '>', 100000)
+                        ->whereIn('status_transaksi', ['disiapkan', 'Dibatalkan Pembeli'])
                         ->orderBy('tanggal_transaksi', 'desc')
                         ->get();
 
@@ -66,5 +65,52 @@ class PembeliController extends Controller
     public function klaimMerchandise()
     {
         return $this->hasMany(PembeliMerchandise::class, 'id_pembeli', 'id_pembeli');
+    }
+
+    public function cancelByPembeli($id_transaksi)
+    {
+        $transaksi = Transaksi::with('TransaksiBarang.barang', 'pembeli')->findOrFail($id_transaksi);
+
+        $transaksi->status_transaksi = 'Dibatalkan Pembeli';
+        $transaksi->save();
+
+        $pembeli = $transaksi->pembeli;
+
+        $totalHargaAwal = $transaksi->total_harga + ($transaksi->poin_tukar * 100);
+
+        $ongkir = ($totalHargaAwal >= 1500000) ? 0 : 100000;
+        $totalHarga = $totalHargaAwal - $ongkir;
+
+        if ($totalHarga > 500000) {
+            $poinReward = floor(($totalHarga / 10000) * 1.2);
+        } else {
+            $poinReward = floor(($totalHarga / 10000) * 1);
+        }
+
+        $pembeli->poin_pembeli -= $poinReward;
+
+        if ($transaksi->poin_tukar > 0) {
+            $pembeli->poin_pembeli += $transaksi->poin_tukar;
+        }
+
+        if ($pembeli->poin_pembeli < 0) {
+            $pembeli->poin_pembeli = 0;
+        }
+
+        $pembeli->save();
+
+        foreach ($transaksi->TransaksiBarang as $junction) {
+            $barang = $junction->barang;
+            $barang->status_barang = 'tersedia';
+            $barang->save();
+        }
+
+        $pembeli = Auth::user();
+        $Transaksis = Transaksi::with(['transaksiBarang.barang'])
+                        ->whereIn('status_transaksi', ['disiapkan', 'Dibatalkan Pembeli'])
+                        ->orderBy('tanggal_transaksi', 'desc')
+                        ->get();
+
+        return view('pembeli.liveCode', compact('pembeli', 'Transaksis'));
     }
 }
