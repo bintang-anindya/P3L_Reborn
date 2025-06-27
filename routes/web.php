@@ -217,8 +217,8 @@ Route::post('/checkout', [TransaksiController::class, 'checkout'])->name('transa
 Route::get('/transaksi/upload-bukti/{id}', [TransaksiController::class, 'uploadBuktiForm'])->name('transaksi.uploadBukti');
 Route::post('/transaksi/upload-bukti/{id}', [TransaksiController::class, 'uploadBukti'])->name('transaksi.uploadBukti.store');
 Route::get('/transaksi/cancel-if-expired/{id_transaksi}', [TransaksiController::class, 'cancelIfExpired'])->name('transaksi.cancelIfExpired');
-Route::get('/transaksi/cancelByCs/{id_transaksi}', [TransaksiController::class, 'cancelByCs'])->name('transaksi.cancelByCs');
-Route::get('/transaksi/validasi/{id_transaksi}', [TransaksiController::class, 'validasi'])->name('transaksi.validasi');
+Route::post('/transaksi/cancelByCs/{id_transaksi}', [TransaksiController::class, 'cancelByCs'])->name('transaksi.cancelByCs');
+Route::post('/transaksi/validasi/{id_transaksi}', [TransaksiController::class, 'validasi'])->name('transaksi.validasi');
 
 Route::get('/dashboard/cs', [DashboardController::class, 'indexCs'])->name('dashboard.cs');
 
@@ -240,6 +240,11 @@ Route::get('/laporan/stok-gudang/pdf', [LaporanController::class, 'stokGudangPdf
 Route::get('/laporan/penjualan-kategori/pdf', [LaporanController::class, 'penjualanKategoriPdf'])->name('laporan.penjualan_kategori.pdf');
 Route::get('/laporan/masa-penitipan-habis/pdf', [LaporanController::class, 'masaPenitipanHabisPdf'])->name('laporan.masa_penitipan_habis.pdf');
 Route::get('/laporan/komisi-bulanan/pdf', [LaporanController::class, 'komisiBulananPdf'])->name('laporan.komisi_bulanan.pdf');
+
+// ----------------------- Tarik Saldo --------------------------
+Route::get('/penitip/penarikan', [PenitipController::class, 'index'])->name('penitip.penarikan');
+
+Route::post('/penitip/tariksaldo/{id_penitip}', [PenitipController::class, 'tariksaldo'])->name('tariksaldo');
 
 // ------------------------- Belum Fix ----------------------
 Route::get('laporan/print-penitip/{id}', [LaporanController::class, 'printPenitip'])->name('laporan.printPenitip');

@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReUseMart</title>
+    {{-- Ini adalah link Bootstrap dan Font Awesome yang Anda gunakan --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    {{-- Ini adalah link Tailwind CSS yang Anda gunakan, seharusnya di sini jika di `@apply` di style --}}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         body {
-            margin-top : 30px;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Poppins', 'Roboto', sans-serif; /* Menggunakan font dari Poppins/Roboto */
             background-color: #f8f9fa;
-            /* Flexbox untuk sticky footer */
             display: flex;
             flex-direction: column;
-            min-height: 100vh; /* Pastikan body setidaknya setinggi viewport */
-            margin: 0; /* Hapus margin default browser */
+            min-height: 100vh;
+            margin: 0;
         }
 
         .nav-link {
@@ -26,17 +30,13 @@
             color: #dc3545 !important;
         }
 
-        /* Hapus properti positioning dari footer */
         footer {
             background-color: #222;
             color: #ccc;
             text-align: center;
             padding: 1rem;
-            /* Flexbox untuk mendorong footer ke bawah */
-            margin-top: auto; /* Ini akan mendorong footer ke bagian bawah */
-            width: 100%; /* Pastikan footer mengambil seluruh lebar */
-            /* Z-index tidak lagi diperlukan karena tidak fixed */
-            /* z-index: 100; */
+            margin-top: auto;
+            width: 100%;
         }
 
         footer a {
@@ -48,19 +48,73 @@
             color: #fff;
         }
 
-        /* Menambahkan margin-bottom pada konten agar tidak tumpang tindih dengan footer */
-        /* ini jika Anda ingin memastikan ada ruang di atas footer */
-        /* .content-wrapper {
-            padding-bottom: 70px;
-        } */
+        /* Styles for custom modals (copied from your original) */
+        .modal-overlay {
+            position: fixed; /* Explicitly fixed */
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* bg-black bg-opacity-50 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999; /* Ensure it's on top of other content */
+            transition: opacity 300ms ease-in-out; /* transition-opacity duration-300 ease-in-out */
+        }
+        .modal-container {
+            background-color: white; /* bg-white */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* shadow-xl */
+            max-width: 24rem; /* max-w-sm */
+            width: 100%;
+            margin: 0 1rem; /* mx-4 */
+            transform: scale(1); /* Ensure no conflicting transform */
+            transition: all 300ms ease-in-out; /* transition-all duration-300 ease-in-out */
+        }
+        .modal-header {
+            padding: 1rem 1.5rem; /* px-6 py-4 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+        }
+        .modal-body {
+            padding: 1rem 1.5rem; /* px-6 py-4 */
+            color: #4b5563; /* text-gray-700 */
+        }
+        .modal-footer {
+            padding: 1rem 1.5rem; /* px-6 py-4 */
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            border-top: 1px solid #e5e7eb; /* border-t border-gray-200 */
+            background-color: #f9fafb; /* bg-gray-50 */
+            border-bottom-left-radius: 0.75rem; /* rounded-b-xl */
+            border-bottom-right-radius: 0.75rem;
+        }
+
+        /* Utility classes for modal visibility */
+        .modal-overlay.hidden {
+            display: none;
+        }
+        .modal-overlay.opacity-0 {
+            opacity: 0;
+        }
+        .modal-overlay.pointer-events-none {
+            pointer-events: none;
+        }
     </style>
+    @stack('styles')
 </head>
 <body>
 
+    {{-- Ini adalah div yang akan membungkus konten utama --}}
     <div class="flex-grow-1">
         @yield('content')
     </div>
 
+    {{-- Footer --}}
     <footer class="mt-5">
         <div class="container text-center">
             <p>&copy; {{ date('Y') }} ReUseMart. All rights reserved.</p>
@@ -70,18 +124,16 @@
         </div>
     </footer>
 
+    {{-- JavaScript utama --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // Pastikan elemen 'countdown' ada di halaman yang meng-extend layout ini
-        // Jika tidak ada, script ini akan error atau tidak berfungsi.
-        // Anda mungkin ingin menambahkan pengecekan sebelum mengakses countdownEl.
+        // Contoh skrip countdown (tetap di sini karena ini bagian dari layout app)
         const countdownEl = document.getElementById('countdown');
 
-        // Hanya jalankan logic countdown jika elemen ditemukan
         if (countdownEl) {
             const end = new Date();
-            end.setDate(end.getDate() + 3); // Default 3 hari dari sekarang
+            end.setDate(end.getDate() + 3);
 
             function updateCountdown() {
                 const now = new Date().getTime();
@@ -89,7 +141,7 @@
 
                 if (distance < 0) {
                     countdownEl.innerHTML = "EXPIRED";
-                    clearInterval(countdownInterval); // Hentikan interval
+                    clearInterval(countdownInterval);
                     return;
                 }
 
@@ -105,11 +157,18 @@
             }
 
             updateCountdown();
-            const countdownInterval = setInterval(updateCountdown, 1000); // Simpan ID interval
+            const countdownInterval = setInterval(updateCountdown, 1000);
         } else {
             console.warn("Element with ID 'countdown' not found. Countdown script will not run.");
         }
     </script>
-    @stack('scripts') 
+
+    {{-- STACK UNTUK SCRIPT TAMBAHAN DARI CHILD VIEWS --}}
+    @stack('scripts')
+
+    {{-- STACK UNTUK MODAL DARI CHILD VIEWS (PENTING!) --}}
+    {{-- Modals diletakkan di sini agar berada di level root body dan fixed positioning bekerja dengan benar --}}
+    @stack('modals')
+
 </body>
 </html>

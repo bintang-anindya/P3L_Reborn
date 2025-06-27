@@ -1,16 +1,79 @@
 @extends('layouts.app')
 
 @section('content')
-
-<div class="container">
-
-    <div class="d-flex justify-content-start mb-3">
-        <form action="{{ route('dashboard.gudang') }}" method="GET">
-            <button class="btn btn-outline-secondary">
-                <i class="bi bi-house-door me-1"></i> Back to Dashboard
-            </button>
-        </form>
-    </div>
+<style>
+    /* Menggunakan flex-shrink-0 untuk memastikan sidebar tidak menyusut */
+    .sidebar-fixed {
+        flex-shrink: 0;
+    }
+    /* Custom scrollbar for table-responsive */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 10px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: #cbd5e1; /* gray-300 */
+        border-radius: 5px;
+    }
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f5f9; /* gray-100 */
+        border-radius: 5px;
+    }
+    /* Styles for modal overlay (sebaiknya juga di layouts/app.blade.php jika sama di semua modal) */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        transition: opacity 300ms ease-in-out;
+    }
+    .modal-container {
+        background-color: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        max-width: 2xl; /* Sesuaikan ukuran modal jika perlu, misal max-w-lg untuk lebih lebar */
+        width: 100%;
+        margin: 0 1rem;
+        transform: scale(1);
+        transition: all 300ms ease-in-out;
+    }
+    .modal-header {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .modal-body {
+        padding: 1rem 1.5rem;
+        color: #4b5563;
+        /* Tambahkan dua properti ini: */
+        max-height: 70vh; /* Sesuaikan nilai ini (misal 70% dari viewport height) */
+        overflow-y: auto; /* Aktifkan scroll vertikal jika konten melebihi max-height */
+    }
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        border-top: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+        border-bottom-left-radius: 0.75rem;
+        border-bottom-right-radius: 0.75rem;
+    }
+    /* Utility classes for modal visibility */
+    .modal-overlay.hidden {
+        display: none;
+    }
+    .modal-overlay.opacity-0 {
+        opacity: 0;
+    }
+    .modal-overlay.pointer-events-none {
+        pointer-events: none;
+    }
+</style>
 
     {{-- Alert --}}
     @if(session('success'))
@@ -32,280 +95,337 @@
         </div>
     @endif
 
-    <h3>Dashboard Gudang</h3>
+    <div class="flex flex-grow">
+        <nav id="sidebarMenu" class="sidebar-fixed w-full md:w-1/4 lg:w-1/5 p-6 bg-white shadow-lg border-r border-gray-200 h-screen sticky top-0 left-0 flex flex-col">
+            <div class="pt-3 flex flex-col h-full">
+                <h5 class="text-2xl font-bold text-gray-800 mb-6 text-center">Dashboard Gudang</h5>
+                <ul class="flex flex-col space-y-2 flex-grow">
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('gudang/inputBarang*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="/gudang/inputBarang">
+                            <i class="fas fa-box mr-3 text-lg"></i>
+                            Input Barang
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('gudang/ambilBarang*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="/gudang/ambilBarang">
+                            <i class="fas fa-receipt mr-3 text-lg"></i>
+                            Daftar Pengambilan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('gudang/daftarTransaksi*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="/gudang/daftarTransaksi">
+                            <i class="fas fa-file-invoice-dollar mr-3 text-lg"></i>
+                            Daftar Transaksi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('gudang/cetak*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="/gudang/cetak">
+                            <i class="fas fa-print mr-3 text-lg"></i>
+                            Cetak PDF
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('gudang/konfirmasi*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="/gudang/konfirmasi">
+                            <i class="fas fa-check-double mr-3 text-lg"></i>
+                            Konfirmasi Pengambilan
+                        </a>
+                    </li>
+                </ul>
 
-    {{-- Form Penitipan --}}
-    <div class="card mb-4">
-        <div class="card-header">Input Transaksi Penitipan Barang</div>
-        <div class="card-body">
-            <form action="{{ route('gudang.inputBarang.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="id_pegawai" value="4">
-
-                <div class="mb-3">
-                    <label for="nama_barang" class="form-label">Nama Barang</label>
-                    <input type="text" name="nama_barang" id="nama_barang" class="form-control @error('nama_barang') is-invalid @enderror" value="{{ old('nama_barang') }}" required>
-                    @error('nama_barang')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="mt-auto p-4">
+                    <form action="{{ route('logout') }}" method="POST" class="flex justify-center">
+                        @csrf
+                        <button type="submit" class="bg-red-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300 w-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-sign-out-alt mr-3 text-lg"></i>
+                            Log Out
+                        </button>
+                    </form>
                 </div>
+            </div>
+        </nav>
 
-                <div class="mb-3">
-                    <label for="pesan" class="form-label">Pesan</label>
-                    <input type="text" name="pesan" id="pesan" class="form-control @error('pesan') is-invalid @enderror" value="{{ old('pesan') }}" required>
-                    @error('pesan')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label>Berat Barang</label>
-                    <input type="number" name="berat" class="form-control @error('berat') is-invalid @enderror" value="{{ old('berat') }}" required>
-                    @error('berat')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label>Deskripsi Barang</label>
-                    <input type="text" name="deskripsi_barang" class="form-control @error('deskripsi_barang') is-invalid @enderror" value="{{ old('deskripsi_barang') }}" required>
-                    @error('deskripsi_barang')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="harga_barang" class="form-label">Harga Barang (Rp)</label>
-                    <div class="input-group">
-                        <span class="input-group-text">Rp</span>
-                        <input type="number" name="harga_barang" id="harga_barang" class="form-control @error('harga_barang') is-invalid @enderror" 
-                               value="{{ old('harga_barang') }}" min="0" step="1000" required 
-                               placeholder="Masukkan harga barang">
-                        @error('harga_barang')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <small class="form-text text-muted">Masukkan harga estimasi atau nilai barang dalam Rupiah</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_kategori" class="form-label">Kategori</label>
-                    <select name="id_kategori" id="id_kategori" class="form-control @error('id_kategori') is-invalid @enderror" required onchange="toggleGaransi()">
-                        <option value="">-- Pilih Kategori --</option>
-                        @if(isset($kategoriList) && $kategoriList->count() > 0)
-                            @foreach($kategoriList as $kategori)
-                                <option value="{{ $kategori->id_kategori }}" 
-                                        data-nama="{{ strtolower($kategori->nama_kategori) }}"
-                                        {{ old('id_kategori') == $kategori->id_kategori ? 'selected' : '' }}>
-                                    {{ $kategori->nama_kategori }}
-                                </option>
-                            @endforeach
-                        @else
-                            <option value="" disabled>Tidak ada kategori tersedia</option>
-                        @endif
-                    </select>
-                    @error('id_kategori')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3" id="garansi-container" style="display: none;">
-                    <label for="tanggal_garansi" class="form-label">Tanggal Garansi <span class="text-info">(Khusus Elektronik & Gadget)</span></label>
-                    <input type="date" name="tanggal_garansi" id="tanggal_garansi" class="form-control @error('tanggal_garansi') is-invalid @enderror" value="{{ old('tanggal_garansi') }}">
-                    @error('tanggal_garansi')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-text text-muted">Field ini hanya wajib diisi untuk kategori Elektronik & Gadget</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
-                    <input type="date" name="tanggal_masuk" id="tanggal_masuk" class="form-control @error('tanggal_masuk') is-invalid @enderror" value="{{ old('tanggal_masuk', date('Y-m-d')) }}" required onchange="setTenggat(this.value)">
-                    @error('tanggal_masuk')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-3">
-                    <label for="tenggat_waktu" class="form-label">Tenggat Waktu (otomatis 30 hari)</label>
-                    <input type="date" name="tenggat_waktu" id="tenggat_waktu" class="form-control" readonly value="{{ old('tenggat_waktu') }}">
-                </div>
-
-                <div class="mb-3">
-                    <label for="id_hunter" class="form-label">Hunter <span class="text-muted">(Opsional)</span></label>
-                    <select name="id_hunter" id="id_hunter" class="form-control @error('id_hunter') is-invalid @enderror">
-                        <option value="">-- Pilih Hunter (Opsional) --</option>
-                        @if(isset($hunterList) && $hunterList->count() > 0)
-                            @foreach($hunterList as $hunter)
-                                <option value="{{ $hunter->id_pegawai }}" {{ old('id_hunter') == $hunter->id_pegawai ? 'selected' : '' }}>
-                                    {{ $hunter->nama_pegawai }}
-                                </option>
-                            @endforeach
-                        @else
-                            <option value="" disabled>Tidak ada hunter tersedia</option>
-                        @endif
-                    </select>
-                    @error('id_hunter')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-text text-muted">Hunter adalah pegawai yang bertugas mengumpulkan/mencari barang</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="gambar_barang" class="form-label">Gambar Barang</label>
-                    <input type="file" name="gambar_barang" id="gambar_barang" class="form-control @error('gambar_barang') is-invalid @enderror" accept="image/*" required>
-                    @error('gambar_barang')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="form-text text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
-                </div>
-
-                <div class="mb-3">
-                    <label for="gambar_tambahan" class="form-label">Gambar Tambahan (Max 5)</label>
-                    <input type="file" name="gambar_tambahan[]" id="gambar_tambahan" class="form-control @error('gambar_tambahan') is-invalid @enderror" multiple accept="image/*">
-                    @error('gambar_tambahan')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="text-muted">Anda bisa memilih lebih dari satu gambar</small>
-                </div>
-
-                <div class="mb-3">
-                    <label>Penitip</label>
-                    <select name="id_penitip" class="form-control" required>
-                        <option value="">-- Pilih Penitip --</option>
-                        @foreach($penitipList as $penitip)
-                            <option value="{{ $penitip->id_penitip }}">{{ $penitip->nama_penitip }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
-                    <button type="submit" class="btn btn-success">Simpan Data</button>
-                </div>
-
-            </form>
-        </div>
-    </div>
-
-    {{-- Tabel Barang Dititipkan --}}
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Data Barang Dititipkan</span>
-            <div class="search-box" style="width: 300px;">
-                <form id="searchForm" method="GET" action="{{ url()->current() }}">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Cari barang..." 
-                            value="{{ request('search') }}">
-                        @if(request('search'))
-                            <a href="{{ url()->current() }}" class="btn btn-outline-danger">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        @endif
-                    </div>
+        {{-- Form Penitipan --}}
+        <main class="flex-grow p-8 bg-white rounded-xl shadow-lg border border-gray-200 mt-8 md:mt-0 md:ml-8 mx-4 md:mx-0">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-l-4 border-red-600 pl-4 leading-tight">Input Transaksi Penitipan Barang</h2>
+            <div class="d-flex justify-content-start mb-3">
+                <form action="{{ route('dashboard.gudang') }}" method="GET">
+                    <button class="btn btn-outline-secondary">
+                        <i class="bi bi-house-door me-1"></i> Back to Dashboard
+                    </button>
                 </form>
             </div>
-        </div>
-        <div class="card-body table-responsive">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nama Barang</th>
-                        <th>Harga</th>
-                        <th>Pesan</th>
-                        <th>Kategori</th>
-                        <th>Tanggal Masuk</th>
-                        <th>Tenggat Waktu</th>
-                        <th>Gambar</th>
-                        <th>Penitip</th>
-                        <th>QC By</th>
-                        <th>Hunter</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(isset($barangList) && $barangList->count() > 0)
-                        @foreach($barangList as $barang)
-                        <tr>
-                            <td>{{ $barang->nama_barang ?? '-' }}</td>
-                            <td>
-                                @if(isset($barang->harga_barang) && $barang->harga_barang > 0)
-                                    <span class="fw-bold text-success">Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>{{ optional($barang->penitipan)->pesan ?? '-' }}</td>
-                            <td>{{ optional($barang->kategori)->nama_kategori ?? '-' }}</td>
-                            <td>
-                                @if($barang->tanggal_masuk)
-                                    {{ $barang->tanggal_masuk instanceof \Carbon\Carbon ? $barang->tanggal_masuk->format('d/m/Y') : $barang->tanggal_masuk }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if($barang->tenggat_waktu)
-                                    {{ $barang->tenggat_waktu instanceof \Carbon\Carbon ? $barang->tenggat_waktu->format('d/m/Y') : $barang->tenggat_waktu }}
-                                @else
-                                    -
-                                @endif
-                            </td>
-                            <td>
-                                @if($barang->gambar_barang && file_exists(storage_path('app/public/' . $barang->gambar_barang)))
-                                    <img src="{{ asset('storage/' . $barang->gambar_barang) }}" width="100" class="img-thumbnail" alt="Gambar {{ $barang->nama_barang }}">
-                                    <!-- Gambar Tambahan -->
-                                    @if($barang->gambarTambahan->count() > 0)
-                                        <div class="mb-3">
-                                            <div class="row">
-                                                @foreach($barang->gambarTambahan as $gambar)
-                                                    <div class="col-md-3 mb-2 position-relative">
-                                                        <img src="{{ asset('storage/' . $gambar->path_gambar) }}" class="img-thumbnail" width="150">
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endif
-                                @else
-                                    <span class="text-muted">Tidak ada gambar</span>
-                                @endif
-                            </td>
-                            <td>{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</td>
-                            <td>{{ optional(optional($barang->penitipan)->pegawai)->nama_pegawai ?? '-' }}</td>
-                            <td>
-                                @if($barang->penitipan && $barang->penitipan->id_hunter)
-                                    @php
-                                        $hunter = $hunterList->where('id_pegawai', $barang->penitipan->id_hunter)->first();
-                                    @endphp
-                                    {{ $hunter->nama_pegawai ?? '-' }}
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($barang->penitipan)
-                                    <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editPenitipanModal{{ $barang->penitipan->id_penitipan }}">Edit</button>
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#hapusPenitipanModal{{ $barang->penitipan->id_penitipan }}">Hapus</button>
-                                    <a href="{{ route('penitipan.nota', $barang->penitipan->id_penitipan) }}" class="btn btn-sm btn-info">PDF</a>
-                                @else
-                                    <span class="text-muted">No actions</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @endforeach
-                        <tr id="no-results-row" style="display: none;">
-                            <td colspan="10" class="text-center">Transaksi Penitipan Barang Tidak Ditemukan!</td>
-                        </tr>
-                    @else
-                        <tr>
-                            <td colspan="10" class="text-center">Belum ada barang dititipkan</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="{{ route('gudang.inputBarang.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="id_pegawai" value="4">
 
+                        <div class="mb-3">
+                            <label for="nama_barang" class="form-label">Nama Barang</label>
+                            <input type="text" name="nama_barang" id="nama_barang" class="form-control @error('nama_barang') is-invalid @enderror" value="{{ old('nama_barang') }}" required>
+                            @error('nama_barang')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="pesan" class="form-label">Pesan</label>
+                            <input type="text" name="pesan" id="pesan" class="form-control @error('pesan') is-invalid @enderror" value="{{ old('pesan') }}" required>
+                            @error('pesan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Berat Barang</label>
+                            <input type="number" name="berat" class="form-control @error('berat') is-invalid @enderror" value="{{ old('berat') }}" required>
+                            @error('berat')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Deskripsi Barang</label>
+                            <input type="text" name="deskripsi_barang" class="form-control @error('deskripsi_barang') is-invalid @enderror" value="{{ old('deskripsi_barang') }}" required>
+                            @error('deskripsi_barang')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="harga_barang" class="form-label">Harga Barang (Rp)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="harga_barang" id="harga_barang" class="form-control @error('harga_barang') is-invalid @enderror" 
+                                    value="{{ old('harga_barang') }}" min="0" step="1000" required 
+                                    placeholder="Masukkan harga barang">
+                                @error('harga_barang')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <small class="form-text text-muted">Masukkan harga estimasi atau nilai barang dalam Rupiah</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_kategori" class="form-label">Kategori</label>
+                            <select name="id_kategori" id="id_kategori" class="form-control @error('id_kategori') is-invalid @enderror" required onchange="toggleGaransi()">
+                                <option value="">-- Pilih Kategori --</option>
+                                @if(isset($kategoriList) && $kategoriList->count() > 0)
+                                    @foreach($kategoriList as $kategori)
+                                        <option value="{{ $kategori->id_kategori }}" 
+                                                data-nama="{{ strtolower($kategori->nama_kategori) }}"
+                                                {{ old('id_kategori') == $kategori->id_kategori ? 'selected' : '' }}>
+                                            {{ $kategori->nama_kategori }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="" disabled>Tidak ada kategori tersedia</option>
+                                @endif
+                            </select>
+                            @error('id_kategori')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3" id="garansi-container" style="display: none;">
+                            <label for="tanggal_garansi" class="form-label">Tanggal Garansi <span class="text-info">(Khusus Elektronik & Gadget)</span></label>
+                            <input type="date" name="tanggal_garansi" id="tanggal_garansi" class="form-control @error('tanggal_garansi') is-invalid @enderror" value="{{ old('tanggal_garansi') }}">
+                            @error('tanggal_garansi')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">Field ini hanya wajib diisi untuk kategori Elektronik & Gadget</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
+                            <input type="date" name="tanggal_masuk" id="tanggal_masuk" class="form-control @error('tanggal_masuk') is-invalid @enderror" value="{{ old('tanggal_masuk', date('Y-m-d')) }}" required onchange="setTenggat(this.value)">
+                            @error('tanggal_masuk')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tenggat_waktu" class="form-label">Tenggat Waktu (otomatis 30 hari)</label>
+                            <input type="date" name="tenggat_waktu" id="tenggat_waktu" class="form-control" readonly value="{{ old('tenggat_waktu') }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_hunter" class="form-label">Hunter <span class="text-muted">(Opsional)</span></label>
+                            <select name="id_hunter" id="id_hunter" class="form-control @error('id_hunter') is-invalid @enderror">
+                                <option value="">-- Pilih Hunter (Opsional) --</option>
+                                @if(isset($hunterList) && $hunterList->count() > 0)
+                                    @foreach($hunterList as $hunter)
+                                        <option value="{{ $hunter->id_pegawai }}" {{ old('id_hunter') == $hunter->id_pegawai ? 'selected' : '' }}>
+                                            {{ $hunter->nama_pegawai }}
+                                        </option>
+                                    @endforeach
+                                @else
+                                    <option value="" disabled>Tidak ada hunter tersedia</option>
+                                @endif
+                            </select>
+                            @error('id_hunter')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">Hunter adalah pegawai yang bertugas mengumpulkan/mencari barang</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gambar_barang" class="form-label">Gambar Barang</label>
+                            <input type="file" name="gambar_barang" id="gambar_barang" class="form-control @error('gambar_barang') is-invalid @enderror" accept="image/*" required>
+                            @error('gambar_barang')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">Format: JPG, PNG, GIF. Maksimal 2MB</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="gambar_tambahan" class="form-label">Gambar Tambahan (Max 5)</label>
+                            <input type="file" name="gambar_tambahan[]" id="gambar_tambahan" class="form-control @error('gambar_tambahan') is-invalid @enderror" multiple accept="image/*">
+                            @error('gambar_tambahan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Anda bisa memilih lebih dari satu gambar</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Penitip</label>
+                            <select name="id_penitip" class="form-control" required>
+                                <option value="">-- Pilih Penitip --</option>
+                                @foreach($penitipList as $penitip)
+                                    <option value="{{ $penitip->id_penitip }}">{{ $penitip->nama_penitip }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary me-md-2">Reset</button>
+                            <button type="submit" class="btn btn-success">Simpan Data</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+            {{-- Tabel Barang Dititipkan --}}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Data Barang Dititipkan</span>
+                    <div class="search-box" style="width: 300px;">
+                        <form id="searchForm" method="GET" action="{{ url()->current() }}">
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Cari barang..." 
+                                    value="{{ request('search') }}">
+                                @if(request('search'))
+                                    <a href="{{ url()->current() }}" class="btn btn-outline-danger">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>Harga</th>
+                                <th>Pesan</th>
+                                <th>Kategori</th>
+                                <th>Tanggal Masuk</th>
+                                <th>Tenggat Waktu</th>
+                                <th>Gambar</th>
+                                <th>Penitip</th>
+                                <th>QC By</th>
+                                <th>Hunter</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if(isset($barangList) && $barangList->count() > 0)
+                                @foreach($barangList as $barang)
+                                <tr>
+                                    <td>{{ $barang->nama_barang ?? '-' }}</td>
+                                    <td>
+                                        @if(isset($barang->harga_barang) && $barang->harga_barang > 0)
+                                            <span class="fw-bold text-success">Rp {{ number_format($barang->harga_barang, 0, ',', '.') }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ optional($barang->penitipan)->pesan ?? '-' }}</td>
+                                    <td>{{ optional($barang->kategori)->nama_kategori ?? '-' }}</td>
+                                    <td>
+                                        @if($barang->tanggal_masuk)
+                                            {{ $barang->tanggal_masuk instanceof \Carbon\Carbon ? $barang->tanggal_masuk->format('d/m/Y') : $barang->tanggal_masuk }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($barang->tenggat_waktu)
+                                            {{ $barang->tenggat_waktu instanceof \Carbon\Carbon ? $barang->tenggat_waktu->format('d/m/Y') : $barang->tenggat_waktu }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($barang->gambar_barang && file_exists(storage_path('app/public/' . $barang->gambar_barang)))
+                                            <img src="{{ asset('storage/' . $barang->gambar_barang) }}" width="100" class="img-thumbnail" alt="Gambar {{ $barang->nama_barang }}">
+                                            <!-- Gambar Tambahan -->
+                                            @if($barang->gambarTambahan->count() > 0)
+                                                <div class="mb-3">
+                                                    <div class="row">
+                                                        @foreach($barang->gambarTambahan as $gambar)
+                                                            <div class="col-md-3 mb-2 position-relative">
+                                                                <img src="{{ asset('storage/' . $gambar->path_gambar) }}" class="img-thumbnail" width="150">
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <span class="text-muted">Tidak ada gambar</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ optional(optional($barang->penitipan)->penitip)->nama_penitip ?? '-' }}</td>
+                                    <td>{{ optional(optional($barang->penitipan)->pegawai)->nama_pegawai ?? '-' }}</td>
+                                    <td>
+                                        @if($barang->penitipan && $barang->penitipan->id_hunter)
+                                            @php
+                                                $hunter = $hunterList->where('id_pegawai', $barang->penitipan->id_hunter)->first();
+                                            @endphp
+                                            {{ $hunter->nama_pegawai ?? '-' }}
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($barang->penitipan)
+                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editPenitipanModal{{ $barang->penitipan->id_penitipan }}">Edit</button>
+                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#hapusPenitipanModal{{ $barang->penitipan->id_penitipan }}">Hapus</button>
+                                            <a href="{{ route('penitipan.nota', $barang->penitipan->id_penitipan) }}" class="btn btn-sm btn-info">PDF</a>
+                                        @else
+                                            <span class="text-muted">No actions</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                                <tr id="no-results-row" style="display: none;">
+                                    <td colspan="10" class="text-center">Transaksi Penitipan Barang Tidak Ditemukan!</td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td colspan="10" class="text-center">Belum ada barang dititipkan</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+    </div>
     {{-- Modals - Only create if penitipan exists --}}
     @if(isset($barangList) && $barangList->count() > 0)
         @foreach($barangList as $barang)

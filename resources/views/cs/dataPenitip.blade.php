@@ -1,433 +1,306 @@
 @extends('layouts.app')
 
-{{-- Bootstrap Icons link ini tidak lagi dibutuhkan jika menggunakan SVG inline --}}
-{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> --}}
-
+{{-- Bagian konten utama halaman --}}
 @section('content')
-<style>
-    /* Gaya Hitam Putih Minimalis (menyesuaikan dengan layout app) */
-    body {
-        /* background-color: #f8f9fa; */ /* Ini mungkin sudah diatur di layouts.app */
-        color: #343a40; /* Warna teks standar (abu-abu gelap) */
-        font-family: Arial, sans-serif;
-    }
-    .container.py-4 {
-        /* Jika container di sini adalah kontainer utama yang ingin diberi latar belakang putih */
-        background-color: #ffffff; /* Latar belakang kontainer putih bersih */
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); /* Sedikit bayangan lembut */
-    }
-    h2 {
-        color: #000000; /* Judul hitam pekat */
-        border-bottom: 1px solid #dee2e6; /* Garis bawah abu-abu terang */
-        padding-bottom: 15px;
-        margin-bottom: 25px;
-        font-weight: 600;
-    }
+{{-- Perhatikan: Tag <head> dan <body> di dalam @section('content') ini akan diabaikan oleh Blade.
+     Hanya konten di dalamnya yang akan disuntikkan ke @yield('content') di layouts/app.blade.php.
+     Style yang spesifik untuk halaman ini lebih baik diletakkan di @push('styles') atau di file CSS terpisah. --}}
 
-    /* Tombol "Back to Dashboard" */
-    .btn-back-dashboard {
-        background-color: #ffffff;
-        color: #343a40;
-        border: 1px solid #adb5bd; /* Border abu-abu sedang */
-        transition: all 0.2s ease-in-out;
-        font-size: 0.9rem;
-        padding: 8px 15px;
-    }
-    .btn-back-dashboard:hover {
-        background-color: #e9ecef; /* Abu-abu terang saat hover */
-        color: #212529; /* Teks lebih gelap saat hover */
-        border-color: #6c757d; /* Border lebih gelap saat hover */
-    }
-    .btn-back-dashboard .bi {
-        color: #6c757d; /* Warna ikon standar */
-        vertical-align: middle;
-        margin-right: 5px;
-    }
-    .btn-back-dashboard:hover .bi {
-        color: #495057; /* Warna ikon lebih gelap saat hover */
-    }
+    <div class="flex flex-grow">
+        {{-- Sidebar --}}
+        <nav id="sidebarMenu" class="sidebar-fixed w-full md:w-1/4 lg:w-1/5 p-6 bg-white shadow-lg border-r border-gray-200 h-screen sticky top-0 left-0 flex flex-col">
+            <div class="pt-3 flex flex-col h-full">
+                <h5 class="text-2xl font-bold text-gray-800 mb-6 text-center">Dashboard CS</h5>
+                <ul class="flex flex-col space-y-2 flex-grow">
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('cs/data-penitip*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="{{ route('cs.penitip.index') }}">
+                            <i class="fas fa-database mr-3 text-lg"></i>
+                            Data Penitip
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('dashboard/cs') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="{{ route('dashboard.cs') }}">
+                            <i class="fas fa-check-circle mr-3 text-lg"></i>
+                            Verifikasi Pembayaran
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="block py-3 px-4 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-red-600 transition duration-300 flex items-center {{ request()->is('cs/merchandise*') ? 'bg-gray-800 text-white hover:bg-gray-700 hover:text-white' : '' }}" href="{{ route('cs.merchandise.index') }}">
+                            <i class="fas fa-gift mr-3 text-lg"></i>
+                            Merchandise
+                        </a>
+                    </li>
+                </ul>
+                <div class="mt-auto p-4">
+                    <form action="{{ route('logout') }}" method="POST" class="flex justify-center">
+                        @csrf
+                        <button type="submit" class="bg-red-600 text-white px-5 py-3 rounded-lg font-semibold hover:bg-red-700 transition duration-300 w-full flex items-center justify-center shadow-md">
+                            <i class="fas fa-sign-out-alt mr-3 text-lg"></i>
+                            Log Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </nav>
 
-    /* Alerts (Pesan Sukses/Error) */
-    .alert {
-        border-radius: 3px;
-        margin-bottom: 20px;
-        font-size: 0.95rem;
-    }
-    .alert-success {
-        background-color: #e9ecef; /* Latar belakang abu-abu terang */
-        border-color: #ced4da; /* Border abu-abu */
-        color: #28a745; /* Teks hijau untuk kontras */
-    }
-    .alert-danger {
-        background-color: #e9ecef; /* Latar belakang abu-abu terang */
-        border-color: #ced4da; /* Border abu-abu */
-        color: #dc3545; /* Teks merah untuk kontras */
-    }
+        {{-- Konten Utama --}}
+        <main class="flex-grow p-8 bg-white rounded-xl shadow-lg border border-gray-200 mt-8 md:mt-0 md:ml-8 mx-4 md:mx-0">
+            {{-- Flash Message --}}
+            @if(session('success'))
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm mb-6" role="alert">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm mb-6" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-    /* Search Input & Button */
-    .input-group .form-control {
-        border-color: #ced4da;
-    }
-    .input-group .btn-primary {
-        background-color: #343a40;
-        border-color: #343a40;
-        color: #fff;
-    }
-    .input-group .btn-primary:hover {
-        background-color: #23272b;
-        border-color: #1d2124;
-    }
-    .input-group .bi {
-        color: #fff;
-    }
+            {{-- Header & Back to Dashboard --}}
+            <div class="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+                <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-red-600 pl-4 leading-tight">Manajemen Data Penitip</h2>
+            </div>
 
-    /* Card (Form Tambah/Edit dan Tabel) */
-    .card {
-        border: 1px solid #e0e0e0; /* Border card abu-abu terang */
-        border-radius: 5px;
-        box-shadow: none; /* Hilangkan bayangan default Bootstrap */
-    }
-    .card-header {
-        background-color: #f2f2f2; /* Header card abu-abu sangat terang */
-        color: #343a40; /* Teks header abu-abu gelap */
-        border-bottom: 1px solid #e0e0e0;
-        padding: 15px 20px;
-        font-size: 1.1rem;
-    }
-    .card-body {
-        padding: 20px;
-    }
+            {{-- Search --}}
+            <form action="{{ route('cs.penitip.index') }}" method="GET" class="mb-6 flex">
+                <div class="relative flex-grow">
+                    <input type="text" name="keyword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-300" placeholder="Cari nama, username, atau NIK..." value="{{ request('keyword') }}">
+                    <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-500 hover:text-red-500 transition duration-300">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
 
-    /* Form Elements */
-    .form-control {
-        border: 1px solid #ced4da;
-        border-radius: 3px;
-        padding: 8px 12px;
-        font-size: 0.95rem;
-    }
-    label {
-        font-weight: 500;
-        color: #495057;
-        margin-bottom: 5px;
-        display: block;
-    }
-    .btn-success { /* Untuk "Simpan Perubahan" */
-        background-color: #28a745;
-        border-color: #28a745;
-        color: #fff;
-        transition: background-color 0.2s;
-    }
-    .btn-success:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-    }
-    .btn-secondary { /* Untuk "Batal" */
-        background-color: #6c757d;
-        border-color: #6c757d;
-        color: #fff;
-        transition: background-color 0.2s;
-    }
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
-    .btn-primary { /* Untuk "Tambah Penitip" */
-        background-color: #000000;
-        border-color: #000000;
-        color: #ffffff;
-        transition: background-color 0.2s;
-    }
-    .btn-primary:hover {
-        background-color: #343a40;
-        border-color: #343a40;
-    }
+            {{-- Error from validation --}}
+            @if ($errors->any())
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm mb-6">
+                    <ul class="mb-0 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
+            {{-- Form Tambah / Edit --}}
+            <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-200 mb-8">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">{{ isset($penitip) ? 'Edit Penitip' : 'Tambah Penitip' }}</h3>
+                <div class="card-body">
+                    <form id="penitipForm" action="{{ isset($penitip) ? route('cs.penitip.update', $penitip->id_penitip) : route('cs.penitip.store') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @if(isset($penitip)) @method('PUT') @endif
 
-    /* Tabel Penitip */
-    .table-responsive {
-        overflow-x: auto; /* Untuk tabel yang responsif */
-    }
-    .table-bordered {
-        border: 1px solid #e0e0e0; /* Border luar tabel */
-    }
-    .table-hover tbody tr:hover {
-        background-color: #e9ecef; /* Abu-abu terang saat hover pada baris */
-    }
-    .table-light thead th {
-        background-color: #343a40; /* Header tabel hitam gelap */
-        color: #ffffff; /* Teks header putih */
-        border: 1px solid #343a40; /* Border header sesuai warna background */
-        padding: 12px 15px;
-        vertical-align: middle;
-    }
-    .table tbody td {
-        border: 1px solid #e0e0e0; /* Border sel abu-abu sangat terang */
-        padding: 10px 15px;
-        vertical-align: middle;
-    }
-    .table tbody tr:nth-of-type(even) {
-        background-color: #f8f9fa; /* Latar belakang baris genap abu-abu sangat terang */
-    }
-    .table tbody tr:nth-of-type(odd) {
-        background-color: #ffffff; /* Latar belakang baris ganjil putih */
-    }
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="nama_penitip" class="block text-gray-700 text-sm font-medium mb-1">Nama Penitip</label>
+                                <input type="text" name="nama_penitip" id="nama_penitip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" value="{{ old('nama_penitip', $penitip->nama_penitip ?? '') }}" required>
+                            </div>
+                            <div>
+                                <label for="username_penitip" class="block text-gray-700 text-sm font-medium mb-1">Username</label>
+                                <input type="text" name="username_penitip" id="username_penitip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" value="{{ old('username_penitip', $penitip->username_penitip ?? '') }}" required>
+                            </div>
+                            <div>
+                                <label for="password_penitip" class="block text-gray-700 text-sm font-medium mb-1">Password {{ isset($penitip) ? '(Kosongkan jika tidak ingin mengubah)' : '' }}</label>
+                                <input type="password" name="password_penitip" id="password_penitip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" {{ isset($penitip) ? '' : 'required' }}>
+                            </div>
+                            <div>
+                                <label for="nik" class="block text-gray-700 text-sm font-medium mb-1">NIK</label>
+                                <input type="number" name="nik" id="nik" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" value="{{ old('nik', $penitip->nik ?? '') }}" required>
+                            </div>
+                            <div>
+                                <label for="email_penitip" class="block text-gray-700 text-sm font-medium mb-1">Email</label>
+                                <input type="email" name="email_penitip" id="email_penitip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" value="{{ old('email_penitip', $penitip->email_penitip ?? '') }}">
+                            </div>
+                            <div>
+                                <label for="no_telp_penitip" class="block text-gray-700 text-sm font-medium mb-1">No Telepon</label>
+                                <input type="text" name="no_telp_penitip" id="no_telp_penitip" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300" value="{{ old('no_telp_penitip', $penitip->no_telp_penitip ?? '') }}">
+                            </div>
+                            <div class="col-span-1 md:col-span-2">
+                                <label for="foto_ktp" class="block text-gray-700 text-sm font-medium mb-1">Upload Foto KTP</label>
+                                <input type="file" name="foto_ktp" id="foto_ktp" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" accept="image/*" {{ isset($penitip) ? '' : 'required' }}>
+                                @if(isset($penitip) && $penitip->foto_ktp)
+                                    <small class="text-gray-500 mt-1 block">Abaikan jika tidak ingin mengganti. Gambar saat ini:</small>
+                                    <img src="{{ asset('storage/' . $penitip->foto_ktp) }}" alt="KTP Saat Ini" class="mt-2 w-32 h-auto rounded-lg shadow-md border border-gray-300">
+                                @endif
+                            </div>
+                        </div>
 
-    /* Tombol Aksi Tabel */
-    .btn-warning { /* Untuk Edit */
-        background-color: #ffc107; /* Warna kuning asli Bootstrap */
-        border-color: #ffc107;
-        color: #212529; /* Teks hitam */
-        transition: all 0.2s;
-    }
-    .btn-warning:hover {
-        background-color: #e0a800;
-        border-color: #d39e00;
-    }
-    .btn-danger { /* Untuk Hapus */
-        background-color: #dc3545; /* Warna merah asli Bootstrap */
-        border-color: #dc3545;
-        color: #fff;
-        transition: all 0.2s;
-    }
-    .btn-danger:hover {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.8rem;
-    }
-    .btn-sm .bi {
-        font-size: 0.9rem; /* Ukuran ikon di tombol kecil */
-        vertical-align: -0.125em; /* Penyelarasan ikon */
-    }
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="submit" class="px-6 py-3 rounded-lg font-semibold text-white shadow-md transition duration-300
+                                {{ isset($penitip) ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-800 hover:bg-gray-700' }}">
+                                <i class="fas fa-save mr-2"></i>
+                                {{ isset($penitip) ? 'Simpan Perubahan' : 'Tambah Penitip' }}
+                            </button>
+                            @if(isset($penitip))
+                                <a href="{{ route('cs.penitip.index') }}" class="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-300 shadow-md">Batal</a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    /* Pagination */
-    .pagination .page-item .page-link {
-        font-size: 0.875rem;
-        padding: 0.5rem 0.75rem; /* Ukuran padding normal untuk pagination */
-        color: #343a40; /* Warna teks link default */
-        border: 1px solid #dee2e6; /* Border link abu-abu terang */
-        background-color: #ffffff; /* Latar belakang link putih */
-        transition: all 0.2s;
-    }
-    .pagination .page-item .page-link:hover {
-        background-color: #e9ecef; /* Latar belakang hover abu-abu terang */
-        border-color: #adb5bd;
-    }
-    .pagination .page-item.active .page-link {
-        background-color: #000000; /* Latar belakang aktif hitam */
-        border-color: #000000;
-        color: #ffffff; /* Teks aktif putih */
-    }
-    .pagination .page-item.disabled .page-link {
-        color: #adb5bd; /* Teks disabled abu-abu */
-        pointer-events: none;
-        background-color: #ffffff;
-        border-color: #dee2e6;
-    }
-    .pagination .page-item .page-link i {
-        font-size: 1rem; /* Ukuran ikon panah */
-    }
-    img.img-thumbnail {
-        border: 1px solid #ced4da;
-        border-radius: 3px;
-    }
-</style>
+            {{-- Tabel --}}
+            <div class="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Daftar Penitip</h3>
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="w-full text-sm leading-normal">
+                        <thead class="bg-gray-800 text-white uppercase text-xs tracking-wider">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Nama</th>
+                                <th class="px-6 py-3 text-left">Username</th>
+                                <th class="px-6 py-3 text-left">NIK</th>
+                                <th class="px-6 py-3 text-left">Email</th>
+                                <th class="px-6 py-3 text-left">No Telp</th>
+                                <th class="px-6 py-3 text-left">Poin</th>
+                                <th class="px-6 py-3 text-left">Saldo</th>
+                                <th class="px-6 py-3 text-left">Foto KTP</th>
+                                <th class="px-6 py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($penitips as $penitip)
+                            <tr class="border-b border-gray-200 {{ $loop->iteration % 2 == 0 ? 'bg-gray-50' : 'bg-white' }} hover:bg-gray-100">
+                                <td class="px-6 py-4">{{ $penitip->nama_penitip }}</td>
+                                <td class="px-6 py-4">{{ $penitip->username_penitip }}</td>
+                                <td class="px-6 py-4">{{ $penitip->nik }}</td>
+                                <td class="px-6 py-4">{{ $penitip->email_penitip }}</td>
+                                <td class="px-6 py-4">{{ $penitip->no_telp_penitip }}</td>
+                                <td class="px-6 py-4">{{ $penitip->poin_penitip ?? 0 }}</td>
+                                <td class="px-6 py-4">Rp{{ number_format($penitip->saldo_penitip ?? 0, 0, ',', '.') }}</td>
+                                <td class="px-6 py-4">
+                                    @if($penitip->foto_ktp)
+                                        <a href="{{ asset('storage/' . $penitip->foto_ktp) }}" target="_blank" class="block w-20 h-20 overflow-hidden rounded-md border border-gray-300 hover:border-blue-500 transition duration-300">
+                                            <img src="{{ asset('storage/' . $penitip->foto_ktp) }}" alt="KTP" class="w-full h-full object-cover">
+                                        </a>
+                                    @else
+                                        <span class="text-gray-500 italic">Belum ada</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center space-x-2">
+                                    <a href="{{ route('cs.penitip.edit', $penitip->id_penitip) }}" class="inline-block px-4 py-2 bg-yellow-500 text-white rounded-lg font-semibold text-sm hover:bg-yellow-600 transition duration-300 shadow-sm">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <button type="button" class="inline-block px-4 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-red-700 transition duration-300 shadow-sm btnDelete" data-id="{{ $penitip->id_penitip }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="9" class="px-6 py-4 text-center text-gray-600 italic">Belum ada data penitip.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-<div class="container py-4">
-    {{-- Flash Message --}}
-    @if(session('success') || session('error'))
-        <div class="alert alert-{{ session('success') ? 'success' : 'danger' }} alert-dismissible fade show" role="alert">
-            {{ session('success') ?? session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Manajemen Data Penitip</h2>
-        <form action="{{ route('dashboard.cs') }}" method="GET">
-            <button class="btn btn-back-dashboard">
-                <svg class="bi bi-house-door me-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5V10.3a1.5 1.5 0 0 1 3 0v4.2a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L8.354 1.146zM11.5 7.5v7h-3V10.3a.5.5 0 0 0-.5-.5H6a.5.5 0 0 0-.5.5v4.2h-3v-7l5.657-5.657L11.5 7.5z"/>
-                </svg>
-                Back to Dashboard
-            </button>
-        </form>
+                {{-- Pagination --}}
+                <div class="mt-6 flex justify-center">
+                    {{ $penitips->links('pagination::tailwind') }}
+                </div>
+            </div>
+        </main>
     </div>
 
-    {{-- Search --}}
-    <form action="{{ route('cs.penitip.index') }}" method="GET" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="keyword" class="form-control" placeholder="Cari nama, username, atau NIK..." value="{{ request('keyword') }}">
-            <button class="btn btn-primary" type="submit">
-                <svg class="bi bi-search" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.415 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
-                    <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
-                </svg>
-                Cari
-            </button>
-        </div>
-    </form>
+{{-- Tutup @section('content') di sini --}}
+@endsection
 
-    {{-- Error --}}
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+{{-- PUSH MODALS KE DALAM STACK 'modals' DI LAYOUTS/APP.BLADE.PHP --}}
+@push('modals')
+    <div id="submitConfirmModal" class="modal-overlay hidden opacity-0 pointer-events-none">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h5 class="text-xl font-semibold" id="submitConfirmModalLabel">Konfirmasi Aksi</h5>
+                <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl" onclick="closeModal('submitConfirmModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="submitConfirmModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300" onclick="closeModal('submitConfirmModal')">Batal</button>
+                <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300" id="confirmSubmitBtn">Ya, Lanjutkan</button>
+            </div>
         </div>
-    @endif
+    </div>
 
-    {{-- Form Tambah / Edit --}}
-    <div class="card mb-5">
-        <div class="card-header fw-semibold">{{ isset($penitip) ? 'Edit Penitip' : 'Tambah Penitip' }}</div>
-        <div class="card-body">
-            <form id="penitipForm" action="{{ isset($penitip) ? route('cs.penitip.update', $penitip->id_penitip) : route('cs.penitip.store') }}" method="POST" enctype="multipart/form-data">
+    <div id="deleteConfirmModal" class="modal-overlay hidden opacity-0 pointer-events-none">
+        <div class="modal-container">
+            <form id="formDelete" method="POST">
                 @csrf
-                @if(isset($penitip)) @method('PUT') @endif
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Nama Penitip</label>
-                        <input type="text" name="nama_penitip" class="form-control" value="{{ old('nama_penitip', $penitip->nama_penitip ?? '') }}" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Username</label>
-                        <input type="text" name="username_penitip" class="form-control" value="{{ old('username_penitip', $penitip->username_penitip ?? '') }}" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Password {{ isset($penitip) ? '(Kosongkan jika tidak ingin mengubah)' : '' }}</label>
-                        <input type="password" name="password_penitip" class="form-control" {{ isset($penitip) ? '' : 'required' }}>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>NIK</label>
-                        <input type="number" name="nik" class="form-control" value="{{ old('nik', $penitip->nik ?? '') }}" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email_penitip" class="form-control" value="{{ old('email_penitip', $penitip->email_penitip ?? '') }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>No Telepon</label>
-                        <input type="text" name="no_telp_penitip" class="form-control" value="{{ old('no_telp_penitip', $penitip->no_telp_penitip ?? '') }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Upload Foto KTP</label>
-                        <input type="file" name="foto_ktp" class="form-control" accept="image/*" {{ isset($penitip) ? '' : 'required' }}>
-                        @if(isset($penitip) && $penitip->foto_ktp)
-                            <small class="text-muted">Abaikan jika tidak ingin mengganti.</small>
-                        @endif
-                    </div>
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-{{ isset($penitip) ? 'success' : 'primary' }}">
-                            <svg class="bi bi-save me-1" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path fill-rule="evenodd" d="M2.5 1A1.5 1.5 0 0 0 1 2.5v11A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5V6.707a1 1 0 0 0-.293-.707L12.354.854A1 1 0 0 0 11.646.5H2.5zm-.5 1a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .354.146L13.146 3.5h-9.793A.5.5 0 0 0 3 3v-1zm1 11.5v-4.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v4.5H4z"/>
-                            </svg>
-                            {{ isset($penitip) ? 'Simpan Perubahan' : 'Tambah Penitip' }}
-                        </button>
-                        @if(isset($penitip))
-                            <a href="{{ route('cs.penitip.index') }}" class="btn btn-secondary ms-2">Batal</a>
-                        @endif
-                    </div>
+                @method('DELETE')
+                <div class="modal-header">
+                    <h5 class="text-xl font-semibold" id="deleteConfirmModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="text-gray-500 hover:text-gray-700 text-2xl" onclick="closeModal('deleteConfirmModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus data penitip ini? Tindakan ini tidak dapat dibatalkan.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300" onclick="closeModal('deleteConfirmModal')">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">Ya, Hapus</button>
                 </div>
             </form>
         </div>
     </div>
+@endpush
 
-    {{-- Tabel --}}
-    <div class="card">
-        <div class="card-header fw-semibold">Daftar Penitip</div>
-        <div class="card-body table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Nama</th>
-                        <th>Username</th>
-                        <th>NIK</th>
-                        <th>Email</th>
-                        <th>No Telp</th>
-                        <th>Poin</th>
-                        <th>Saldo</th>
-                        <th>Foto KTP</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($penitips as $penitip)
-                    <tr>
-                        <td>{{ $penitip->nama_penitip }}</td>
-                        <td>{{ $penitip->username_penitip }}</td>
-                        <td>{{ $penitip->nik }}</td>
-                        <td>{{ $penitip->email_penitip }}</td>
-                        <td>{{ $penitip->no_telp_penitip }}</td>
-                        <td>{{ $penitip->poin ?? 0 }}</td>
-                        <td>Rp{{ number_format($penitip->saldo ?? 0, 0, ',', '.') }}</td>
-                        <td>
-                            @if($penitip->foto_ktp)
-                                <img src="{{ asset('storage/' . $penitip->foto_ktp) }}" alt="KTP" width="80" class="img-thumbnail">
-                            @else
-                                <span class="text-muted">Belum ada</span>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <a href="{{ route('cs.penitip.edit', $penitip->id_penitip) }}" class="btn btn-warning btn-sm me-1">
-                                <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10.5a.5.5 0 0 0 .5.5h.793l6.354-6.354z"/>
-                                </svg>
-                            </a>
-                            <form action="{{ route('cs.penitip.destroy', $penitip->id_penitip) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus data penitip ini?')">
-                                    <svg class="bi bi-trash" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13V9.5a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4H2.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                    </svg>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="9" class="text-center text-muted">Belum ada data penitip.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
-            {{-- Pagination --}}
-            <div class="mt-3 d-flex justify-content-center">
-                <nav aria-label="Page navigation">
-                    {{ $penitips->links('pagination::bootstrap-5') }}
-                </nav>
-            </div>
-        </div>
-    </div>
-</div>
-
-@endsection
-
-@section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const penitipForm = document.getElementById('penitipForm');
-        const isEditMode = @json(isset($penitip));
-
-        penitipForm.addEventListener('submit', function (e) {
-            const message = isEditMode
-                ? 'Yakin ingin menyimpan perubahan data penitip ini?'
-                : 'Yakin ingin menambahkan data penitip baru?';
-
-            if (!confirm(message)) {
-                e.preventDefault();
+{{-- PUSH SCRIPT TAMBAHAN KE DALAM STACK 'scripts' DI LAYOUTS/APP.BLADE.PHP --}}
+@push('scripts')
+    <script>
+        // Custom Modal Functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.remove('pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                }, 10);
             }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('opacity-0');
+                modal.classList.add('pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const penitipForm = document.getElementById('penitipForm');
+            const submitConfirmModal = document.getElementById('submitConfirmModal');
+            const submitConfirmModalBody = document.getElementById('submitConfirmModalBody');
+            const confirmSubmitBtn = document.getElementById('confirmSubmitBtn');
+            const isEditMode = @json(isset($penitip));
+
+            // Handle form submission confirmation
+            penitipForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent default submission
+                const message = isEditMode
+                    ? 'Yakin ingin menyimpan perubahan data penitip ini?'
+                    : 'Yakin ingin menambahkan data penitip baru?';
+                submitConfirmModalBody.textContent = message;
+                showModal('submitConfirmModal');
+
+                // Attach event listener for the confirmation button inside the modal
+                confirmSubmitBtn.onclick = function() {
+                    closeModal('submitConfirmModal');
+                    penitipForm.submit(); // Programmatically submit the form
+                };
+            });
+
+            // Handle delete button confirmation
+            document.querySelectorAll('.btnDelete').forEach(button => {
+                button.addEventListener('click', function () {
+                    const penitipId = this.dataset.id;
+                    const deleteForm = document.getElementById('formDelete');
+                    deleteForm.action = `/cs/data-penitip/${penitipId}`; // Sesuaikan dengan rute Laravel Anda
+                    showModal('deleteConfirmModal');
+                });
+            });
         });
-    });
-</script>
-@endsection
+    </script>
+@endpush

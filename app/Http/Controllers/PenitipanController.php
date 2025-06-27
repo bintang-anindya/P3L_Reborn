@@ -16,9 +16,41 @@ use Carbon\Carbon;
 
 class PenitipanController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return view('dashboard.gudang');
+        $kategoriList = KategoriBarang::all();
+        
+        $search = $request->input('search');
+
+        $barangList = Barang::with(['penitipan.penitip', 'penitipan.pegawai', 'kategori'])
+            ->when($search, function($query) use ($search) {
+                return $query->where(function($q) use ($search) {
+                    $q->where('nama_barang', 'like', "%{$search}%")
+                    ->orWhere('deskripsi_barang', 'like', "%{$search}%")
+                    ->orWhere('harga_barang', 'like', "%{$search}%")
+                    ->orWhereHas('penitipan', function($q) use ($search) {
+                        $q->where('pesan', 'like', "%{$search}%")
+                            ->orWhere('id_penitipan', 'like', "%{$search}%")
+                            ->orWhereHas('penitip', function($q) use ($search) {
+                                $q->where('nama_penitip', 'like', "%{$search}%");
+                            })
+                            ->orWhereHas('pegawai', function($q) use ($search) {
+                                $q->where('nama_pegawai', 'like', "%{$search}%");
+                            });
+                    })
+                    ->orWhereHas('kategori', function($q) use ($search) {
+                        $q->where('nama_kategori', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->orderBy('tanggal_masuk', 'desc')
+            ->paginate(10); 
+
+        $penitipList = Penitip::all();
+        $pegawais = Pegawai::all();
+        $hunterList = Pegawai::where('id_role', 5)->get();
+
+        return view('dashboard.gudang', compact('kategoriList', 'barangList', 'penitipList', 'pegawais', 'hunterList'));
     }
 
     public function index(Request $request) // Add Request $request parameter here

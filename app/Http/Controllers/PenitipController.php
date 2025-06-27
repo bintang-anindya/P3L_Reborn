@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Penitip;
 use App\Models\Barang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+
 
 class PenitipController extends Controller
 {
@@ -26,6 +29,21 @@ class PenitipController extends Controller
         $penitips = $query->paginate(10);
         return view('cs.dataPenitip', compact('penitips'));
     }
+    // public function index(Request $request)
+    // {
+    //     $guard = session('guard');
+
+    //     if ($guard == 'penitip') {
+    //         $user = Auth::guard('penitip')->user();
+    //         $penitip = $user;
+
+    //         return view('penitip.penarikan', compact(
+    //             'user',
+    //             'penitip',
+    //         ));
+
+    //     } 
+    // }
 
     public function store(Request $request)
     {
@@ -121,5 +139,38 @@ class PenitipController extends Controller
         $penitip->delete();
 
         return redirect()->route('cs.penitip.index')->with('success', 'Penitip berhasil dihapus.');
+    }
+
+    public function tariksaldo(Request $request, $id)
+    {
+        $penitip = Penitip::findOrFail($id);
+
+        $request->validate([
+            'nominal_tarik' => ['required','numeric','min:1',
+                function ($attribute, $value, $fail) use ($penitip) {
+                    if ($value > $penitip->saldo_penitip) {
+                        $fail('Nominal penarikan tidak boleh melebihi saldo yang tersedia.');
+                        return redirect()->route('penitip.penarikan')->with('error', 'Saldo anda kurang');
+                    }
+                },
+            ],
+        ], [
+            'nominal_tarik.required' => 'Nominal penarikan wajib diisi.',
+            'nominal_tarik.numeric' => 'Nominal penarikan harus berupa angka.',
+            'nominal_tarik.min' => 'Nominal penarikan harus minimal 1.',
+        ]);
+
+        $penitip->saldo_penitip -= $request->nominal_tarik + $request->nominal_tarik*5/100;
+        $penitip->nominal_tarik = $request->nominal_tarik;
+
+        $penitip->save();
+
+        Log::info('Penarikan Saldo Berhasil', [
+            'penitip_id' => $penitip->id_penitip,
+            'nominal_tarik' => $request->nominal_tarik,
+            'saldo_setelah_tarik' => $penitip->saldo_penitip,
+        ]);
+
+        return redirect()->route('penitip.penarikan')->with('success', 'Penarikan berhasil dilakukan.');
     }
 }
